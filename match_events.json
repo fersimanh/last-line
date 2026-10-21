@@ -543,7 +543,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 104.2,
-      "keeper_y": 33.8
+      "keeper_y": 33.8,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.67,
+      "keeper_set": true
     },
     {
       "id": 41,
@@ -856,7 +860,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.6,
-      "keeper_y": 34.6
+      "keeper_y": 34.6,
+      "defenders_in_lane": 3,
+      "deflected": false,
+      "swerve": 0.37,
+      "keeper_set": false
     },
     {
       "id": 65,
@@ -1250,7 +1258,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.9,
-      "keeper_y": 32.6
+      "keeper_y": 32.6,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.85,
+      "keeper_set": true
     },
     {
       "id": 96,
@@ -2397,7 +2409,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 102.0,
-      "keeper_y": 34.6
+      "keeper_y": 34.6,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.77,
+      "keeper_set": true
     },
     {
       "id": 186,
@@ -2900,7 +2916,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 101.0,
-      "keeper_y": 32.5
+      "keeper_y": 32.5,
+      "defenders_in_lane": 1,
+      "deflected": true,
+      "swerve": 0.06,
+      "keeper_set": false
     },
     {
       "id": 226,
@@ -5046,7 +5066,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 101.2,
-      "keeper_y": 33.9
+      "keeper_y": 33.9,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.1,
+      "keeper_set": false
     },
     {
       "id": 395,
@@ -5989,7 +6013,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 102.0,
-      "keeper_y": 32.9
+      "keeper_y": 32.9,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.62,
+      "keeper_set": true
     },
     {
       "id": 469,
@@ -6528,7 +6556,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 104.0,
-      "keeper_y": 33.5
+      "keeper_y": 33.5,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.17,
+      "keeper_set": true
     },
     {
       "id": 511,
@@ -6661,7 +6693,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 103.7,
-      "keeper_y": 34.5
+      "keeper_y": 34.5,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.19,
+      "keeper_set": true
     },
     {
       "id": 521,
@@ -8564,7 +8600,11 @@
       "body_part": "head",
       "keeper": "Elias Novak",
       "keeper_x": 101.9,
-      "keeper_y": 32.0
+      "keeper_y": 32.0,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.78,
+      "keeper_set": false
     },
     {
       "id": 671,
@@ -8884,7 +8924,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.1,
-      "keeper_y": 35.1
+      "keeper_y": 35.1,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.08,
+      "keeper_set": true
     },
     {
       "id": 696,
@@ -9154,7 +9198,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 101.1,
-      "keeper_y": 32.6
+      "keeper_y": 32.6,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.11,
+      "keeper_set": true
     },
     {
       "id": 717,
@@ -9676,7 +9724,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 101.5,
-      "keeper_y": 35.3
+      "keeper_y": 35.3,
+      "defenders_in_lane": 3,
+      "deflected": false,
+      "swerve": 0.98,
+      "keeper_set": true
     },
     {
       "id": 758,
@@ -10808,7 +10860,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.3,
-      "keeper_y": 33.8
+      "keeper_y": 33.8,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.34,
+      "keeper_set": true
     },
     {
       "id": 847,
@@ -11032,7 +11088,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 101.7,
-      "keeper_y": 33.6
+      "keeper_y": 33.6,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.86,
+      "keeper_set": true
     },
     {
       "id": 864,
@@ -11321,7 +11381,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.7,
-      "keeper_y": 33.5
+      "keeper_y": 33.5,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.4,
+      "keeper_set": true
     },
     {
       "id": 886,
@@ -11545,7 +11609,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.4,
-      "keeper_y": 32.7
+      "keeper_y": 32.7,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.33,
+      "keeper_set": true
     },
     {
       "id": 903,
@@ -11715,7 +11783,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 102.1,
-      "keeper_y": 34.0
+      "keeper_y": 34.0,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.96,
+      "keeper_set": true
     },
     {
       "id": 916,
@@ -11824,7 +11896,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.4,
-      "keeper_y": 36.0
+      "keeper_y": 36.0,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.38,
+      "keeper_set": false
     },
     {
       "id": 924,
@@ -12018,7 +12094,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 101.8,
-      "keeper_y": 36.7
+      "keeper_y": 36.7,
+      "defenders_in_lane": 3,
+      "deflected": true,
+      "swerve": 0.55,
+      "keeper_set": true
     },
     {
       "id": 939,
@@ -12184,7 +12264,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.7,
-      "keeper_y": 33.7
+      "keeper_y": 33.7,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.58,
+      "keeper_set": true
     },
     {
       "id": 952,
@@ -12660,7 +12744,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.8,
-      "keeper_y": 33.5
+      "keeper_y": 33.5,
+      "defenders_in_lane": 2,
+      "deflected": true,
+      "swerve": 0.7,
+      "keeper_set": true
     },
     {
       "id": 989,
@@ -13734,7 +13822,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 102.8,
-      "keeper_y": 33.6
+      "keeper_y": 33.6,
+      "defenders_in_lane": 2,
+      "deflected": true,
+      "swerve": 0.38,
+      "keeper_set": true
     },
     {
       "id": 1074,
@@ -13926,7 +14018,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 101.9,
-      "keeper_y": 31.0
+      "keeper_y": 31.0,
+      "defenders_in_lane": 3,
+      "deflected": false,
+      "swerve": 0.2,
+      "keeper_set": true
     },
     {
       "id": 1089,
@@ -15097,7 +15193,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.9,
-      "keeper_y": 34.6
+      "keeper_y": 34.6,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.07,
+      "keeper_set": true
     },
     {
       "id": 1181,
@@ -15573,7 +15673,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 102.2,
-      "keeper_y": 35.5
+      "keeper_y": 35.5,
+      "defenders_in_lane": 2,
+      "deflected": false,
+      "swerve": 0.64,
+      "keeper_set": true
     },
     {
       "id": 1218,
@@ -16883,7 +16987,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 104.1,
-      "keeper_y": 36.0
+      "keeper_y": 36.0,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.91,
+      "keeper_set": true
     },
     {
       "id": 1321,
@@ -17055,7 +17163,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 101.1,
-      "keeper_y": 33.6
+      "keeper_y": 33.6,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.52,
+      "keeper_set": true
     },
     {
       "id": 1334,
@@ -17186,7 +17298,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.2,
-      "keeper_y": 32.7
+      "keeper_y": 32.7,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.61,
+      "keeper_set": true
     },
     {
       "id": 1344,
@@ -17547,7 +17663,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.7,
-      "keeper_y": 34.9
+      "keeper_y": 34.9,
+      "defenders_in_lane": 1,
+      "deflected": false,
+      "swerve": 0.89,
+      "keeper_set": true
     },
     {
       "id": 1372,
@@ -17869,7 +17989,11 @@
       "body_part": "foot",
       "keeper": "Elias Novak",
       "keeper_x": 103.6,
-      "keeper_y": 35.2
+      "keeper_y": 35.2,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.26,
+      "keeper_set": true
     },
     {
       "id": 1397,
@@ -18660,7 +18784,11 @@
       "body_part": "foot",
       "keeper": "Mateo Rios",
       "keeper_x": 103.5,
-      "keeper_y": 35.1
+      "keeper_y": 35.1,
+      "defenders_in_lane": 0,
+      "deflected": false,
+      "swerve": 0.27,
+      "keeper_set": true
     }
   ]
 }

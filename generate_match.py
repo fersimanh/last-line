@@ -12,6 +12,9 @@ import random
 
 SEED = 42
 random.seed(SEED)
+# The extra shot-context fields (defenders, deflection, swerve, keeper set) come
+# from their own random stream, so adding them does not change the match itself.
+context_rng = random.Random(SEED + 1)
 
 MATCH_SECONDS = 90 * 60
 GOAL_Y_MIN, GOAL_Y_MAX, GOAL_H = 30.34, 37.66, 2.44
@@ -76,6 +79,18 @@ def distribute(team, opp, keeper_x, keeper_y):
     return opp if completed else team
 
 
+def shot_context(distance):
+    """Extra facts about how a shot was struck, used by the saveability score."""
+    # Each of 3 defenders may stand in the shooting lane; more likely on long shots
+    p_defender = clamp(0.1 + distance / 60, 0.1, 0.6)
+    return {
+        "defenders_in_lane": sum(context_rng.random() < p_defender for _ in range(3)),
+        "deflected": context_rng.random() < 0.08,
+        "swerve": round(context_rng.random(), 2),  # 0 = straight, 1 = big late movement
+        "keeper_set": context_rng.random() < 0.85,  # balanced and ready when struck
+    }
+
+
 def take_shot(team, opp):
     """One shot, including the keeper's reaction. Returns the team with the ball next."""
     shooter = random.choices(TEAMS[team]["outfield"], weights=SHOOTER_WEIGHTS)[0]
@@ -94,6 +109,7 @@ def take_shot(team, opp):
         "keeper": keeper,
         "keeper_x": round(keeper_x, 1),
         "keeper_y": round(keeper_y, 1),
+        **shot_context(distance),
     }
     tick(1, 3)
     roll = random.random()

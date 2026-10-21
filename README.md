@@ -18,12 +18,33 @@ Pitch: 105 x 68 m. Each event is in the frame of the team in possession, attacki
 | --- | --- |
 | pass | receiver, success |
 | cross, through_ball, box_entry | none |
-| shot | outcome (goal, saved, off_target, blocked), distance_m, speed_kmh, body_part, keeper, keeper_x, keeper_y, end_y and end_z (not on blocked shots) |
+| shot | outcome (goal, saved, off_target, blocked), distance_m, speed_kmh, body_part, keeper, keeper_x, keeper_y, defenders_in_lane (0-3), deflected (true/false), swerve (0-1), keeper_set (true/false), end_y and end_z (not on blocked shots) |
 | goal | related_to (shot id), score |
 | keeper_save | related_to (shot id), end_z |
 | keeper_claim, keeper_sweep | none |
 | keeper_distribution | kind (short or long), outcome (completed or lost) |
 | tackle, possession_change | none |
+
+## Saveability score
+
+`scoring.py` rates every on-target shot from 0 (nearly unstoppable) to 100 (routine stop): 65+ is "should save", 35-64 "tough save", below 35 "near-unstoppable". It is a transparent weighted formula, not machine learning. Each factor runs from 0 (hard for the keeper) to 1 (easy):
+
+| Factor | Weight | Easier for the keeper when |
+| --- | --- | --- |
+| placement | 18% | the shot is low and near the middle of the goal |
+| reaction | 16% | the ball's flight time is long compared with the keeper's reaction (0.25 s) plus dive (4.5 m/s) time |
+| distance | 12% | the shot is struck from far away |
+| speed | 12% | the shot is slower |
+| reach | 10% | the keeper is already close to where the ball ends up |
+| angle | 8% | the shot comes from near the goal's center line |
+| no_deflection | 6% | the shot is a clean strike |
+| lane | 5% | no defenders stand between the ball and the keeper |
+| depth | 4% | the keeper stands at the ideal distance off the line (further out against long shots) |
+| swerve | 4% | the ball flies straight |
+| keeper_set | 4% | the keeper was balanced and ready when it was struck |
+| foot_strike | 1% | it is a foot strike, not a header |
+
+The weighted sum is stretched around a midpoint (`CENTER`) so scores spread out. The weights, the reaction and dive numbers, and the midpoint are hand-picked assumptions, not fitted to real football data. Reaction overlaps with distance, speed and reach on purpose: it asks whether the keeper had enough time, while the others show what drove that. The synthetic generator draws `defenders_in_lane`, `deflected`, `swerve` and `keeper_set` from a separate random stream, so they are simulated context and do not change who scores.
 
 ## Architecture
 

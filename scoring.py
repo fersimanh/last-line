@@ -6,9 +6,33 @@ It is a transparent formula (not machine learning) so the Foundry agents
 can explain exactly which factors drove it.
 """
 
-SPREAD = 1.7             # how far to stretch scores away from 50
+import math
+
+SPREAD = 1.7            # how far to stretch scores away from the center
+CENTER = 60              # the raw score that maps to a score of 50: the average raw
+                         # score with these weights, so a typical shot lands near 50
 GOAL_HALF_WIDTH = 3.66   # meters (goal is 7.32 m wide)
 GOAL_HEIGHT = 2.44       # meters
+
+# Assumptions behind the reaction-time factor
+KEEPER_DELAY_SEC = 0.25  # time for the keeper to read the shot and start moving
+KEEPER_DIVE_MS = 4.5     # sideways speed of a dive, meters per second
+
+# How much each factor counts toward the score (adds up to 1.0)
+WEIGHTS = {
+    "placement": 0.18,    # where the ball crosses the line
+    "reaction": 0.16,     # time the ball gives the keeper vs time the keeper needs
+    "distance": 0.12,     # how far the shot was struck from
+    "speed": 0.12,        # how hard it was struck
+    "reach": 0.10,        # how far the keeper was from where the ball ended up
+    "angle": 0.08,        # how wide of the goal's center line it was struck from
+    "no_deflection": 0.06,  # a deflection takes away reaction time
+    "lane": 0.05,         # defenders standing between the ball and the keeper
+    "depth": 0.04,        # keeper's distance off the goal line vs the ideal for this shot
+    "swerve": 0.04,       # late movement in the air
+    "keeper_set": 0.04,   # keeper balanced and ready, or caught moving
+    "foot_strike": 0.01,  # headers are harder to read than foot strikes
+}
 
 # How much each attacking event adds to the danger rating
 DANGER_WEIGHTS = {"box_entry": 2, "cross": 1, "through_ball": 2, "shot": 3}
@@ -30,13 +54,41 @@ def saveability(shot):
     lateral = abs(shot["end_y"] - 34) / GOAL_HALF_WIDTH
     height = shot["end_z"] / GOAL_HEIGHT
     placement = 1 - clamp(0.6 * lateral + 0.4 * height)
-    reach = 1 - clamp(abs(shot["end_y"] - shot["keeper_y"]) / 3.5)
+    miss_m = abs(shot["end_y"] - shot["keeper_y"])  # sideways distance the keeper must cover
+    reach = 1 - clamp(miss_m / 3.5)
 
-    factors = {"distance": distance, "speed": speed, "placement": placement, "reach": reach}
-    raw = 100 * (0.25 * distance + 0.25 * speed + 0.30 * placement + 0.20 * reach)
-    # Averaging four factors bunches scores near 50, so stretch them around the
-    # midpoint. This spreads verdicts roughly 25% / 50% / 25%.
-    score = clamp(50 + SPREAD * (raw - 50), 0, 100)
+    # Reaction: seconds the ball takes to arrive vs seconds the keeper needs
+    # (reading the shot, then diving sideways). A ratio of 2 or more is easy.
+    flight_sec = shot["distance_m"] / (shot["speed_kmh"] / 3.6)
+    needed_sec = KEEPER_DELAY_SEC + miss_m / KEEPER_DIVE_MS
+    reaction = clamp(flight_sec / needed_sec / 2)
+
+    # Angle: a shot from wide of the goal's center line is harder to cover
+    angle_deg = math.degrees(math.atan2(abs(shot["y"] - 34), 105 - shot["x"]))
+    angle = 1 - clamp(angle_deg / 60)
+
+    # Depth: the ideal spot off the line is further out against longer shots
+    depth_m = 105 - shot["keeper_x"]
+    depth = 1 - clamp(abs(depth_m - (1 + shot["distance_m"] / 15)) / 2.5)
+
+    factors = {
+        "placement": placement,
+        "reaction": reaction,
+        "distance": distance,
+        "speed": speed,
+        "reach": reach,
+        "angle": angle,
+        "no_deflection": 0.0 if shot["deflected"] else 1.0,
+        "lane": 1 - shot["defenders_in_lane"] / 3,
+        "depth": depth,
+        "swerve": 1 - shot["swerve"],
+        "keeper_set": 1.0 if shot["keeper_set"] else 0.0,
+        "foot_strike": 0.0 if shot["body_part"] == "head" else 1.0,
+    }
+    raw = 100 * sum(WEIGHTS[name] * value for name, value in factors.items())
+    # Averaging many factors bunches scores near the middle, so stretch them
+    # around the center. This spreads verdicts roughly 25% / 50% / 25%.
+    score = clamp(50 + SPREAD * (raw - CENTER), 0, 100)
     return round(score), factors
 
 
@@ -53,24 +105,41 @@ def verdict(score):
 HARD_REASONS = {
     "distance": "it was hit from close range",
     "speed": "it was struck very hard",
-    "placement": "it was placed in a corner",
+    "placement": "it was placed high or wide, away from the keeper's body",
     "reach": "the keeper was caught far from the ball's path",
+    "reaction": "the keeper had very little time to react",
+    "angle": "it was struck from a wide angle",
+    "no_deflection": "it took a deflection",
+    "lane": "defenders blocked the keeper's view",
+    "depth": "the keeper was off the ideal depth for this shot",
+    "swerve": "it moved late in the air",
+    "keeper_set": "the keeper was caught moving",
+    "foot_strike": "it was a header",
 }
 EASY_REASONS = {
     "distance": "it came from long range",
     "speed": "it was struck at only moderate pace",
     "placement": "it was hit close to the keeper's body",
     "reach": "the keeper was well positioned",
+    "reaction": "the keeper had plenty of time to react",
+    "angle": "it was struck from straight on",
+    "no_deflection": "it was a clean strike",
+    "lane": "the keeper had a clear view",
+    "depth": "the keeper stood at the ideal depth",
+    "swerve": "it flew straight",
+    "keeper_set": "the keeper was set and ready",
+    "foot_strike": "it was a foot strike",
 }
 
 
 def key_factor(factors, score):
     """Name the factor that best explains the verdict: what made an easy
-    save easy, or what made a hard shot hard."""
+    save easy, or what made a hard shot hard. Factors are ranked by weight, so
+    a heavy factor beats a trivial one (a clean strike is not much of a reason)."""
     if score >= 65:
-        best = max(factors, key=factors.get)
+        best = max(factors, key=lambda name: WEIGHTS[name] * factors[name])
         return EASY_REASONS[best]
-    worst = min(factors, key=factors.get)
+    worst = max(factors, key=lambda name: WEIGHTS[name] * (1 - factors[name]))
     return HARD_REASONS[worst]
 
 

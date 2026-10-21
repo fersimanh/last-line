@@ -64,6 +64,13 @@ def make_analyst(client, live):
             "Then write a short factual summary (max 4 bullet points): what happened, "
             "the saveability score and verdict, the key factor, and how busy the keeper has been. "
             "Saveability runs 0-100: 100 is a routine stop, 0 is nearly unstoppable. "
+            "The insight lists twelve factors, each from 0 (hard for the keeper) to 1 (easy): "
+            "placement, reaction (time the ball gives the keeper), distance, speed, reach, "
+            "angle, no_deflection (0 = it was deflected, 1 = clean strike), lane (defenders in the way), depth "
+            "(keeper's distance off the line), swerve, keeper_set (0 = keeper caught moving) "
+            "and foot_strike (0 = header, 1 = foot). For a 'tough save' or 'near-unstoppable' shot, name the "
+            "one or two LOW factors that made it hard. For a 'should save' shot, name the "
+            "one or two HIGH factors that made it easy. Round factor values to 2 decimals. "
             "Only use numbers from the tools. Never invent facts."
         ),
         tools=[get_current_moment, get_keeper_stats, get_pressure],
