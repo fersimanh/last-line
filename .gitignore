@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Pipeline output (regenerate with: python3 pipeline.py > moments.jsonl)
+moments.jsonl
