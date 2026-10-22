@@ -1,0 +1,8 @@
+streamlit==1.58.0
+plotly==6.7.0
+python-dotenv==1.2.1
+# Only needed to call the Foundry agents (cache misses, pipeline.py, insights.py --warm)
+agent-framework==1.22.0
+azure-identity==1.26.0
+# Only needed for smoke_test.py
+openai==3.35.1

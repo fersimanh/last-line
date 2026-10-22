@@ -1,0 +1,1030 @@
+{
+ "1004|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I recorded a keeper_claim at (x=100.5, y=34.7) with the score 1-1; I felt alert and decisive given the high workload. Saveability score: Not available."
+ },
+ "1004|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "A los 61:51 registré un keeper_claim en (x=100.5, y=34.7) con el marcador 1-1; me sentí alerta y decisivo dada la elevada carga de trabajo, y fue buena noticia para Northgate FC.  \nSalvabilidad: No disponible."
+ },
+ "1004|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I recorded a keeper_claim at (x=100.5, y=34.7) with the score 1-1; I was alert and decisive despite the high workload. Saveability score: Not available."
+ },
+ "1004|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "En el 61:51 registré un keeper_claim en (x=100.5, y=34.7) con el marcador 1-1; me sentí alerta y decidido dado el alto volumen de trabajo. Salvabilidad: No disponible."
+ },
+ "1004|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I recorded a keeper_claim at (x=100.5, y=34.7) with the score 1-1; I felt alert and decisive despite the high workload. Saveability score: Not available. Pleased it aided Northgate FC."
+ },
+ "1004|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "A los 61:51 registré un keeper_claim en (x=100.5, y=34.7) con el marcador 1-1; me sentí alerta y decisivo dado el alto volumen de trabajo. Salvabilidad: No disponible (buena noticia para Northgate FC)."
+ },
+ "1004|casual|Both|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I made a clear claim at (x=100.5, y=34.7) with the score 1-1; I felt alert and decisive after hard work, a boost for us. Saveability score: Not available."
+ },
+ "1004|casual|Both|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "Al 61:51 reclamé el balón con el marcador 1-1; me sentí alerta y decisivo ante la alta carga de trabajo. Salvabilidad: No disponible. Fue una buena noticia para Northgate FC."
+ },
+ "1004|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I went up and claimed the ball at (x=100.5, y=34.7) with it 1-1 I still felt sharp and sure despite a very busy game. Saveability score: Not available."
+ },
+ "1004|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "Al 61:51 registré una salida como portero en (x=100.5, y=34.7) con el marcador 1-1; me sentí alerta y decidido dada la alta carga de trabajo. Lo siento por Harbor United si esto les perjudicó; salvabilidad: No disponible."
+ },
+ "1004|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "At 61:51 I claimed the ball at (x=100.5, y=34.7) with the score 1-1; I felt alert and decisive given the high workload, and I was glad it helped Northgate FC. Saveability score: Not available."
+ },
+ "1004|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:43:49+00:00",
+  "text": "Al 61:51 salí a reclamar el balón en (x=100.5, y=34.7) con el marcador 1-1; me sentí alerta y decidido por la alta carga de trabajo. Salvabilidad: No disponible. ¡Bien por Northgate FC!"
+ },
+ "1026|analyst|Both|en": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "At 63:25, with the score 1-1, I claimed the ball as keeper; I was well positioned, no deflection occurred, and I still felt comfortable taking it. Saveability 96."
+ },
+ "1026|analyst|Both|es": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "En el 63:25 con el marcador 1-1 hice una captura como portero; estaba bien colocado y no hubo desviación, así que me sentí cómodo para recogerla. Salvabilidad 96."
+ },
+ "1026|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "At 63:25 with the score 1-1 I claimed the ball; I was well set, there was no deflection, and I was comfortable taking it — pleased it helped Northgate FC. Saveability 96."
+ },
+ "1026|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "En el 63:25, con el marcador 1-1, realicé una salida de portero; estaba bien colocado y no hubo desviación, así que me sentí cómodo tomándola, y fue buena noticia para Northgate FC. Salvabilidad 96."
+ },
+ "1026|casual|Both|en": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "I stepped out and claimed it confidently; I was well set and there was no deflection, so I felt comfortable taking it — a tidy moment that lifted Northgate. Saveability 96."
+ },
+ "1026|casual|Both|es": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "Al 63:25 con el marcador 1-1 reclamé el balón; estaba bien colocado y no hubo desviación, así que me sentí cómodo quedármela; fue buena noticia para Northgate FC. Salvabilidad 96."
+ },
+ "1026|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "I claimed it; I was well set and there was no deflection, so I felt comfortable taking it — great for Northgate, felt good in the moment. Saveability 96."
+ },
+ "1026|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:56:16+00:00",
+  "text": "Hice una salida; estaba bien colocado y sin desviación, así que me sentí cómodo tomándola. ¡Muy muy contento por Northgate FC. Salvabilidad 96."
+ },
+ "1089|analyst|Both|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot was placed high or wide, away from my body, and despite my strong reaction (0.96) and good distance (0.95), the zero lane (0.00) and narrow angle (0.25) made it a tough save — saveability 63."
+ },
+ "1089|analyst|Both|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar al 67:03; el disparo se colocó alto o hacia afuera, alejándose de mi cuerpo, y pese a mi reacción fuerte (0.96) y a una buena distancia (0.95), el zero lane (0.00) y el ángulo estrecho (0.25) lo convirtieron en una parada difícil — salvabilidad 63."
+ },
+ "1089|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot was placed high or wide, away from my body, and despite my strong reaction (0.96) and good distance (0.95), the zero lane (0.00) and narrow angle (0.25) made it a tough save — saveability 63; that one hurt Harbor United."
+ },
+ "1089|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar al 67:03; el tiro estaba colocado alto o fuera, lejos de mi cuerpo, y pese a mi reacción fuerte (0.96) y buena distancia (0.95), el carril cero (0.00) y el ángulo estrecho (0.25) lo convirtieron en una parada difícil — salvabilidad 63; lo siento por Harbor United."
+ },
+ "1089|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot was placed high or wide, away from my body, and despite my strong reaction (0.96) and good distance (0.95), the zero lane (0.00) and narrow angle (0.25) made it a tough save — saveability 63 — good for Northgate FC."
+ },
+ "1089|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar al 67:03; el disparo se colocó alto o hacia fuera, alejado de mi cuerpo, y a pesar de mi reacción fuerte (0.96) y buena distancia (0.95), el carril cero (0.00) y el ángulo estrecho (0.25) convirtieron el disparo en una parada difícil — salvabilidad 63; me alegra por Northgate FC."
+ },
+ "1089|casual|Both|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot was placed high or wide, away from my body, and despite my quick reaction and good distance, the open lane and narrow angle made it a tough save — saveability 63."
+ },
+ "1089|casual|Both|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar en el 67:03; el tiro fue colocado alto o por fuera, lejos de mi cuerpo, y pese a mi reacción fuerte y a la buena distancia, la falta de hueco y el ángulo estrecho lo convirtieron en una parada difícil, mala noticia para nosotros y buena para Northgate — salvabilidad 63."
+ },
+ "1089|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot went high and away from body, and despite quick reaction and decent distance, the open lane and tight angle made it a tough stop— sorry, Harbor United — so that really hurts — saveability 63."
+ },
+ "1089|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar al 67:03; el disparo fue alto o hacia fuera, lejos de mi cuerpo, y pese a mi fuerte reacción y buena colocación, la trayectoria y el ángulo estrecho lo hicieron difícil — salvabilidad 63; qué mala suerte para Harbor United, lo siento."
+ },
+ "1089|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "I saw Marco Tesch score at 67:03; the shot went high, away from me, and though I reacted fast and was well placed, the zero lane and tight angle made it a hard stop — saveability 63. Good for Northgate FC, rough on us. I hate that one."
+ },
+ "1089|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T23:44:23+00:00",
+  "text": "Vi a Marco Tesch marcar al 67:03; el tiro fue alto o hacia afuera, lejos de mi cuerpo, y aunque mi reacción fue fuerte y estaba a buena distancia, el cero en el carril y el ángulo estrecho lo hicieron muy difícil — salvabilidad 63; me alegro por Northgate FC, mala suerte para Harbor United."
+ },
+ "1145|analyst|Both|en": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "At 70:46 I performed a keeper sweep at (x=88.7, y=35.8) with the score 1-2; I felt alert and focused on executing the sweep, which was good news for Harbor United. Saveability score: N/A."
+ },
+ "1145|analyst|Both|es": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "A los 70:46 realicé un keeper sweep en (x=88.7, y=35.8) con el marcador 1-2; me mantuve alerta y concentrado en ejecutar el barrido, y fue buena noticia para Harbor United. Salvabilidad: N/A."
+ },
+ "1145|analyst|Harbor United|en": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "At 70:46 I executed a keeper sweep at (x=88.7, y=35.8) with the score 1-2; I was alert, focused on the sweep, and pleased it favored Harbor United. Saveability score: N/A."
+ },
+ "1145|analyst|Harbor United|es": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "A las 70:46 realicé un barrido de portero en (x=88.7, y=35.8) con el marcador 1-2; me mantuve alerta y concentrado en ejecutar el barrido, y me alegré porque fue buena noticia para Harbor United. Salvabilidad: N/A."
+ },
+ "1145|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "At 70:46 I performed a keeper sweep at (x=88.7, y=35.8) with the score 1-2; I was alert and focused on timing, positioning and execution, which proved to be good news for Harbor United. Saveability score: N/A."
+ },
+ "1145|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "En el 70:46 realicé un sweep de portero en (x=88.7, y=35.8) con el marcador 1-2; me sentí alerta y concentrado en ejecutar el sweep. Salvabilidad: N/A."
+ },
+ "1145|casual|Both|en": {
+  "generated_at": "2026-10-22T13:56:56+00:00",
+  "text": "I executed a keeper sweep late in the game while the score was tight. There was no saveability score provided; with danger high and my workload rising after facing several shots, I felt the urgency to stay concentrated, and it ended up good news for Harbor United."
+ },
+ "1145|casual|Both|es": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "70:46 — realicé un barrido de portero en (x=88.7,y=35.8) con el 1-2; me sentí alerta y concentrado. Salvabilidad: N/A. Buena noticia para Harbor United."
+ },
+ "1145|casual|Harbor United|en": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "At 70:46 I performed a keeper sweep at (x=88.7, y=35.8) with the score 1-2; I felt alert and focused on executing the sweep, and it was great news for Harbor United. Saveability score: N/A."
+ },
+ "1145|casual|Harbor United|es": {
+  "generated_at": "2026-10-22T13:56:56+00:00",
+  "text": "Hice una salida del portero a los 70:46 con el marcador 1-2; no había puntuación de salvabilidad. Con mucho peligro y con una carga de trabajo de 7 tras afrontar 6 disparos (4 a puerta), con 2 paradas y 2 goles encajados, sentí la urgencia de mantenerme concentrado y me alegré porque ayudó a Harbor United."
+ },
+ "1145|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "At 70:46 I performed a keeper sweep at (x=88.7, y=35.8) with the score 1-2; I felt alert and focused as I carried out the sweep. Saveability score: N/A."
+ },
+ "1145|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T00:21:04+00:00",
+  "text": "En el 70:46 hice un barrido de portero en (x=88.7, y=35.8) con el marcador 1-2; me sentí alerta y concentrado en ejecutar el barrido. Salvabilidad: N/A."
+ },
+ "1180|analyst|Both|en": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "I saw Nico Alves strike a footed shot from 14.2 m at 110 km/h; I was set and I made the save. It felt like a tough save (saveability 55) because the close distance (0.31) and narrow angle (0.26) cut down my reaction time."
+ },
+ "1180|analyst|Both|es": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "Vi a Nico Alves golpear un disparo con el pie desde 14.2 m a 110 km/h; estaba colocado y lo paré. Me pareció una parada difícil (salvabilidad 55) porque la distancia corta (0.31) y el ángulo estrecho (0.26) redujeron mi tiempo de reacción, y fue buena noticia para el Northgate FC."
+ },
+ "1180|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "I saw Nico Alves strike a footed shot from 14.2 m at 110 km/h; I was set and I made the save, a stop that helped Northgate FC. It felt like a tough save (saveability 55) because the close distance (0.31) and narrow angle (0.26) cut down my reaction time."
+ },
+ "1180|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "Vi a Nico Alves disparar con el pie desde 14.2 m a 110 km/h; me coloqué, la paré y me alegra que esto ayudara al Northgate FC. Se sintió como una parada difícil (salvabilidad 55) porque la distancia corta (0.31) y el ángulo estrecho (0.26) redujeron mi tiempo de reacción."
+ },
+ "1180|casual|Both|en": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "I saw Nico Alves strike a shot; I was set and I made the save. It felt like a tough save (saveability 55) because the close distance and narrow angle cut down my reaction time."
+ },
+ "1180|casual|Both|es": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "Vi a Nico Alves golpear con el pie desde cerca; yo estaba listo y detuve el disparo. Fue una parada complicada (salvabilidad 55) porque la cercanía y el ángulo estrecho redujeron mi tiempo de reacción."
+ },
+ "1180|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "I saw Nico Alves strike a footed shot; I was set and I made the save. It felt like a tough save (saveability 55) because the close range and tight angle cut down my reaction time — great for Northgate FC."
+ },
+ "1180|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:57:58+00:00",
+  "text": "Vi a Nico Alves golpear un disparo con el pie; estaba colocado y lo paré. Se notó como una parada complicada (salvabilidad 55) porque la distancia corta y el ángulo estrecho me dejaron poco tiempo de reacción; fue una gran noticia para el Northgate FC y me alegré."
+ },
+ "1218|analyst|Both|en": {
+  "generated_at": "2026-10-22T13:58:35+00:00",
+  "text": "At 74:59 I saw Ben Arkwright’s shot placed high and wide, away from my reachable zone, and I couldn’t get to it. Saveability 3/100 — near-unstoppable."
+ },
+ "1218|analyst|Both|es": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "Vi el disparo de Ben Arkwright al 74:59 colocado alto o hacia fuera, lejos de mi cuerpo, y sentí que no había nada que pudiera hacer — salvabilidad 3 (casi imparable). Dejó el marcador en 1-3."
+ },
+ "1218|analyst|Harbor United|en": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "I saw Ben Arkwright's 74:59 shot placed high or wide, away from my body, and I felt there was nothing I could do — saveability 3 (near-unstoppable). I knew it was a blow for Harbor United; it left the score at 1-3."
+ },
+ "1218|analyst|Harbor United|es": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "Vi el disparo de Ben Arkwright al 74:59, colocado alto o hacia fuera, lejos de mi cuerpo, y evalué que no había nada que pudiera hacer — salvabilidad 3 (casi imparable). Fue mala noticia para Harbor United; dejó el marcador en 1-3."
+ },
+ "1218|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "Vi el disparo de Ben Arkwright en el 74:59, colocado alto o hacia fuera, alejándose de mi cuerpo, y sentí que no había nada que pudiera hacer — salvabilidad 3 (casi imparable). Dejó el marcador en 1-3; me alegra por Northgate FC, aunque fue mala noticia para Harbor United."
+ },
+ "1218|casual|Both|en": {
+  "generated_at": "2026-10-22T13:58:35+00:00",
+  "text": "I saw Ben Arkwright’s shot at 74:59 sail high and wide away from me, and I couldn’t reach it. Saveability 3/100 — near-unstoppable."
+ },
+ "1218|casual|Both|es": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "Vi el disparo de Ben Arkwright en el 74:59, colocado alto o hacia fuera, lejos de mi cuerpo, y sentí que no había nada que pudiera hacer — salvabilidad 3 (casi imparable). Dejó el marcador en 1-3."
+ },
+ "1218|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:41:56+00:00",
+  "text": "I saw Ben Arkwright score at 74:59; the shot was placed high or wide away from my body and I couldn't reach it — I feel for Harbor United. Saveability 3 (near-unstoppable)."
+ },
+ "1218|casual|Harbor United|es": {
+  "generated_at": "2026-10-22T00:31:27+00:00",
+  "text": "Vi el disparo de Ben Arkwright colocado alto o hacia fuera, lejos de mi cuerpo, y sentí que no había nada que pudiera hacer — salvabilidad 3 (casi imparable). Lo siento por Harbor United, nos dejó 1-3."
+ },
+ "1371|analyst|Both|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I tracked Luca Ferro strike a footed shot from 21.9 m aimed at the near post/high corner that was placed high and wide from my body, and I made the save. It was a tough stop — saveability 48 — with placement (0.34) and reach (0.27) the primary limiting factors."
+ },
+ "1371|analyst|Both|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro rematar con el pie un disparo desde 21.9 m hacia el palo cercano / esquina alta que quedó colocado alto y alejado de mi cuerpo, y hice la parada. Se sintió como una parada complicada — salvabilidad 48 — con la colocación (0.34) y el alcance (0.27) como los factores principales bajos que la hicieron difícil."
+ },
+ "1371|analyst|Harbor United|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I saw Luca Ferro strike a footed shot from 21.9 m toward the near post / high corner that was placed high and wide from my body, and I made the save. It was a tough stop — saveability 48 — with placement (0.34) and reach (0.27) the primary low factors that made it difficult."
+ },
+ "1371|analyst|Harbor United|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro golpear un disparo con el pie desde 21.9 m hacia el poste cercano / esquina alta que fue colocado alto y alejado de mi cuerpo, y la atajé. Pareció una parada difícil — salvabilidad 48 — con colocación (0.34) y alcance (0.27) como los factores primarios bajos que la hicieron complicada."
+ },
+ "1371|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I saw Luca Ferro strike a footed shot from 21.9 m toward the near post / high corner that was placed high and wide from my body, and I made the save. It felt like a tough stop — saveability 48 — with placement (0.34) and reach (0.27) the primary low factors that made it difficult; pleased it benefited Northgate FC."
+ },
+ "1371|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro lanzar un disparo con el pie desde 21.9 m hacia el poste cercano / ángulo alto que estaba colocado alto y alejado de mi cuerpo, y hice la parada. Se sintió como una parada difícil — salvabilidad 48 — con la colocación (0.34) y el alcance (0.27) como los principales factores bajos que la hicieron difícil; me alegré, fue buena noticia para Northgate FC."
+ },
+ "1371|casual|Both|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I saw Luca Ferro hit a footed shot toward the near post and high corner that was placed high and wide from my body, and I made the stop. It felt like a tough stop — saveability 48 — with placement and reach the main low factors that made it hard. A great moment for us. Well done!!"
+ },
+ "1371|casual|Both|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro golpear un disparo con el pie hacia el primer palo / esquina alta, colocado alto y lejos de mi cuerpo, y lo paré. Se sintió como una parada difícil — salvabilidad 48 — la colocación y el alcance fueron los factores principales que la complicaron; fue buena noticia para Northgate FC."
+ },
+ "1371|casual|Harbor United|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I saw Luca Ferro strike a footed shot from 21.9 m toward the near post / high corner that was placed high and wide from my body, and I made the save. It felt like a tough stop — saveability 48 — placement and reach were the main factors that made it hard, and I know that might sting if you support Harbor United."
+ },
+ "1371|casual|Harbor United|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro golpear un disparo con el pie hacia el poste cercano, colocado alto y lejos de mi cuerpo, y lo paré. Se sintió como una parada difícil — salvabilidad 48 — y la colocación y el alcance fueron los principales factores que la hicieron complicada."
+ },
+ "1371|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "I saw Luca Ferro strike a footed shot from 21.9 m toward the near post/high corner that was placed high and wide from my body, and I made the save. It felt like a tough stop — saveability 48 — placement and reach were the main reasons it was difficult, and I'm really glad it helped Northgate FC."
+ },
+ "1371|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T00:32:16+00:00",
+  "text": "Vi a Luca Ferro golpear un disparo con el pie desde 21.9 m hacia el palo cercano / esquina alta que quedó colocado alto y lejos de mi cuerpo, y lo paré; me alegra que nos ayudara a los de Northgate FC. Fue una parada dura — salvabilidad 48 — con la colocación y el alcance como los factores principales que la hicieron difícil."
+ },
+ "1384|analyst|Both|en": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "At 85:26 I recorded a keeper claim at x=100.2, y=37.3 with the score 1-3. No saveability score was returned for this event; with my workload high (19) and the danger level high, I felt busy and fully focused, and this was good news for Northgate FC."
+ },
+ "1384|analyst|Both|es": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "En el 85:26 registré una captura de portero en x=100.2, y=37.3 con el marcador 1-3. No se devolvió puntuación de salvabilidad para este evento; con mi carga de trabajo alta (19) y el nivel de peligro alto, estuve ocupado y totalmente concentrado; fue una buena noticia para Northgate FC."
+ },
+ "1384|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "At 85:26 I recorded a keeper claim at x=100.2, y=37.3 with the score 1-3. No saveability score was returned for this event; with my workload high (19) and the danger level high, I felt busy and fully focused — a positive moment for Northgate FC."
+ },
+ "1384|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "A los 85:26 registré una captura de portero en x=100.2, y=37.3 con el marcador 1-3. No se devolvió ninguna puntuación de salvabilidad para este evento; con mi carga de trabajo alta (19) y el nivel de peligro alto, me sentí ocupado y totalmente concentrado. Me alegré: fue buena noticia para Northgate FC."
+ },
+ "1384|casual|Both|en": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "At 85:26 I claimed the ball with the score 1-3; that was good news for Northgate FC. No saveability score was returned for this event, and with my workload high and the danger level high I felt busy and fully focused."
+ },
+ "1384|casual|Both|es": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "Hice una salida del portero que fue buena noticia para Northgate FC. No se devolvió una puntuación de salvabilidad para esta acción; con mi carga de trabajo alta y el nivel de peligro alto, me sentí ocupado y totalmente concentrado."
+ },
+ "1384|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "At 85:26 I claimed the ball with the score 1-3, a nice moment for Northgate FC. No saveability score was returned for this event; my workload was high and the danger level felt high, so I was busy and fully focused."
+ },
+ "1384|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T13:59:10+00:00",
+  "text": "Recogí el balón y fue una gran noticia para Northgate FC; me alegré por el equipo. No se devolvió una puntuación de salvabilidad; con mucho trabajo y la jugada bastante peligrosa me sentí ocupado y totalmente concentrado."
+ },
+ "1396|analyst|Both|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot from 14.4 m at 75 km/h; the distance and speed gave me very little time to react. My reach felt limited, but I managed to save it — saveability 45/100."
+ },
+ "1396|analyst|Both|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt ejecutar un remate con el pie desde 14.4 m a 75 km/h y tuve muy poco tiempo para reaccionar. Mi alcance se sintió limitado pero conseguí salvarlo — salvabilidad 45/100."
+ },
+ "1396|analyst|Harbor United|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot from 14.4 m at 75 km/h, which left me very little time to react. My reach felt limited but I managed to save it — saveability 45/100."
+ },
+ "1396|analyst|Harbor United|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt disparar con el pie desde 14.4 m a 75 km/h; tuve muy poco tiempo para reaccionar. Mi alcance se sintió limitado, pero conseguí pararlo — salvabilidad 45/100."
+ },
+ "1396|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot from 14.4 m at 75 km/h and I had very little time to react; the stop was crucial for Northgate FC. My reach felt limited but I managed to save it — saveability 45/100."
+ },
+ "1396|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt ejecutar un disparo con el pie desde 14.4 m a 75 km/h y tuve muy poco tiempo para reaccionar. Mi alcance se sintió limitado pero lo logré atajar — salvabilidad 45/100, una muy buena noticia para el Northgate FC."
+ },
+ "1396|casual|Both|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot and I had very little time to react. My reach felt limited but I managed to save it — saveability 45/100."
+ },
+ "1396|casual|Both|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt disparar con el pie desde 14.4 m a 75 km/h y tuve muy poco tiempo para reaccionar. Mi alcance se notó limitado pero lo salvé — salvabilidad 45/100.!!"
+ },
+ "1396|casual|Harbor United|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot and I had very little time to react. My reach felt limited but I managed to save it — saveability 45/100."
+ },
+ "1396|casual|Harbor United|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt disparar con el pie desde cerca y tuve muy poco tiempo para reaccionar. Mi alcance se sintió limitado, pero conseguí pararlo — salvabilidad 45/100."
+ },
+ "1396|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "I saw Theo Brandt fire a footed shot and I had very little time to react. My reach felt limited but I managed to save it — saveability 45/100, and I was really glad it helped Northgate FC."
+ },
+ "1396|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T02:03:46+00:00",
+  "text": "Vi a Theo Brandt disparar con el pie y tuve muy poco tiempo para reaccionar. Mi alcance se sintió limitado pero logré atajarlo — salvabilidad 45/100. Me alegré porque fue buena noticia para Northgate FC."
+ },
+ "1442|analyst|Both|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I made a keeper_claim at x=102.8, y=34.5 at 89:00 with the score 1–3; I was composed in that moment, which was good news for Harbor United. Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|analyst|Both|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Realicé un keeper_claim en x=102.8, y=34.5 a las 89:00 con el marcador 1–3, y me sentí sereno en ese momento. Salvabilidad: No aplicable — este evento fue una reclamación, no un disparo."
+ },
+ "1442|analyst|Harbor United|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I made a keeper_claim at x=102.8, y=34.5 at 89:00 with the score 1–3, and I felt composed; Harbor United! Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|analyst|Harbor United|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Hice un keeper_claim en x=102.8, y=34.5 al 89:00 con el marcador 1–3, y me sentí compuesto en ese momento. Salvabilidad: No aplicable — este evento fue un claim, no un disparo; fue buena noticia para Harbor United."
+ },
+ "1442|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I made a keeper_claim at x=102.8, y=34.5 at 89:00 with the score 1–3; I felt composed as I claimed the ball, removing the immediate threat and keeping our defensive shape intact for Harbor United. Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Hice una captura del portero en x=102.8, y=34.5 en el 89:00 con el marcador 1–3, y me sentí compuesto en ese momento. Salvabilidad: No aplicable — este evento fue una captura, no un disparo."
+ },
+ "1442|casual|Both|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I made the catch at x=102.8, y=34.5 at 89:00 with the score 1–3, and I felt calm and glad in that moment. Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|casual|Both|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Hice una gran captura en x=102.8, y=34.5 al 89:00 con el marcador 1–3, y me sentí sereno en ese momento. Salvabilidad: No aplica — fue una captura, no un remate. Buena noticia!!"
+ },
+ "1442|casual|Harbor United|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I claimed the ball at 89:00 with the score 1–3, and I felt composed in that moment — great for Harbor United. Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|casual|Harbor United|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Recogí el balón en x=102.8, y=34.5 al 89:00 con el marcador 1–3, y me sentí sereno en ese momento; fue una buena noticia para Harbor United. Salvabilidad: No aplicable — este evento fue una captura, no un tiro."
+ },
+ "1442|casual|Northgate FC|en": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "I stepped out to claim the ball at x=102.8, y=34.5 at 89:00 with the score 1–3, and I felt calm and composed in that moment. Saveability score: Not applicable — this event was a claim, not a shot."
+ },
+ "1442|casual|Northgate FC|es": {
+  "generated_at": "2026-10-22T02:04:50+00:00",
+  "text": "Reclamé el balón al minuto 89 con el marcador 1–3 y me sentí tranquilo en ese momento.  \nSalvabilidad: No aplicable — este evento fue una captura, no un disparo."
+ },
+ "186|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I saw Hugo Lind's shot and judged I was positioned too far from the ball's path to reach it. The saveability was 42 — a \"tough save\" (reach 0.16, swerve 0.23)."
+ },
+ "186|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "Fue una buena noticia para Northgate FC y una mala para Harbor United.\n\nAl 11:16 vi el disparo de Hugo Lind y sentí que estaba demasiado lejos de la trayectoria del balón para alcanzarlo. La salvabilidad fue 42 — una «parada difícil» (alcance 0.16, desvío 0.23)."
+ },
+ "186|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I saw Hugo Lind's shot and felt I was caught too far from the ball's path to reach it. The saveability was 42 — a \"tough save\" (reach 0.16, swerve 0.23); I know that’s painful for Harbor United and I’m sorry it went that way."
+ },
+ "186|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "A las 11:16 vi el disparo de Hugo Lind y sentí que estaba demasiado lejos de la trayectoria del balón para llegar a él. La salvabilidad fue 42 — una \"parada difícil\" (reach 0.16, swerve 0.23); lamento que fuera mala noticia para Harbor United."
+ },
+ "186|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I saw Hugo Lind's shot and felt I was caught too far from the ball's path to reach it; I know this was good news for Northgate FC. The saveability was 42 — a \"tough save\" (reach 0.16, swerve 0.23)."
+ },
+ "186|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "11:16 vi el tiro de H Lind y noté estar muy lejos del trayecto del balón para llegar.Salvabilidad 42 — \"parada dura\"(reach 0.16, swerve 0.23). Bien por Northgate."
+ },
+ "186|casual|Both|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I saw Hugo Lind's shot and felt I was caught too far from the ball's path to reach it — it was good news for Northgate and bad for us. The saveability was 42 — a \"tough save.\""
+ },
+ "186|casual|Both|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "A las 11:16 vi el disparo de Hugo Lind y sentí que estaba demasiado lejos de la trayectoria del balón para llegar a él. La salvabilidad fue 42 — una \"parada difícil\"."
+ },
+ "186|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I watched Hugo Lind's shot and knew I was too far from its path to get to it. The saveability was 42 — a tough save, and it really stung for me and for Harbor United."
+ },
+ "186|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "Vi el disparo de Hugo Lind y sentí que estaba demasiado lejos de la trayectoria del balón para llegar. La salvabilidad fue 42 —una \"parada difícil\", y siento mucho que esto haya perjudicado a Harbor United."
+ },
+ "186|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "At 11:16 I saw Hugo Lind's shot and felt I was caught too far from the ball's path to reach it. The saveability was 42 — a \"tough save,\" and well done to Northgate FC."
+ },
+ "186|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:31:22+00:00",
+  "text": "Al 11:16 vi el disparo de Hugo Lind y sentí que estaba demasiado lejos de la trayectoria del balón para llegar a él. La salvabilidad era 42 — una \"parada difícil\", y me alegro por Northgate FC; fue mala noticia para nosotros en Harbor United."
+ },
+ "337|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I made a keeper_claim at 20:28 (1H) at x=101.7, y=30.1 with the score 0-1 and felt composed on the play. Saveability score: not available."
+ },
+ "337|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Hice un keeper_claim a las 20:28 (1H) en x=101.7, y=30.1 con el marcador 0-1; me sentí compuesto en la acción y me alegró, fue buena noticia para Northgate FC. Salvabilidad: no disponible."
+ },
+ "337|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I made a keeper_claim at 20:28 (1H) at x=101.7, y=30.1 with the score 0-1; I felt composed on the play. Saveability score: not available."
+ },
+ "337|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Realicé un keeper_claim a las 20:28 (1H) en x=101.7, y=30.1 con el marcador 0-1 y me sentí sereno en la acción. Salvabilidad: no disponible."
+ },
+ "337|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I made a keeper_claim at 20:28 (1H) at x=101.7, y=30.1 with the score 0-1 and felt composed on the play; that was good for Northgate FC. Saveability score: not available."
+ },
+ "337|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Realicé un keeper_claim a las 20:28 (1H) en x=101.7, y=30.1 con el resultado 0-1 y me sentí compuesto en la jugada; fue buena noticia para Northgate FC. Salvabilidad: no disponible."
+ },
+ "337|casual|Both|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I came out to claim the ball at 20:28 in the first half, felt composed on the play, and it was good news for Northgate FC. Saveability score: not available."
+ },
+ "337|casual|Both|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Salí a reclamar el balón a las 20:28 (1T) en x=101.7, y=30.1 con el marcador 0-1 y me sentí tranquilo en la jugada.  \nSalvabilidad: no disponible."
+ },
+ "337|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I claimed the ball at 20:28 in the first half at x=101.7, y=30.1 with the score 0-1 and felt composed on the play. Saveability score: not available."
+ },
+ "337|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Hice una reclamación de portero a las 20:28 (1H) en x=101.7, y=30.1 con el marcador 0-1 y me sentí tranquilo en la jugada; fue buena noticia para Northgate FC. Salvabilidad: no disponible."
+ },
+ "337|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "I made a keeper claim at 20:28 (1H) with the score 0-1 and felt composed on the play; I'm glad it helped Northgate FC. Saveability score: not available."
+ },
+ "337|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:32:01+00:00",
+  "text": "Hice una intervención como portero a las 20:28 (1H) en x=101.7, y=30.1 con el marcador 0-1 y me sentí tranquilo en la jugada; fue una buena noticia para el Northgate FC. Salvabilidad: no disponible."
+ },
+ "394|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot from 18.2 m at 24:05 and, with reaction 1.00 and no_deflection 1.00, I remained composed, made the save — saveability 79; good news for Northgate FC."
+ },
+ "394|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el disparo de Dani Okoye desde 18.2 m al 24:05 y, con amplio tiempo para reaccionar (reacción 1.00, sin_deflexión 1.00), mantuve la compostura y detuve el balón — salvabilidad 79."
+ },
+ "394|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot from 18.2 m at 24:05 and, with plenty of time to react (reaction 1.00, no_deflection 1.00), I felt composed and made the save — saveability 79."
+ },
+ "394|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el disparo de Dani Okoye desde 18.2 m al 24:05 y, con tiempo suficiente para reaccionar (reacción 1.00, sin_desviación 1.00), me mantuve compuesto e hice la parada — salvabilidad 79."
+ },
+ "394|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot from 18.2 m at 24:05 and, with plenty of time to react (reaction 1.00, no_deflection 1.00), I felt composed and made the save — saveability 79; good news for Northgate FC."
+ },
+ "394|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el disparo de Dani Okoye desde 18.2 m al 24:05 y, con tiempo de sobra para reaccionar (reaction 1.00, no_deflection 1.00), me mantuve sereno y hice la parada — salvabilidad 79; buena noticia para Northgate FC."
+ },
+ "394|casual|Both|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot and, with time to spare, I stayed calm and held on — a good moment for Northgate, saveability 79. And I felt calm and glad to help the team now."
+ },
+ "394|casual|Both|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el disparo de Dani Okoye y, con tiempo de sobra para reaccionar, me sentí tranquilo y lo paré — salvabilidad 79."
+ },
+ "394|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot from 18.2 m at 24:05 and, with plenty of time to react (had time,  no deflection), I felt calm and composed and made the save — saveability 79."
+ },
+ "394|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el disparo de Dani Okoye y, con tiempo de sobra para reaccionar, me sentí tranquilo y lo paré — salvabilidad 79."
+ },
+ "394|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "I saw Dani Okoye's shot from 18.2 m at 24:05 and, with plenty of time to react, I stayed calm, kept it out for Northgate FC, which helped — saveability 79."
+ },
+ "394|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:33:06+00:00",
+  "text": "Vi el tiro de Dani Okoye desde 18.2 m al 24:05 y, con tiempo de sobra para reaccionar, me sentí tranquilo y lo paré — salvabilidad 79. ¡Qué alegría para Northgate FC!"
+ },
+ "468|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I tracked the shot from 22.9 m, struck with the foot at 98 km/h, judged I had sufficient time to react and executed the save. Saveability 79 — key factors were no_deflection 1.00 and lane 1.00, which made the stop easier to manage overall."
+ },
+ "468|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo desde 22.9 m, impactado con el pie a 98 km/h; sentí tiempo suficiente para reaccionar, así que la paré para Northgate FC!  Salvabilidad 79 — claves: no_deflection 1.00 y lane 1.00, facilitó la parada."
+ },
+ "468|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I tracked the shot from 22.9 m — a footed strike at 98 km/h — and judged I had enough time to react, so I made the save, which was good news for Northgate FC. Saveability 79 — key factors were no_deflection 1.00 and lane 1.00, which made the stop easier."
+ },
+ "468|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo desde 22.9 m, golpeado con el pie a 98 km/h, y sentí que tenía tiempo de sobra para reaccionar, así que hice la parada. Salvabilidad 79 — factores clave fueron no_deflection 1.00 y lane 1.00, que hicieron la intervención más sencilla."
+ },
+ "468|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I saw the shot from 22.9 m struck with the foot at 98 km/h and felt I had plenty of time to react, so I made the save. Saveability 79 — key factors were no_deflection 1.00 and lane 1.00. Glad it helped Northgate FC"
+ },
+ "468|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo desde 22.9 m golpeado con el pie a 98 km/h y sentí que tenía tiempo de sobra para reaccionar, así que hice la parada. Salvabilidad 79 — factores clave fueron no_deflection 1.00 y lane 1.00, que facilitaron la detención; me alegré porque ayudó a Northgate FC."
+ },
+ "468|casual|Both|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I saw the shot from distance and felt I had plenty of time to react, so I made the save. Saveability 79 — key factors were no deflection and an open lane, which made the stop easier."
+ },
+ "468|casual|Both|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo desde 22,9 m, golpeado con el pie a 98 km/h, y sentí que tenía tiempo de sobra para reaccionar, así que lo detuve. Salvabilidad 79 — factores clave fueron no_deflection 1.00 y lane 1.00, lo que hizo la parada más fácil."
+ },
+ "468|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I saw the shot and felt I had plenty of time to react, so I made the save. Saveability 79 — key factors were no deflection and a clear lane, which made the stop easier."
+ },
+ "468|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo y sentí que tenía tiempo de sobra para reaccionar, así que la paré. Salvabilidad 79 — factores clave: sin desvío 1.00 y carril 1.00, lo que hizo la parada más fácil."
+ },
+ "468|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "I saw the shot from distance and felt I had time to react, so I made the save for Northgate FC — great for the fans. Saveability 79; the lack of deflection and a clear lane made it easier. It was great for us today."
+ },
+ "468|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:34:17+00:00",
+  "text": "Vi el disparo y sentí que tenía tiempo de sobra para reaccionar, así que lo paré. Salvabilidad 79 — fue buena noticia para Northgate FC y me alegré; además, al no haber desvío y con el carril claro la parada fue más fácil."
+ },
+ "520|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a 23.8 m, 111 km/h shot that was placed high or wide, away from my body, and I saved it — saveability score 47. The shot's speed (0.32) and reach (0.32) were low factors, which made it a tough save."
+ },
+ "520|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch lanzar un disparo de 23.8 m y 111 km/h que estaba colocado alto o hacia fuera, alejado de mi cuerpo, y lo paré — salvabilidad 47; fue buena noticia para Harbor United. La velocidad del disparo (0.32) y el alcance (0.32) fueron factores bajos, lo que hizo que la parada fuera difícil."
+ },
+ "520|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a 23.8 m, 111 km/h shot placed high or wide, away from my body, and I saved it — saveability score 47; pleased it helped Harbor United. The shot's speed (0.32) and reach (0.32) were low factors, which made it a tough save."
+ },
+ "520|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch lanzar un disparo de 23.8 m a 111 km/h que iba colocado alto o ancho, lejos de mi cuerpo, y lo paré — salvabilidad 47; fue una buena noticia para Harbor United. La velocidad del tiro (0.32) y el alcance (0.32) fueron factores bajos, lo que convirtió la parada en una acción difícil."
+ },
+ "520|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a 23.8 m, 111 km/h shot that was placed high or wide, away from my body, and I saved it — saveability score 47; that was good news for Harbor United. The shot's speed (0.32) and reach (0.32) were low factors, which made it a tough save."
+ },
+ "520|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch lanzar un disparo desde 23.8 m a 111 km/h que estuvo colocado alto o hacia fuera, alejado de mi cuerpo, y lo paré — salvabilidad 47. La velocidad del disparo (0.32) y el alcance (0.32) fueron factores bajos, lo que hizo la parada difícil."
+ },
+ "520|casual|Both|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a shot that was placed high or wide, away from my body, and I managed to save it — saveability score 47. The shot's speed and my reach were low factors, which made it a tough stop, and I was glad it helped Harbor United."
+ },
+ "520|casual|Both|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch sacar un disparo colocado alto o a un lado, lejos de mi cuerpo, y lo salvé — salvabilidad 47. La velocidad y el alcance del disparo fueron factores bajos, lo que hizo que la parada fuera difícil."
+ },
+ "520|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a long, powerful shot placed high and away from my body, and I saved it — saveability score 47. Its speed and how far I had to reach were low factors, which made it a tough stop, and I was glad it helped Harbor United."
+ },
+ "520|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch lanzar un disparo colocado alto o hacia fuera, lejos de mi cuerpo, y lo paré — salvabilidad 47. La velocidad y el alcance fueron factores bajos, así que fue una parada difícil; ¡qué alegría para Harbor United!"
+ },
+ "520|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "I saw Marco Tesch fire a long, fast shot that was placed high or wide, away from my body, and I saved it — saveability score 47. The shot's speed and reach were low factors, which made it a tough save."
+ },
+ "520|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:34:52+00:00",
+  "text": "Vi a Marco Tesch disparar, colocado alto o ancho, lejos de mi cuerpo, y lo paré — salvabilidad 47. La velocidad y el alcance fueron factores bajos, así que fue una parada difícil. Lo siento, Northgate FC."
+ },
+ "528|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) record a keeper_claim at 32:24 (1H) at x=101.6, y=35.4 with the score 0-1, and I felt composed making that claim. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar un keeper_claim a los 32:24 (1H) en x=101.6, y=35.4 con el marcador 0-1, y me sentí sereno al realizar ese claim; fue buena noticia para Northgate FC. Salvabilidad: no proporcionada en los datos del evento; hasta ese momento mi carga de trabajo fue alta — disparos enfrentados 3, a puerta 2, paradas 2, goles encajados 0, claims 3, carga de presión actual 6 (alto peligro)."
+ },
+ "528|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) record a keeper_claim at 32:24 (1H) at x=101.6, y=35.4 with the score 0-1, and I felt composed making that claim. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar un keeper_claim a los 32:24 (1H) en x=101.6, y=35.4 con el marcador 0-1, y me sentí compuesto al hacer esa intervención. Fue una buena noticia para Northgate FC. Salvabilidad: no proporcionada en los datos del evento; hasta ese momento mi carga de trabajo era alta — tiros recibidos 3, a puerta 2, paradas 2, goles encajados 0, claims 3, carga de presión actual 6 (alto peligro)."
+ },
+ "528|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) record a keeper_claim at 32:24 (1H) at x=101.6, y=35.4 with the score 0-1, and I felt composed making that claim — glad it helped Northgate FC. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar keeper_claim a las 32:24 (1H) en x=101.6, y=35.4 con marcador 0-1, y me sentí sereno en esa acción. Me alegré; ayudó a Northgate FC. (me alegró!!) Salvabilidad: no proporcionada en los datos; hasta ese punto mi carga era alta — tiros 3, a puerta 2, paradas 2, goles 0, claims 3, presión 6 (alto peligro)."
+ },
+ "528|casual|Both|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) record a keeper claim at 32:24 (1H) at x=101.6, y=35.4 with the score 0-1, and I felt calm making that claim. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|casual|Both|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar una keeper_claim a los 32:24 (1T) en x=101.6, y=35.4 con el marcador 0-1, y me sentí tranquilo al hacer esa salida; fue una buena noticia para nosotros. Salvabilidad: no proporcionada en los datos del evento; hasta ese momento mi carga de trabajo era alta — tiros recibidos 3, a puerta 2, paradas 2, goles encajados 0, reclamaciones 3, carga de presión actual 6 (alto peligro)."
+ },
+ "528|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) make a claim at 32:24 in the first half at x=101.6, y=35.4 with the score 0-1, and I felt composed making that claim — it was good news for Northgate FC. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar una reclamación de portero al 32:24 (1T) en x=101.6, y=35.4 con el marcador 0-1, y me sentí sereno al hacer esa reclamación. Salvabilidad: no proporcionada en los datos del evento; hasta ese momento mi carga de trabajo era alta — tiros recibidos 3, a puerta 2, paradas 2, goles encajados 0, salidas 3, carga de presión actual 6 (alto peligro)."
+ },
+ "528|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "I saw Elias Novak (Northgate FC) record a keeper_claim at 32:24 (1H) at x=101.6, y=35.4 with the score 0-1, and I felt composed making that claim — glad it helped Northgate FC. Saveability score: not provided in the event data; up to that point my workload was high — shots faced 3, on-target 2, saves 2, goals conceded 0, claims 3, current pressure workload 6 (high danger)."
+ },
+ "528|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:36:28+00:00",
+  "text": "Vi a Elias Novak (Northgate FC) registrar una reclamación de portero a las 32:24 (1H) en x=101.6, y=35.4 con el marcador 0-1, y me sentí sereno al hacer esa salida. Me alegré, fue buena noticia para el Northgate FC. Salvabilidad: no proporcionada en los datos del evento; hasta ese momento mi carga de trabajo era alta — tiros enfrentados 3, a puerta 2, paradas 2, goles encajados 0, salidas 3, carga de presión actual 6 (alto peligro)."
+ },
+ "757|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I tracked Theo Brandt’s 26.0 m, 92 km/h shot with his foot arriving at goal with three defenders in the lane, and I managed to save it. I was stretched because I was caught far from the ball’s path, which increased the difficulty (saveability 40)."
+ },
+ "757|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt desde 26.0 m, 92 km/h con el pie dirigirse a portería con tres defensores en la línea, y lo salvé. Me sentí estirado porque quedé lejos de la trayectoria del balón, lo que hizo que fuera una parada difícil (salvabilidad 40)."
+ },
+ "757|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I tracked Theo Brandt’s 26.0 m, 92 km/h footed shot into goal with 3 defenders in the lane, and I saved it for Northgate FC. I was stretched because I was caught far from the ball’s path, making it a tough save (saveability 40)."
+ },
+ "757|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt desde 26.0 m, a 92 km/h, golpeado con el pie, venir hacia la portería con 3 defensores en la línea, y lo paré. Me sentí estirado porque me pilló lejos de la trayectoria del balón, lo que la convirtió en una parada difícil (salvabilidad 40)."
+ },
+ "757|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I saw Theo Brandt’s 26.0 m, 92 km/h shot with his foot come at goal with three defenders in the lane, and I saved it — a big moment for Northgate FC. I felt stretched because I was caught far from the ball’s path, making it a tough save (saveability 40)."
+ },
+ "757|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt desde 26.0 m, 92 km/h con su pie dirigirse a portería con 3 defensores en la línea, y lo detuve; buen resultado para Northgate FC. Me sentí estirado porque me pilló lejos de la trayectoria del balón, convirtiéndola en una parada difícil (salvabilidad 40)."
+ },
+ "757|casual|Both|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I saw Theo Brandt’s shot with his foot come at goal with defenders in the lane, and I saved it. I felt stretched because I was caught far from the ball’s path, so it was a tough save — good news for Northgate (saveability 40)."
+ },
+ "757|casual|Both|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt a 26.0 m, 92 km/h con la bota que iba a portería con tres defensores en la zona y lo paré. Me sentí estirado porque estaba lejos del trayecto del balón, fue una parada difícil(salvabilidad 40)."
+ },
+ "757|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I saw Theo Brandt’s shot come at goal with three defenders in the lane, and I saved it. I felt stretched because I was caught far from the ball’s path, so it was a tough save (saveability 40)."
+ },
+ "757|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt venir a portería con el pie, con tres defensores en la línea, y lo atajé. Me noté muy estirado porque me pilló lejos de la trayectoria del balón, así que fue una parada dura (salvabilidad 40)."
+ },
+ "757|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "I saw Theo Brandt’s shot with his foot come at goal with three defenders in the lane, and I saved it — glad it helped Northgate FC. I felt stretched because I was caught far from the ball’s path, so it was a tough save (saveability 40)."
+ },
+ "757|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:37:58+00:00",
+  "text": "Vi el disparo de Theo Brandt venir hacia la portería con tres defensas en la línea, lo paré y fue una gran noticia para Northgate FC. Me sentí estirado porque estaba lejos de la trayectoria del balón, fue una parada difícil (salvabilidad 40)."
+ },
+ "81|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I made a successful claim at x=100.6, y=36.9 and secured the ball with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I felt composed and in control."
+ },
+ "81|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 hice una captura exitosa en x=100.6, y=36.9 y aseguré el balón con el marcador 0-0. Salvabilidad: N/A — fue una captura, no un tiro; me sentí compuesto y en control."
+ },
+ "81|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I made a successful claim at x=100.6, y=36.9 and secured the ball with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I felt composed and in control."
+ },
+ "81|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 realicé una captura exitosa en x=100.6, y=36.9 y aseguré el balón con el marcador 0-0. Salvabilidad: N/A— fue una captura, no un remate; me sentí compuesto y en control."
+ },
+ "81|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I made a clean claim at x=100.6, y=36.9, secured the ball with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I was composed glad Northgate FC today."
+ },
+ "81|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 hice una captura exitosa en x=100.6, y=36.9 y aseguré el balón con el marcador 0-0. Salvabilidad: N/A — fue una captura, no un disparo; me sentí sereno y en control, me alegré porque ayudó a Northgate FC."
+ },
+ "81|casual|Both|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I came out and claimed the ball at x=100.6, y=36.9, securing it with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I felt calm and in control."
+ },
+ "81|casual|Both|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 hice una salida exitosa en x=100.6, y=36.9 y aseguré el balón con el marcador 0-0. Salvabilidad: N/A — fue una salida, no un disparo; me sentí sereno y en control y fue una buena noticia para Northgate FC."
+ },
+ "81|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I made a confident, successful claim and secured the ball with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I felt composed and in control."
+ },
+ "81|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 hice una salida exitosa en x=100.6, y=36.9 y aseguré el balón con el marcador 0-0. Salvabilidad: N/A — fue una captura, no un disparo; me sentí tranquilo y en control."
+ },
+ "81|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "At 04:53 I made a successful claim at x=100.6, y=36.9 and secured the ball with the score 0-0. Saveability score: N/A — this was a claim, not a shot; I felt composed and in control — glad it helped Northgate FC."
+ },
+ "81|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:29:37+00:00",
+  "text": "A las 04:53 realicé una salida y aseguré el balón en x=100.6, y=36.9 con el marcador 0-0. Fue buena noticia para el Northgate FC; me alegré de ayudar al equipo. Salvabilidad: N/A — esto fue una captura, no un disparo; me sentí sereno y en control."
+ },
+ "864|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I tracked Sam Varga’s shot at 53:07 aimed high and away from my body; given my reach and the placement it was a difficult save to pull off too. Saveability 45."
+ },
+ "864|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el disparo de Sam Varga al 53:07 colocado alto o hacia fuera, lejos de mi cuerpo, y sentí que mi alcance y la colocación lo hicieron una parada difícil de ejecutar. Salvabilidad 45."
+ },
+ "864|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I saw Sam Varga’s shot at 53:07 placed high and away from my body; the placement and my reach narrowed the save window and made it a difficult stop, which I know was a boost for Harbor United. Saveability 45."
+ },
+ "864|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el disparo de Sam Varga en el 53:07, colocado alto o hacia fuera, lejos de mi cuerpo, y constaté que mi alcance y la colocación lo convertían en una parada difícil de ejecutar; supuso buena noticia para Harbor United y mala para Northgate FC. Salvabilidad 45."
+ },
+ "864|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I saw Sam Varga’s shot at 53:07 placed high or wide, away from my body; my reach and the placement made it a difficult save to execute, and I know that was especially damaging for Northgate FC. Saveability 45."
+ },
+ "864|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el disparo de Sam Varga en el 53:07 colocado alto o hacia fuera, alejado de mi cuerpo, y noté que mi alcance y la colocación lo hacían una parada difícil de ejecutar; lamento que esto perjudicara a Northgate FC. Salvabilidad 45."
+ },
+ "864|casual|Both|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I saw Sam Varga’s shot at 53:07 go high and away from my body; my reach just wasn’t enough, so it was a really tough one to keep out for me. Saveability 45."
+ },
+ "864|casual|Both|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el disparo de Sam Varga al 53:07, colocado alto o hacia afuera, lejos de mi cuerpo, y sentí que mi alcance y la colocación lo hicieron difícil de detener. Salvabilidad 45."
+ },
+ "864|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I saw Sam Varga’s shot at 53:07 head high or wide, away from my body, and I knew my reach made it a tough stop. Glad it helped Harbor United!!! Saveability 45."
+ },
+ "864|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el disparo de Sam Varga al 53:07, colocado alto o hacia fuera, lejos de mi cuerpo, y sentí que mi alcance y la colocación lo hacían una parada difícil; me alegra por Harbor United. Salvabilidad 45."
+ },
+ "864|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "I saw Sam Varga’s shot at 53:07 placed high or wide, away from my body, and I felt my reach and the placement made it a tough save to pull off — I’m sorry, Northgate fans; I know that hurt. Saveability 45."
+ },
+ "864|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:38:54+00:00",
+  "text": "Vi el tiro de Sam Varga puesto alto o fuera lejos de mi cuerpo; mi alcance y la colocación lo hicieron difícil de parar. Lo siento, Northgate. Salvabilidad 45."
+ },
+ "885|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's footed shot from 17.4 m at 81 km/h placed high and wide away from my body, and I made the save. Saveability 46 — tough save; reach (0.33) and lane (0.33) were the lowest factors, which made it difficult."
+ },
+ "885|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo con el pie de Theo Brandt desde 17.4 m a 81 km/h, colocado alto y hacia afuera, lejos de mi cuerpo, y lo detuve. Salvabilidad 46 — parada difícil; reach (0.33) y lane (0.33) fueron los factores más bajos, lo que lo hizo complicado."
+ },
+ "885|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's footed shot from 17.4 m at 81 km/h placed high and wide away from my body, and I made the save. Saveability 46 — tough save; reach (0.33) and lane (0.33) were the lowest factors, which made it difficult."
+ },
+ "885|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo con el pie de Theo Brandt desde 17.4 m a 81 km/h, colocado alto y hacia afuera, lejos de mi cuerpo, y lo detuve. Salvabilidad 46 — parada difícil; alcance (0.33) y carril (0.33) fueron los factores más bajos, lo que la complicó."
+ },
+ "885|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's footed shot from 17.4 m at 81 km/h placed high and wide away from my body, and I made the save — glad it helped Northgate FC. Saveability 46 — tough save; reach (0.33) and lane (0.33) were the lowest factors, which made it difficult."
+ },
+ "885|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo con el pie de Theo Brandt desde 17.4 m a 81 km/h colocado alto y abierto, lejos de mi cuerpo, y lo paré; me alegré porque ayudó al Northgate FC. Salvabilidad 46 — parada difícil; alcance (0.33) y carril (0.33) fueron los factores más bajos, lo que la hizo difícil."
+ },
+ "885|casual|Both|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's shot from 17.4 m at 81 km/h placed high and wide away from my body and I tipped it to safety. Saveability 46 — that was a tough one; low reach, and a narrow lane made it hard, but it helped Northgate FC."
+ },
+ "885|casual|Both|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo con el pie de Theo Brandt, colocado alto y ancho, lejos de mi cuerpo, y lo paré. Salvabilidad 46 — parada difícil. El alcance y la trayectoria fueron los factores más bajos, lo que lo hizo complicado; aun así fue una buena noticia para Northgate FC."
+ },
+ "885|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's footed shot placed high and wide away from my body, and I made the save. Saveability 46 — tough save; my reach and the lane were the lowest factors, which made it difficult."
+ },
+ "885|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo de Theo Brandt con el pie desde 17.4 m a 81 km/h, colocado alto y hacia afuera, lejos de mi cuerpo, y lo paré. Salvabilidad 46 — parada difícil; alcance (0.33) y carril (0.33) fueron los factores más bajos, por eso fue complicado."
+ },
+ "885|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "I saw Theo Brandt's shot placed high and wide away from my body, and I made the save. Saveability 46 — a tough one because my reach and the space the ball had were the weakest parts, which made it difficult, but I'm glad it helped Northgate FC."
+ },
+ "885|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:40:11+00:00",
+  "text": "Vi el disparo con el pie de Theo Brandt, colocado alto y hacia afuera, lejos de mi cuerpo, y lo paré. Salvabilidad 46 — fue una parada dura; alcance y carril fueron los factores más bajos, por eso fue complicado. Me alegra, fue buena noticia para Northgate FC."
+ },
+ "915|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' 25.5 m, 99 km/h clean strike placed high or wide and away from my body, and I managed to save it. Saveability 36 — a \"tough save\" (reach 0.01, swerve 0.04 were the main low factors)."
+ },
+ "915|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el disparo limpio de Tomas Reyes desde 25.5 m, 99 km/h, colocado alto o hacia fuera y alejado de mi cuerpo, y conseguí pararlo. Salvabilidad 36 — una \"parada difícil\" (alcance 0.01, efecto 0.04 fueron los principales factores bajos)."
+ },
+ "915|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' 25.5 m, 99 km/h clean strike placed high or wide and away from my body, and I managed to save it. Saveability 36 — a \"tough save\" (reach 0.01, swerve 0.04 were the main low factors). Small win for Harbor United."
+ },
+ "915|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el disparo limpio de Tomás Reyes desde 25.5 m, 99 km/h colocado alto o hacia fuera y lejos de mi cuerpo, y logré detenerlo; me alegra que fuera buena noticia para Harbor United. Salvabilidad 36 — una \"parada difícil\" (alcance 0.01, efecto 0.04 fueron los principales factores bajos)."
+ },
+ "915|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' 25.5 m, 99 km/h clean strike placed high or wide and away from my body, and I managed to save it. Saveability 36 — a \"tough save\" (reach 0.01, swerve 0.04 were the main low factors)."
+ },
+ "915|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el disparo limpio de Tomas Reyes desde 25.5 m, 99 km/h, colocado alto o hacia fuera y lejos de mi cuerpo, y logré detenerlo. Salvabilidad 36 — una \"parada difícil\" (alcance 0.01, efecto 0.04 fueron los principales factores bajos)."
+ },
+ "915|casual|Both|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' shot placed high and away from my body, and I managed to keep it out. Saveability 36 — a \"tough save\" (reach 0.01, swerve 0.04 were the main low factors)."
+ },
+ "915|casual|Both|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el disparo limpio de Tomás Reyes desde 25,5 m a 99 km/h, colocado alto o hacia fuera y lejos de mi cuerpo, y logré salvarlo — fue una buena noticia para Harbor United. Salvabilidad 36 — una \"parada difícil\" (alcance 0.01, efecto 0.04 fueron los principales factores bajos)."
+ },
+ "915|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' 25.5 m, 99 km/h clean strike placed high or wide and away from my body, and I managed to save it. Saveability 36 — a tough save, and I was glad it helped Harbor United."
+ },
+ "915|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el tiro de Tomas Reyes, 25.5 m, 99 km/h, colocado alto o fuera y lejos de mi cuerpo, y lo salvé.Buena para Harbor United. Salvabilidad 36 — difícil (alcance 0.01, swerve 0.04 fueron factores bajos)."
+ },
+ "915|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "I saw Tomas Reyes' 25.5 m, 99 km/h clean strike placed high or wide and away from my body, and I managed to save it — glad it helped Northgate FC. Saveability 36 — a \"tough save\" (reach and swerve were the main low factors)."
+ },
+ "915|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:41:47+00:00",
+  "text": "Vi el disparo limpio de Tomas Reyes, colocado alto o abierto y lejos de mi cuerpo, y lo pude detener.  Fue una gran noticia para todo el equipo de Harbor United. Salvabilidad 36 — una «parada difícil»."
+ },
+ "951|analyst|Both|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I tracked a footed shot from 20.7 m by Nico Alves at 86 km/h that finished at 33.55 / 1.95; I was set with plenty of time to react and I made the save. Saveability 82 — my reaction and reach were excellent, which made the stop straightforward."
+ },
+ "951|analyst|Both|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con el pie desde 20.7 m de Nico Alves (86 km/h) que acabó en 33.55 / 1.95; estaba colocado con tiempo de sobra para reaccionar y detuve el remate. Salvabilidad 82 — noté que mi reacción y mi alcance fueron excelentes, lo que hizo la parada sencilla."
+ },
+ "951|analyst|Harbor United|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I tracked a footed strike from 20.7 m by Nico Alves (86 km/h) that finished at 33.55 / 1.95; I was set with plenty of time to react and I made the save. Saveability 82 — my reaction and reach were excellent, which made the stop straightforward."
+ },
+ "951|analyst|Harbor United|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con el pie desde 20.7 m de Nico Alves (86 km/h) que terminó en 33.55 / 1.95; estaba colocado con tiempo de sobra para reaccionar y hice la parada. Salvabilidad 82 — noté que mi reacción y mi alcance fueron excelentes, lo que hizo la parada sencilla."
+ },
+ "951|analyst|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I saw a footed shot from 20.7 m by Nico Alves (86 km/h) that ended at 33.55 / 1.95; my positioning left me set with plenty of time to react, I extended level with the post and made the save. Saveability 82 — pleased it helped Northgate FC today"
+ },
+ "951|analyst|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con el pie de Nico Alves desde 20.7 m (86 km/h) que terminó en 33.55 / 1.95; estaba colocado con tiempo de sobra para reaccionar y realicé la parada, buena noticia para Northgate FC. Salvabilidad 82 — sentí que mi reacción y alcance fueron excelentes, lo que facilitó la parada."
+ },
+ "951|casual|Both|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I saw a footed shot from about 20 metres by Nico Alves that I had plenty of time to react to, and I made the save. Saveability 82 — my reaction and reach felt excellent, so the stop was straightforward."
+ },
+ "951|casual|Both|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con la pierna de Nico Alves; me coloqué con tiempo, lo paré y fue una buena noticia para Northgate. Salvabilidad 82 — sentí que mi reacción y mi alcance fueron excelentes, lo que hizo la parada sencilla."
+ },
+ "951|casual|Harbor United|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I saw a footed shot from 20.7 m by Nico Alves (86 km/h) that ended at 33.55 / 1.95; I was set with plenty of time to react and I made the save — a good moment for us at Northgate. Saveability 82 — I felt my reaction and reach were excellent, which made the stop straightforward."
+ },
+ "951|casual|Harbor United|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con el pie de Nico Alves; estaba preparado con tiempo de sobra para reaccionar y pude atajarlo. Salvabilidad 82 — Sentí que mi reacción y mi alcance fueron excelentes, así que la parada resultó sencilla y fue una buena noticia para Northgate FC."
+ },
+ "951|casual|Northgate FC|en": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "I saw a footed shot that I had plenty of time to read and I made the save. Saveability 82 — my reaction and reach felt excellent, so the stop was straightforward. I’m glad that helped Northgate FC. Really felt composed and in control overall."
+ },
+ "951|casual|Northgate FC|es": {
+  "generated_at": "2026-10-21T22:42:44+00:00",
+  "text": "Vi un disparo con el pie desde 20.7 m de Nico Alves (86 km/h) que acabó en 33.55 / 1.95; estaba colocado con tiempo de sobra para reaccionar y la paré. Salvabilidad 82 — Sentí que mi reacción y mi llegada fueron excelentes, lo que hizo la parada sencilla. ¡Bien por Northgate FC!"
+ },
+ "full_time|Harbor United|analyst|en": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "I couldn't get the result we wanted as the match finished Harbor United 1-3 Northgate FC, which is a bitter outcome for Harbor United. I faced 10 shots (5 on target), made 2 saves and conceded 3 goals; I also claimed 1 cross and made 1 sweep, with goals prevented +0.09. Northgate's keeper faced 14 shots (9 on target), made 8 saves, conceded once, claimed 6 crosses and had 0 sweeps, with goals prevented +2.81. There are small positives in my performance, but overall I need to help tighten up our defence and improve consistency on crosses and sweeps to change results."
+ },
+ "full_time|Harbor United|analyst|es": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "No pude lograr el resultado que queríamos y el partido terminó Harbor United 1-3 Northgate FC; siento el golpe para Harbor United. Me enfrenté a 10 disparos (5 entre los tres palos), hice 2 paradas y encajé 3 goles; también despejé 1 centro y realicé 1 barrida, con salvabilidad +0.09. El portero de Northgate se enfrentó a 14 disparos (9 entre los tres palos), hizo 8 paradas, encajó 1 gol, despejó 6 centros y no tuvo barridas, con salvabilidad +2.81. Hay pequeños aspectos positivos en mi actuación, pero en general debo ayudar a reforzar nuestra defensa y mejorar la consistencia en centros y barridas para cambiar los resultados."
+ },
+ "full_time|Harbor United|casual|en": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "I couldn't get the result we wanted as the match finished Harbor United 1-3 Northgate FC. I faced plenty of shots, made some saves and conceded three; I also claimed a cross and made a sweep, with goals prevented +0.09. Northgate's keeper did well on their end. There are small positives in my performance, but overall I need to help tighten up our defence and improve consistency on crosses and sweeps to change results — I know this hurts Harbor United fans."
+ },
+ "full_time|Harbor United|casual|es": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "No pude conseguir el resultado que queríamos; el partido terminó Harbor United 1-3 Northgate FC y lo siento mucho por Harbor United. Me enfrenté a 10 disparos (5 a puerta), hice 2 paradas y encajé 3 goles; además atrapé 1 centro e hice 1 salida, con goles evitados +0.09. El portero de Northgate se enfrentó a 14 disparos (9 a puerta), hizo 8 paradas, encajó un gol, resolvió 6 centros y no tuvo salidas, con goles evitados +2.81. Hay pequeñas cosas positivas en mi actuación, pero en general tengo que ayudar a apretar nuestra defensa y mejorar la consistencia en centros y salidas para cambiar los resultados."
+ },
+ "full_time|Northgate FC|analyst|en": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "I kept goal in Northgate FC's 3-1 win over Harbor United; I'm glad it helped Northgate FC. I faced 14 shots (9 on target), made 8 saves and conceded 1, and I claimed 6 crosses with 0 sweeps. An average keeper would have made 5.19 saves from these shots, so my goals prevented was +2.81. Harbor United's keeper faced 10 shots (5 on target), made 2 saves and conceded 3, claimed 1 cross and had 1 sweep, with goals prevented +0.09."
+ },
+ "full_time|Northgate FC|analyst|es": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "Defendí la portería en la victoria 3-1 del Northgate FC sobre Harbor United; me alegra que esto ayudara al Northgate FC. Enfrenté 14 tiros (9 entre los tres palos), hice 8 paradas y encajé 1, y cacé 6 centros con 0 barridos. Un portero medio habría hecho 5.19 paradas de esos tiros, por lo tanto mis goles prevenidos fueron +2.81. El portero de Harbor United enfrentó 10 tiros (5 entre los tres palos), hizo 2 paradas y encajó 3, cazó 1 centro y tuvo 1 barrido, con goles prevenidos +0.09."
+ },
+ "full_time|Northgate FC|casual|en": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "I kept goal in Northgate FC's 3-1 win over Harbor United. I faced 14 shots (9 on target), made 8 saves and conceded 1, and I claimed 6 crosses with 0 sweeps. I was glad it helped Northgate FC, and I felt proud to keep us calm and in the lead tonight!!! Harbor United's keeper faced 10 shots (5 on target), made 2 saves and conceded 3, claimed 1 cross and had 1 sweep, with goals prevented +0.09."
+ },
+ "full_time|Northgate FC|casual|es": {
+  "generated_at": "2026-10-22T14:00:39+00:00",
+  "text": "Estuve en la portería en la victoria 3-1 de Northgate FC sobre Harbor United; me alegra que lo lográramos para el club. Me enfrenté a 14 tiros (9 entre los tres palos), hice 8 paradas y encajé 1, y atrapé 6 centros sin barridas. Un portero medio habría hecho 5.19 paradas en esos tiros, así que mis goles evitados fueron +2.81. El portero de Harbor United se enfrentó a 10 tiros (5 entre los tres palos), hizo 2 paradas y encajó 3, atrapó 1 centro y tuvo 1 barrida, con goles evitados +0.09."
+ }
+}

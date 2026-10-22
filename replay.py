@@ -41,6 +41,15 @@ def clock(event):
     return f"{event['minute']:02d}:{event['second']:02d}"
 
 
+def is_key_moment(event):
+    """Shots on target that were saved, goals, keeper claims and sweeps.
+    (A goal arrives as a 'shot' event followed by a 'goal' event; we use the
+    'goal' event so the moment carries the new score.)"""
+    if event["type"] == "shot":
+        return event["outcome"] == "saved"
+    return event["type"] in ("goal", "keeper_claim", "keeper_sweep")
+
+
 def describe(event, insight):
     """One printable line for a key moment, or None for quiet events."""
     t = clock(event)

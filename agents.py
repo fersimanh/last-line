@@ -103,6 +103,8 @@ def make_personalizer(client):
             "You adapt a goalkeeper's narration for one viewer. "
             "Mode 'casual': simple, warm words for a general fan, no jargon, "
             "no text-speak, few numbers (always keep the saveability score if there is one). "
+            "Saveability belongs to a single shot only: never call any other number "
+            "(such as goals prevented) saveability. "
             "Mode 'analyst': precise and tactical, keep every number. "
             "Keep the goalkeeper's first-person voice. "
             "If the viewer's favorite club is involved, acknowledge it briefly "

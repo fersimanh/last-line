@@ -70,19 +70,37 @@ Built with Microsoft Agent Framework (`Agent` + `FoundryChatClient`) against a F
 
 Each output line is JSON with `clock`, `match_second`, `type`, `player`, `keeper`, `score`, `saveability`, `verdict`, `key_factor`, `analysis`, `narration`, `versions` (one per viewer, with a `fallback` flag), `errors` and a UTC `generated_at` timestamp. A `half_time` line arrives before the first second-half event, and the last line is the `full_time` report.
 
+## Streamlit app
+
+`app.py` replays the match through the followed keeper's eyes:
+
+- **Shot map**: a half pitch of the shots the keeper faced, appearing as the match plays. Color is saveability on a colorblind-safe red (hard) to gray to blue (easy) scale; off-target and blocked shots have no score and stay light gray. Each outcome has its own marker (star goal, circle saved, x off target, square blocked) and every marker has a hover label.
+- **Goal mouth**: where each on-target shot crossed the 7.32 x 2.44 m goal, from the shooter's view.
+- **Workload meter and danger indicator** for the followed goal (danger shows an icon and a word, not only a color).
+- **Insight cards** for key moments, newest first.
+- **Full-time report** tab: `keeper_report()` numbers plus the Narrator's report.
+- **Sidebar**: mode (Casual fan or Analyst), favorite club (decides which keeper you follow, or Both), language (English or Spanish), replay speed (default 120x, a full match in 45 s), Play, Pause and Restart.
+
+The match position lives in `st.session_state`, so changing any option mid-match re-renders the cards in the new mode and language without restarting.
+
+Card and report text comes from `insights.py`: first `insight_cache.json` (instant), then the agents on a cache miss (slow, then cached), then a fallback line with the saveability score and verdict. `python3 insights.py --warm` fills the cache for every moment, mode, club and language, so the demo does not depend on live API calls. Set `LAST_LINE_LIVE_AGENTS=0` to never call the agents.
+
 ## Run it
 
 ```
-pip install openai python-dotenv agent-framework
-az login
+pip install -r requirements.txt
+az login                            # only needed for the agents
 python3 generate_match.py
+streamlit run app.py                # the app
+python3 test_app.py                 # app tests (no Azure needed)
+python3 insights.py --warm          # refill the text cache
 python3 hello_agent.py              # checks Foundry auth
-python3 pipeline.py --only 67:03    # one moment
-python3 pipeline.py > moments.jsonl # whole match
+python3 pipeline.py --only 67:03    # one moment as JSON
+python3 pipeline.py > moments.jsonl # whole match as JSON
 ```
 
 Settings go in a `.env` file (never committed): `PROJECT_ENDPOINT`, `MODEL_DEPLOYMENT_NAME` for the agents; `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `AZURE_OPENAI_DEPLOYMENT` for `smoke_test.py`.
 
 ## Status
 
-Built for the hackathon, October 2026. In progress: live replay, saveability scoring, Foundry agents, Streamlit interface.
+Built for the hackathon, October 2026. Done: synthetic data, live replay, saveability scoring, Foundry agents, Streamlit interface. Not deployed yet.

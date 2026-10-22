@@ -20,7 +20,7 @@ import json
 from datetime import datetime, timezone
 
 from agents import make_analyst, make_client, make_narrator, make_personalizer
-from replay import clock, load_match, stream
+from replay import clock, is_key_moment, load_match, stream
 from scoring import MatchState
 
 AGENT_TIMEOUT_SEC = 90  # give up on a slow agent and use the fallback
@@ -50,15 +50,6 @@ class LiveMatch:
 
     def now(self):
         return self.event["minute"] * 60 + self.event["second"]
-
-
-def is_key_moment(event):
-    """Shots on target that were saved, goals, keeper claims and sweeps.
-    (A goal arrives as a 'shot' event followed by a 'goal' event; we use the
-    'goal' event so the moment carries the new score.)"""
-    if event["type"] == "shot":
-        return event["outcome"] == "saved"
-    return event["type"] in ("goal", "keeper_claim", "keeper_sweep")
 
 
 def fallback_text(live, viewer=None):
@@ -119,13 +110,14 @@ async def process_moment(live, agents, viewers):
     else:
         news = f"good news for {keeper_club}"
     context = f"The narrator is the {keeper_club} goalkeeper. This moment was {news}."
-    versions = []
-    for viewer in viewers:
-        text = None
-        if narration:
-            text = await personalize(personalizer, narration, viewer, errors, context)
-        versions.append({"viewer": viewer, "text": text or fallback_text(live, viewer),
-                         "fallback": text is None})
+    # asyncio.gather runs the Personalizer for every viewer at the same time
+    texts = [None] * len(viewers)
+    if narration:
+        texts = await asyncio.gather(*[personalize(personalizer, narration, viewer, errors, context)
+                                       for viewer in viewers])
+    versions = [{"viewer": viewer, "text": text or fallback_text(live, viewer),
+                 "fallback": text is None}
+                for viewer, text in zip(viewers, texts)]
 
     return {
         "kind": "moment",
@@ -153,8 +145,8 @@ def stats_in_words(s):
     return (f"{s['shots_faced']} shots faced ({s['on_target']} on target), {s['saves']} saves, "
             f"{s['goals_conceded']} goals conceded, {s['claims']} crosses claimed, "
             f"{s['sweeps']} sweeps. An average keeper would have made {s['expected_saves']} "
-            f"saves from these shots, so goals prevented = {s['goals_prevented']:+} "
-            "(above 0 is better than average).")
+            f"saves from these shots, so goals prevented is {s['goals_prevented']:+} "
+            "(more than 0 means better than an average keeper).")
 
 
 async def keeper_report(live, agents, viewers, kind):
@@ -168,22 +160,29 @@ async def keeper_report(live, agents, viewers, kind):
     score = f"{home} {home_goals}-{away_goals} {away}"
     label = "Halftime" if kind == "half_time" else "Full-time"
     errors = []
-    narrations = {}  # team -> that keeper's report, so each team is only written once
+    # Which keeper each viewer hears from
+    teams = [viewer["club"] if viewer["club"] in report else home for viewer in viewers]
 
-    versions = []
-    for viewer in viewers:
-        team = viewer["club"] if viewer["club"] in report else home
-        if team not in narrations:
-            opponent = live.state.other(team)
-            prompt = (f"{label} keeper report. You are the {team} goalkeeper. Score: {score}.\n"
-                      f"Your numbers: {stats_in_words(report[team])}\n"
-                      f"The {opponent} keeper's numbers: {stats_in_words(report[opponent])}")
-            narrations[team] = await ask(narrator, prompt, errors)
-        narration = narrations[team]
+    # 1. The Narrator writes one report per keeper (each team only once)
+    narrations = {}
+    for team in dict.fromkeys(teams):  # unique teams, in order
+        opponent = live.state.other(team)
+        prompt = (f"{label} keeper report. You are the {team} goalkeeper. Score: {score}.\n"
+                  f"Your numbers: {stats_in_words(report[team])}\n"
+                  f"The {opponent} keeper's numbers: {stats_in_words(report[opponent])}")
+        narrations[team] = await ask(narrator, prompt, errors)
+
+    # 2. The Personalizer adapts it for every viewer at the same time
+    async def adapt(viewer, team):
+        if not narrations[team]:
+            return None
         context = f"The narrator is the {team} goalkeeper. Score: {score}."
-        text = await personalize(personalizer, narration, viewer, errors, context) if narration else None
-        versions.append({"viewer": viewer, "keeper_team": team,
-                         "text": text or json.dumps(report[team]), "fallback": text is None})
+        return await personalize(personalizer, narrations[team], viewer, errors, context)
+
+    texts = await asyncio.gather(*[adapt(viewer, team) for viewer, team in zip(viewers, teams)])
+    versions = [{"viewer": viewer, "keeper_team": team,
+                 "text": text or json.dumps(report[team]), "fallback": text is None}
+                for viewer, team, text in zip(viewers, teams, texts)]
 
     return {"kind": kind, "score": live.score, "keeper_report": report,
             "narrations": narrations, "versions": versions, "errors": errors,
