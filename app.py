@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from dotenv import load_dotenv
 
-from insights import BOTH, VERDICT_ES, get_insight_text, get_report_text, match_second, replay_to
+from insights import BOTH, DIST_VERDICT_ES, VERDICT_ES, get_insight_text, get_report_text, match_second, replay_to
 from replay import load_match
 
 # .env wins over old terminal values (only needed when the agents are called live)
@@ -46,7 +46,11 @@ TEXT = {
     "en": {
         "goal": "Goal", "saved": "Saved", "off_target": "Off target", "blocked": "Blocked",
         "card_goal": "Goal conceded", "card_shot": "Save", "card_keeper_claim": "Cross claimed",
-        "card_keeper_sweep": "Sweep", "saveability": "Saveability", "workload": "Workload",
+        "card_keeper_sweep": "Sweep", "card_keeper_distribution": "Distribution",
+        "quality": "Quality", "decision": "decision", "pressure": "pressure",
+        "led_to_shot": "led to a shot", "completion": "Distribution completed",
+        "long_balls": "Long balls", "avg_decision": "Avg decision score",
+        "attacks": "Attacks ending in a shot", "saveability": "Saveability", "workload": "Workload",
         "workload_help": "Shots faced + crosses claimed + sweeps",
         "danger": "Danger at this goal", "low": "Low", "medium": "Medium", "high": "High",
         "live": "Live", "report": "Full-time report", "shot_map": "Shots faced",
@@ -65,7 +69,11 @@ TEXT = {
     "es": {
         "goal": "Gol", "saved": "Parada", "off_target": "Fuera", "blocked": "Bloqueado",
         "card_goal": "Gol encajado", "card_shot": "Parada", "card_keeper_claim": "Centro atrapado",
-        "card_keeper_sweep": "Salida", "saveability": "Salvabilidad", "workload": "Carga de trabajo",
+        "card_keeper_sweep": "Salida", "card_keeper_distribution": "Distribución",
+        "quality": "Calidad", "decision": "decisión", "pressure": "presión",
+        "led_to_shot": "acabó en tiro", "completion": "Distribución completada",
+        "long_balls": "Balones largos", "avg_decision": "Decisión media",
+        "attacks": "Ataques que acabaron en tiro", "saveability": "Salvabilidad", "workload": "Carga de trabajo",
         "workload_help": "Tiros recibidos + centros atrapados + salidas",
         "danger": "Peligro en esta portería", "low": "Bajo", "medium": "Medio", "high": "Alto",
         "live": "En vivo", "report": "Informe final", "shot_map": "Tiros recibidos",
@@ -155,6 +163,13 @@ def verdict_badge(score, verdict):
     """A colored badge matching the shot map colors: red, gray or blue."""
     color = {"near-unstoppable": "red", "tough save": "gray", "should save": "blue"}[verdict]
     return f":{color}-badge[{t['saveability']} {score} · {verdict_label(verdict)}]"
+
+
+def quality_badge(quality, verdict):
+    """Distribution badge: blue excellent, gray safe, orange risky, red turnover."""
+    color = {"excellent": "blue", "safe": "gray", "risky": "orange", "turnover": "red"}[verdict]
+    label = DIST_VERDICT_ES[verdict] if lang == "es" else verdict
+    return f":{color}-badge[{t['quality']} {quality} · {label}]"
 
 
 def danger_badge(level):
@@ -263,14 +278,26 @@ def keeper_panel(team, snapshot):
 def insight_card(moment):
     with st.container(border=True):
         title = t["card_" + moment["type"]]
-        line = f"**{moment['clock']}** · **{title}** · {moment['player']}"
+        d = moment["distribution"]  # None unless this is a keeper distribution
+        who = f"{moment['player']} → {d['target_player']}" if d else moment["player"]
+        line = f"**{moment['clock']}** · **{title}** · {who}"
         if moment["saveability"] is not None:
             line += "  " + verdict_badge(moment["saveability"], moment["verdict"])
+        if d:
+            line += "  " + quality_badge(d["quality"], d["verdict"])
         st.markdown(line)
         if club == BOTH:
             st.caption(f"{moment['keeper']} · {moment['keeper_team']}")
         with st.spinner("Asking the agents..."):  # only shows on a slow cache miss
             st.write(get_insight_text(moment, mode, lang, club))
+        if mode == "analyst" and d:
+            # The facts behind the rating, in the order an analyst reads them
+            details = (f"{d['method'].replace('_', ' ')} ({d['technique'].replace('_', ' ')}) · "
+                       f"{d['target_role']} · {d['distance_m']} m · {d['pressure']} {t['pressure']} · "
+                       f"{t['decision']} {d['decision_score']}")
+            if d["led_to_shot"]:
+                details += f" · {t['led_to_shot']}"
+            st.caption(details)
         if mode == "analyst" and moment["key_factor"] and lang == "en":
             st.caption(f"{t['key_factor']}: {moment['key_factor']}")
 
@@ -292,6 +319,13 @@ def report_tab(state, finished):
         cols[1].metric(t["prevented"], f"{r['goals_prevented']:+}", help=t["prevented_help"])
         cols[2].metric(t["claims"], r["claims"])
         cols[3].metric(t["sweeps"], r["sweeps"])
+        cols = st.columns(4)
+        cols[0].metric(t["completion"], f"{r['distribution_completion_pct']}%",
+                       help=f"{r['completed']} / {r['distributions']}")
+        cols[1].metric(t["long_balls"], f"{r['long_ball_pct']}%",
+                       help=f"{r['long_completed']} / {r['long_attempts']}")
+        cols[2].metric(t["avg_decision"], r["avg_decision_score"])
+        cols[3].metric(t["attacks"], r["attacks_started"])
         if finished:
             with st.spinner("Asking the narrator..."):
                 text = get_report_text(team, mode, lang)

@@ -56,6 +56,11 @@ def fallback_text(live, viewer=None):
     """Plain line used when an agent fails: saveability score and verdict."""
     spanish = viewer is not None and viewer["language"] == "es"
     event, insight = live.event, live.insight
+    if insight.get("type") == "distribution":
+        if spanish:
+            return f"{event['player']} a {event['target_player']}: calidad {insight['quality']}/100."
+        return (f"{event['player']} to {event['target_role']} {event['target_player']}: quality "
+                f"{insight['quality']}/100, {insight['verdict']} ({insight['key_factor']}).")
     if insight:
         verdict = insight["verdict"]
         if spanish:
@@ -95,18 +100,26 @@ async def process_moment(live, agents, viewers):
     # 1. Shot Analyst reads the shared state through its tools
     analysis = await ask(analyst, "Analyse the current moment.", errors)
 
-    # 2. Handoff to the Narrator. If the Analyst failed, pass the raw insight instead.
-    facts = analysis or json.dumps({"event": event, "insight": insight})
-    narration = await ask(narrator, f"Moment at {clock(event)}. Analysis:\n{facts}", errors)
-
-    # 3. Handoff to the Personalizer, once per viewer. Claims and sweeps are
-    # done by the keeper's own team; shots and goals by the other team.
-    if event["type"] in ("keeper_claim", "keeper_sweep"):
+    # Whose point of view: claims, sweeps and distributions are done by the
+    # keeper's own team; shots and goals come from the other team.
+    if event["type"] in ("keeper_claim", "keeper_sweep", "keeper_distribution"):
         keeper_club = event["team"]
     else:
         keeper_club = live.state.other(event["team"])
+    keeper_name = insight.get("keeper", event["player"])
+
+    # 2. Handoff to the Narrator, telling it who it is. If the Analyst failed,
+    # pass the raw insight instead.
+    facts = analysis or json.dumps({"event": event, "insight": insight})
+    narration = await ask(narrator, f"You are {keeper_name}, the {keeper_club} goalkeeper. "
+                          f"Moment at {clock(event)}. Analysis:\n{facts}", errors)
+
+    # 3. Handoff to the Personalizer, once per viewer
+    turnover = event["type"] == "keeper_distribution" and insight.get("verdict") == "turnover"
     if event["type"] == "goal":
         news = f"good news for {event['team']}, bad news for {keeper_club}"
+    elif turnover:
+        news = f"bad news for {keeper_club}: they lost the ball"
     else:
         news = f"good news for {keeper_club}"
     context = f"The narrator is the {keeper_club} goalkeeper. This moment was {news}."
@@ -132,6 +145,10 @@ async def process_moment(live, agents, viewers):
         "saveability": insight.get("saveability"),
         "verdict": insight.get("verdict"),
         "key_factor": insight.get("key_factor"),
+        # distribution moments only (None otherwise)
+        "quality": insight.get("quality"),
+        "decision_score": insight.get("decision_score"),
+        "difficulty": insight.get("difficulty"),
         "analysis": analysis,
         "narration": narration,
         "versions": versions,

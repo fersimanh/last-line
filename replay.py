@@ -12,7 +12,7 @@ import argparse
 import json
 import time
 
-from scoring import MatchState
+from scoring import MatchState, distribution_insight
 
 
 def load_match(path="match_events.json"):
@@ -41,12 +41,26 @@ def clock(event):
     return f"{event['minute']:02d}:{event['second']:02d}"
 
 
+def is_notable_distribution(event):
+    """A keeper distribution worth talking about: played under high pressure,
+    intercepted, started an attack that ended in a shot, or a very good or very
+    poor decision. Routine distributions stay quiet."""
+    if event["type"] != "keeper_distribution":
+        return False
+    rating = distribution_insight(event)
+    return (event["pressure"] == "high" or event["outcome"] == "intercepted"
+            or event["led_to_shot"] or rating["decision_score"] < 50
+            or (rating["decision_score"] >= 95 and rating["difficulty"] >= 55))
+
+
 def is_key_moment(event):
-    """Shots on target that were saved, goals, keeper claims and sweeps.
-    (A goal arrives as a 'shot' event followed by a 'goal' event; we use the
-    'goal' event so the moment carries the new score.)"""
+    """Shots on target that were saved, goals, keeper claims and sweeps, and
+    notable keeper distributions. (A goal arrives as a 'shot' event followed by
+    a 'goal' event; we use the 'goal' event so the moment carries the new score.)"""
     if event["type"] == "shot":
         return event["outcome"] == "saved"
+    if event["type"] == "keeper_distribution":
+        return is_notable_distribution(event)
     return event["type"] in ("goal", "keeper_claim", "keeper_sweep")
 
 
@@ -69,6 +83,17 @@ def describe(event, insight):
         return f"{t}  CLAIM  {event['player']} collects the cross"
     if kind == "keeper_sweep":
         return f"{t}  SWEEP  {event['player']} comes out to clear"
+    if is_notable_distribution(event):
+        method = event["method"].replace("_", " ")
+        line = (f"{t}  DIST   {event['player']} {method} ({event['technique'].replace('_', ' ')}) "
+                f"to {event['target_role']} {event['target_player']}, {event['distance_m']} m, "
+                f"{event['pressure']} pressure -> {event['outcome'].replace('_', ' ')}")
+        if event["led_to_shot"]:
+            line += ", led to a shot"
+        if insight:
+            line += (f"\n         quality {insight['quality']}/100, decision {insight['decision_score']}, "
+                     f"{insight['verdict']} ({insight['key_factor']})")
+        return line
     return None
 
 
@@ -84,6 +109,11 @@ def print_report(state):
         print(f"{team}: faced {r['on_target']} on target, saved {r['saves']}, "
               f"conceded {r['goals_conceded']}, expected saves {r['expected_saves']}, "
               f"goals prevented {r['goals_prevented']:+}")
+        print(f"  distribution: {r['distributions']} played, {r['distribution_completion_pct']}% completed, "
+              f"{r['long_ball_pct']}% long, {r['long_completed']}/{r['long_attempts']} long balls won, "
+              f"{r['pressure_completions']} completed under high pressure, "
+              f"{r['progressive_m']} m gained, avg decision {r['avg_decision_score']}, "
+              f"{r['attacks_started']} attacks ending in a shot")
 
 
 def main():

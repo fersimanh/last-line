@@ -151,6 +151,125 @@ def danger_level(points):
     return "low"
 
 
+# ---------- Distribution: how the keeper gives the ball away ----------
+# These rules are shared with generate_match.py, so the decision score judges
+# the keeper with the same numbers the simulation used.
+
+HANDS_TRIGGERS = ("after_save", "after_claim")  # the keeper holds the ball in their hands
+PRESSURE_LEVEL = {"low": 0.0, "medium": 0.5, "high": 1.0}
+LONG_PASS_M = 32  # feet passes longer than this are kicked
+SUCCESS = ("completed", "contested_won")  # outcomes where the keeper's team keeps the ball
+
+# Chance a pass reaches a teammate before distance, pressure and openness
+BASE_SUCCESS = {"roll": 0.95, "throw": 0.92, "ground_pass": 0.90, "kick": 0.56}
+
+
+def pick_method(trigger, distance_m):
+    """How a keeper plays a pass of this length. Throws and rolls only when the
+    keeper holds the ball (after a save or claim); a back pass must be played
+    with the feet."""
+    if trigger in HANDS_TRIGGERS:
+        if distance_m <= 15:
+            return "roll"
+        if distance_m <= 30:
+            return "throw"
+        return "kick"
+    return "ground_pass" if distance_m <= LONG_PASS_M else "kick"
+
+
+def pass_success_prob(method, distance_m, open_m, pressure):
+    """Chance (0-1) that a pass reaches its target."""
+    p = BASE_SUCCESS[method]
+    if method == "kick":
+        p -= 0.003 * max(0, distance_m - 40)   # longer kicks are harder to land
+        p -= 0.04 * PRESSURE_LEVEL[pressure]   # a rushed kick is a little less accurate
+        p += 0.02 * (open_m - 4)               # a free receiver wins more headers
+    else:
+        p -= 0.004 * max(0, distance_m - 12)   # longer short passes give time to intercept
+        p -= 0.20 * PRESSURE_LEVEL[pressure]   # pressing forwards cut out short passes
+        p += 0.015 * (open_m - 5)              # a free receiver is easy to find
+    return clamp(p, 0.15, 0.98)
+
+
+def option_value(trigger, option, pressure, keeper_x):
+    """How good one passing option is: the chance it works times how far it
+    moves the team forward, minus the cost of losing the ball. Losing it close
+    to your own goal (target under 40 m) costs much more than losing it far away."""
+    method = pick_method(trigger, option["distance_m"])
+    p = pass_success_prob(method, option["distance_m"], option["open_m"], pressure)
+    gain = option["x"] - keeper_x
+    loss_cost = 1.0 if option["x"] < 40 else 0.4
+    return p * (1 + gain / 80) - (1 - p) * loss_cost
+
+
+# Outcome points for the quality score
+OUTCOME_POINTS = {"completed": 100, "contested_won": 80, "contested_lost": 25, "intercepted": 0}
+METHOD_DIFFICULTY = {"roll": 0.0, "throw": 0.2, "ground_pass": 0.3, "kick": 0.8}
+
+REASON_TEXT = {
+    "free_man": "found the free teammate",
+    "relieve_press": "played out calmly under pressure",
+    "break_press_long": "went long over the press",
+    "switch_play": "switched the play to the other side",
+    "safe_retention": "kept the ball safely",
+    "quick_counter": "released it fast to start a counter",
+}
+
+
+def distribution_insight(event):
+    """Rate one keeper_distribution event. Every score runs 0-100."""
+    pressure = event["pressure"]
+    success = event["outcome"] in SUCCESS
+    target = next(o for o in event["options"] if o["player"] == event["target_player"])
+
+    # Difficulty: long passes, pressure, kicks and tightly marked receivers are harder
+    difficulty = 100 * (0.35 * clamp(event["distance_m"] / 70)
+                        + 0.30 * PRESSURE_LEVEL[pressure]
+                        + 0.20 * METHOD_DIFFICULTY[event["method"]]
+                        + 0.15 * (1 - clamp(target["open_m"] / 12)))
+
+    # Decision: the chosen option's value against the best option on offer.
+    # Each 0.005 of value given up costs 1 point; choosing the best scores 100.
+    values = {o["player"]: option_value(event["trigger"], o, pressure, event["x"])
+              for o in event["options"]}
+    best_player = max(values, key=values.get)
+    decision = 100 * clamp(1 - (values[best_player] - values[event["target_player"]]) / 0.5)
+
+    # Quality: decision 40%, outcome 30%, difficulty 30%. Difficulty only counts
+    # when the pass worked: a hard pass that comes off deserves credit, a hard
+    # pass that fails does not.
+    quality = (0.40 * decision + 0.30 * OUTCOME_POINTS[event["outcome"]]
+               + 0.30 * (difficulty if success else 0))
+
+    if not success:
+        dist_verdict = "turnover"
+    elif quality >= 80:
+        dist_verdict = "excellent"
+    elif decision < 60 or difficulty >= 60:
+        dist_verdict = "risky"
+    else:
+        dist_verdict = "safe"
+
+    best = next(o for o in event["options"] if o["player"] == best_player)
+    if not success and pressure == "high":
+        factor = "the press closed in before the pass got away"
+    elif decision < 60:
+        factor = f"a better option was on: the {best['role']} {best['player']}"
+    elif not success:
+        factor = "the receiver was too closely marked"
+    else:
+        factor = REASON_TEXT[event["reason"]]
+
+    return {
+        "difficulty": round(difficulty),
+        "decision_score": round(decision),
+        "quality": round(quality),
+        "verdict": dist_verdict,
+        "key_factor": factor,
+        "best_option": best_player,
+    }
+
+
 class MatchState:
     """Tracks each keeper's workload and the danger facing each goal."""
 
@@ -158,7 +277,11 @@ class MatchState:
         self.teams = [home, away]
         self.keeper_stats = {
             t: {"shots_faced": 0, "on_target": 0, "saves": 0, "goals_conceded": 0,
-                "claims": 0, "sweeps": 0, "expected_saves": 0.0}
+                "claims": 0, "sweeps": 0, "expected_saves": 0.0,
+                # distribution
+                "distributions": 0, "completed": 0, "progressive_m": 0.0,
+                "pressure_completions": 0, "led_to_shot": 0,
+                "long_attempts": 0, "long_completed": 0, "decision_total": 0}
             for t in self.teams
         }
         self.recent = {t: [] for t in self.teams}  # (time_sec, points) against each team
@@ -198,6 +321,7 @@ class MatchState:
                 else:
                     stats["saves"] += 1
                 insight = {
+                    "type": "shot",
                     "defender": defender,
                     "keeper": event["keeper"],
                     "saveability": score,
@@ -209,6 +333,21 @@ class MatchState:
             self.keeper_stats[event["team"]]["claims"] += 1
         elif etype == "keeper_sweep":
             self.keeper_stats[event["team"]]["sweeps"] += 1
+        elif etype == "keeper_distribution":
+            stats = self.keeper_stats[event["team"]]
+            rating = distribution_insight(event)
+            completed = event["outcome"] in SUCCESS
+            long_ball = event["method"] == "kick"
+            stats["distributions"] += 1
+            stats["decision_total"] += rating["decision_score"]
+            stats["long_attempts"] += long_ball
+            if completed:
+                stats["completed"] += 1
+                stats["long_completed"] += long_ball
+                stats["progressive_m"] += max(0.0, event["x_gain_m"])  # forward meters only
+                stats["pressure_completions"] += event["pressure"] == "high"
+            stats["led_to_shot"] += event["led_to_shot"]
+            insight = dict(rating, type="distribution", keeper=event["player"], team=event["team"])
 
         return insight
 
@@ -225,6 +364,14 @@ class MatchState:
         saves to the saves the saveability scores say were expected."""
         report = {}
         for team, s in self.keeper_stats.items():
-            report[team] = dict(s, goals_prevented=round(s["saves"] - s["expected_saves"], 2),
-                                expected_saves=round(s["expected_saves"], 2))
+            n = s["distributions"]
+            row = dict(s, goals_prevented=round(s["saves"] - s["expected_saves"], 2),
+                       expected_saves=round(s["expected_saves"], 2),
+                       progressive_m=round(s["progressive_m"], 1),
+                       distribution_completion_pct=round(100 * s["completed"] / n, 1) if n else 0.0,
+                       long_ball_pct=round(100 * s["long_attempts"] / n, 1) if n else 0.0,
+                       avg_decision_score=round(s["decision_total"] / n, 1) if n else 0.0,
+                       attacks_started=s["led_to_shot"])
+            del row["decision_total"]  # only needed for the average
+            report[team] = row
         return report

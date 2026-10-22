@@ -13,6 +13,7 @@ match second. The app calls it on every screen update.
 """
 import argparse
 import asyncio
+import hashlib
 import json
 import os
 from datetime import datetime, timezone
@@ -30,6 +31,9 @@ LANGUAGES = ["en", "es"]
 
 VERDICT_ES = {"should save": "debió pararlo", "tough save": "parada difícil",
               "near-unstoppable": "casi imparable"}
+DIST_VERDICT_ES = {"excellent": "excelente", "safe": "segura", "risky": "arriesgada",
+                   "turnover": "pérdida"}
+KEEPER_OWN_EVENTS = ("keeper_claim", "keeper_sweep", "keeper_distribution")
 
 
 # ---------- Replaying the match ----------
@@ -39,9 +43,9 @@ def match_second(event):
 
 
 def keeper_team(event, state):
-    """Which keeper a moment belongs to. Claims and sweeps are made by the
-    keeper's own team; shots and goals come from the other team."""
-    if event["type"] in ("keeper_claim", "keeper_sweep"):
+    """Which keeper a moment belongs to. Claims, sweeps and distributions are
+    made by the keeper's own team; shots and goals come from the other team."""
+    if event["type"] in KEEPER_OWN_EVENTS:
         return event["team"]
     return state.other(event["team"])
 
@@ -56,28 +60,36 @@ def replay_to(match, events, upto_sec):
     """
     state = MatchState(match["home"], match["away"])
     visible = [e for e in events if match_second(e) <= upto_sec]
-    shots, moments, shot_insights, score = [], [], {}, "0-0"
+    shots, moments, insights, score = [], [], {}, "0-0"
 
     for event, insight, _ in stream(visible, state, speed=0):
+        insights[event["id"]] = insight  # empty dict for quiet events
         if event["type"] == "shot":
             shots.append({"event": event, "insight": insight,
                           "keeper_team": keeper_team(event, state)})
-            shot_insights[event["id"]] = insight
         if event["type"] == "goal":
             score = event["score"]
         if is_key_moment(event):
-            moments.append(make_moment(event, events, state, shot_insights, score))
+            moments.append(make_moment(event, events, state, insights, score))
     return state, shots, moments, score
 
 
-def make_moment(event, events, state, shot_insights, score):
+def make_moment(event, events, state, insights, score):
     """A key moment as a plain dict. A goal takes its numbers and its clock
-    from the shot that caused it, so 67:04 'goal' shows as 67:03."""
-    insight = shot_insights.get(event["id"], {})
+    from the shot that caused it, so a 67:04 'goal' shows as 67:03."""
+    insight = insights.get(event["id"], {})
     timed = event
     if event["type"] == "goal":
-        insight = shot_insights.get(event["related_to"], {})
+        insight = insights.get(event["related_to"], {})
         timed = next(e for e in events if e["id"] == event["related_to"])
+    distribution = None
+    if event["type"] == "keeper_distribution":
+        distribution = {k: event[k] for k in (
+            "trigger", "method", "technique", "target_player", "target_role", "distance_m",
+            "direction", "pressure", "reason", "outcome", "x_gain_m", "led_to_shot")}
+        distribution.update({k: insight[k] for k in (
+            "difficulty", "decision_score", "quality", "verdict", "best_option")})
+        insight = dict(insight, verdict=None)  # "verdict" below is the shot verdict only
     return {
         "event_id": event["id"],
         "clock": clock(timed),
@@ -90,6 +102,7 @@ def make_moment(event, events, state, shot_insights, score):
         "saveability": insight.get("saveability"),
         "verdict": insight.get("verdict"),
         "key_factor": insight.get("key_factor"),
+        "distribution": distribution,          # None unless type is keeper_distribution
         "score": score,
     }
 
@@ -100,17 +113,29 @@ _cache = {}
 _cache_mtime = None
 
 
+def match_fingerprint(path="match_events.json"):
+    """A short code that changes whenever the match file changes. Cached texts
+    are keyed by event id, so texts made for an older match must not be used."""
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()[:16]
+
+
 def load_cache():
-    """Read the cache file, but only again if it changed on disk."""
+    """Read the cache file, but only again if it changed on disk. A cache made
+    for a different match is ignored (and replaced on the next save)."""
     global _cache, _cache_mtime
     try:
         mtime = os.path.getmtime(CACHE_PATH)
     except OSError:
-        return _cache  # no file yet
-    if mtime != _cache_mtime:
-        with open(CACHE_PATH) as f:
-            _cache = json.load(f)
-        _cache_mtime = mtime
+        mtime = None  # no file yet
+    if mtime != _cache_mtime or not _cache:
+        cache = {}
+        if mtime is not None:
+            with open(CACHE_PATH) as f:
+                cache = json.load(f)
+        if cache.get("_match") != match_fingerprint():
+            cache = {"_match": match_fingerprint()}  # wrong or no match: start empty
+        _cache, _cache_mtime = cache, mtime
     return _cache
 
 
@@ -149,6 +174,14 @@ def fallback_text(moment, language):
         if spanish:
             return f"Salvabilidad {moment['saveability']}/100: {VERDICT_ES[moment['verdict']]}."
         return (f"Saveability {moment['saveability']}/100: {moment['verdict']} "
+                f"({moment['key_factor']}).")
+    if moment["distribution"]:
+        d = moment["distribution"]
+        if spanish:
+            return (f"{moment['player']} a {d['target_player']} ({d['target_role']}): "
+                    f"calidad {d['quality']}/100, {DIST_VERDICT_ES[d['verdict']]}.")
+        return (f"{moment['player']} {d['method'].replace('_', ' ')} to {d['target_role']} "
+                f"{d['target_player']}: quality {d['quality']}/100, {d['verdict']} "
                 f"({moment['key_factor']}).")
     if moment["type"] == "keeper_claim":
         return f"{moment['player']} {'atrapa el centro' if spanish else 'claims the cross'}."
