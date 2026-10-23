@@ -41,7 +41,7 @@ The ball carrier acts every 1-3 s (faster under pressure). Options: pass to each
 - **Contract:** `contract.json` freezes the field list of every original event type; `test_sim.py` checks the engine never drops one.
 
 ## Calibration
-Every target lives in `calibration.py` with a source label: **verified** (Premier League 2025/26, first 11 matchweeks; within 15%) or **approximate** (general knowledge, unverified; ranges, within 25%). `report_calibration.py` runs 30 seeds by default (`--seeds N`) and prints PASS or FAIL per metric. Metrics that need a later stage print `n/a`. Approximate ranges are UNVERIFIED; the report also says whether a value is inside the range or only within 25% of it.
+Every target lives in `calibration.py` with a source label: **verified** (Premier League 2025/26, first 11 matchweeks; within 15%) or **approximate** (general knowledge, unverified; ranges, within 25%). `report_calibration.py` runs 60 seeds by default (header goals are rare, so fewer seeds are too noisy to judge) (`--seeds N`) and prints PASS or FAIL per metric. Metrics that need a later stage print `n/a`. Approximate ranges are UNVERIFIED; the report also says whether a value is inside the range or only within 25% of it.
 
 ## Left out on purpose
 Fatigue, momentum, VAR, injuries, weather, referees' judgment beyond a foul rate.

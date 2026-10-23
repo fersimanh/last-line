@@ -1,6 +1,6 @@
 """Run the engine over several seeds and print every metric against its target.
 
-    python3 report_calibration.py              # 30 seeds, the engine's current stage
+    python3 report_calibration.py              # 60 seeds, the engine's current stage
     python3 report_calibration.py --seeds 10   # a quicker look while tuning
 
 PASS / FAIL per target (see calibration.py for the tolerances); targets a later
@@ -13,7 +13,7 @@ import time
 import calibration
 import sim_engine
 
-STAGE = 2   # the stage the engine has reached; raise it as stages are finished
+STAGE = 3   # the stage the engine has reached; raise it as stages are finished
 
 
 def run(seeds):
@@ -31,7 +31,7 @@ def run(seeds):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seeds", type=int, default=30)
+    parser.add_argument("--seeds", type=int, default=60)
     args = parser.parse_args()
     means, per_match, slowest = run(range(1, args.seeds + 1))
     rows = calibration.evaluate(means, STAGE)

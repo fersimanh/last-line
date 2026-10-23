@@ -2,26 +2,28 @@
 
 Goalkeeper-lens match intelligence for the Microsoft x Premier League "Inside the Game" hackathon. A replayed synthetic match flows through three Microsoft Foundry agents that score each threat on goal, explain it from the keeper's point of view, and adapt the story to each viewer.
 
-## Match engine (in progress, branch `realism`)
+## Match engine
 
-A position-based engine is replacing the event-by-event generator: 22 tracked players and a ball move on the pitch, and the events are read off what happens. It is **football-realistic, calibrated to published league averages where available; not real match data.** Design: `SIM_DESIGN.md`. Targets and their sources: `calibration.py`; run `python3 report_calibration.py`.
+The match is produced by a position-based engine: 22 tracked players and a ball move on the pitch, and the events are read off what happens. It is **football-realistic, calibrated to published league averages where available; not real match data.** Design: `SIM_DESIGN.md`. Targets and their sources: `calibration.py`; run `python3 report_calibration.py` (60 seeds by default, `--seeds N`; about 2.5 minutes).
 
-- **Verified** targets are published Premier League 2025/26 figures (first 11 matchweeks): completed passes per match, long-pass share, share of passes ending in the final third, goal kicks ending in the opposition half, header share of goals, second-half added time. The simulated 30-match average must be within 15 percent.
-- **Approximate** targets are general football knowledge, **UNVERIFIED**, treated as ranges and held to within 25 percent: pass completion, goals, shots, shots on target, corners, fouls, cards, offsides, crosses, throw-ins and possession.
+- **Verified** targets are published Premier League 2025/26 figures (first 11 matchweeks): completed passes per match, long-pass share, share of passes ending in the final third, goal kicks ending in the opposition half, header share of goals, second-half added time. The simulated average must be within 15 percent.
+- **Approximate** targets are general football knowledge, **UNVERIFIED**, treated as ranges and held to within 25 percent: pass completion, goals, shots, shots on target, corners, fouls, cards, offsides, crosses, throw-ins and possession. The report also says whether a value is inside the range or only within 25 percent of it.
 - Assumptions of mine: "about 713 completed passes" is read as both teams combined, and a "long" pass is 32 m or more.
-
-Status: Stage 1 (formations, tracking, the possession loop with pass success and failure) is done and writes `sim_events.json` and `sim_tracking.npz` (2 Hz tracking of all 22 players and the ball, loaded with `tracking.py`). The app still runs on the old generator until Stage 3.
+- Over 60 seeds all 19 targets pass: for example 732 completed passes, 12.2% long, 35% ending in the final third, 51% of goal kicks reaching the opposition half, 20.9% of goals headers, 401 s of second-half added time, 2.9 goals and 24.9 shots per match. Corners (11.1 against 10-11) are just outside their stated range, inside the 25% band. A match takes 2-5 s to simulate.
+- Known gaps: about 30-40 goal kicks per match is higher than real football (roughly 16), which gives each keeper more distributions than a real one; no fatigue, VAR, weather or referee judgment beyond foul and card rates.
+- `tracking.npz` holds all 22 players and the ball every 0.5 s in absolute pitch coordinates (int16 centimeters), read with `tracking.py`; it also records which player stands in each slot, so substitutions are visible. `contract.json` freezes the fields the original event types had, and `test_sim.py` checks the engine never drops one.
+- The earlier rule-based generator is kept as `legacy_generator.py` (used by one geometry test).
 
 ## Synthetic data
 
-All data is invented: fictional clubs (Harbor United, Northgate FC), fictional players, no real match data. `generate_match.py` writes `match_events.json` (seeded, so it is reproducible).
+All data is invented: fictional clubs (Harbor United, Northgate FC), fictional players, no real match data. `generate_match.py` runs the engine and writes `match_events.json` and `tracking.npz` (seeded, so it is reproducible).
 
 Pitch: 105 x 68 m, goal centered at y = 34 (goal width 7.32 m, height 2.44 m). There are two coordinate frames:
 
 - **Attacking frame** (every event except `keeper_distribution`): the team in possession attacks toward x = 105. Defending events in that possession (saves, claims, sweeps, tackles) use the same frame, so a keeper making a save stands near x = 101-104.
 - **Own frame** (`keeper_distribution` only, including `target_x`, `target_y` and every option): the distributing keeper's team attacks toward x = 105, so its keeper stands near x = 2-6. To move a point between frames: x -> 105 - x, y -> 68 - y.
 
-The match uses seed 58: it is inside the 20-35 shots / 2-6 goals range, both keepers concede, and every shot situation appears. It has 1,410 events, 28 shots (12 on target), 3 goals (Harbor United 2-1 Northgate FC) and 50 keeper distributions (22 and 28). Across seeds 1-40: about 27 shots and 3.9 goals per match, and a keeper averages about 26 distributions (a few matches fall outside 18-35).
+The match uses seed 99, chosen from seeds 1-120 because it has 2 goals (1-1), one busy keeper (Elias Novak, 6 saves) and one quiet one (Mateo Rios, 1 save), a goalkeeper back-pass followed by a switch of play (56:26), a corner the keeper claims (55:01) and direct free kicks with a wall. It has 1,681 events, 32 shots (9 on target), 6 corners, 55 throw-ins, 20 fouls, 6 cards, 9 substitutions and 50 keeper distributions (23 and 27). The match clock keeps running through half time and added time: the first half ends at 47:37 and the match at about 100 minutes. (The numbers further down in the distribution and saveability sections were measured on the earlier generator, seeds 1-40, and are kept as design notes.)
 
 ### Fields on every event
 
@@ -129,7 +131,7 @@ The keeper's field of view is the INPUT, not an overlay: the agents only ever le
 
 Each keeper perceives about 790-830 of the 1,410 events. Most misses are beyond 55 m (the far half); about 50 per keeper are close but outside the cone, and 10-12 are hidden behind a body. Every key moment reaches its keeper. Defenders in a shot's lane usually narrow the angle rather than fully hide the shooter: only a few screened shots are actually blocked from the keeper's eye.
 
-`test_architecture.py` enforces the rule: only the data layer (`generate_match.py`, `replay.py`, `scoring.py`, `vision.py`, `perception.py`) may read the raw match, and `agents.py` and `pipeline.py` may never touch the missed log. Every other module, `app.py` included, reads the match only through `PerceptionFilter` (the app also uses its `missed` list and `reveal()` for the Reveal view, which is display only).
+`test_architecture.py` enforces the rule: only the data layer (`generate_match.py`, `legacy_generator.py`, `replay.py`, `scoring.py`, `vision.py`, `perception.py`) may read the raw match, and `agents.py` and `pipeline.py` may never touch the missed log. Every other module, `app.py` included, reads the match only through `PerceptionFilter` (the app also uses its `missed` list and `reveal()` for the Reveal view, which is display only).
 
 ## Architecture
 
@@ -162,7 +164,7 @@ Each output line is JSON with `clock`, `match_second`, `type`, `player`, `keeper
 
 - **Keeper's eyes** (the default): a 2D pitch from the followed goal line to just past halfway. A translucent lime cone is the keeper's **modeled sightline** (the data has no real eyeline): 120 degrees by default, 55 m long, always turned toward the ball. Everything outside the cone is dimmed. The last 8 perceived events appear as markers with a fading trail: circle = seen, square = your own action, diamond = felt but not seen, star = goal. A top panel shows the workload meter, the danger level (a shape and a word, not only a color) and **how much the keeper missed** (in the last 30 s and so far). Cards for key moments are written to the keeper in the second person ("You're 4 m off your line..."), each with a mono label row, a headline carrying the verdict, a sight pill (**Seen clearly**, **Late sight** or **Your action**; text, not color alone) and a **Show the numbers** expander.
 - **Reveal**: what the keeper did not perceive. The same pitch also draws the events the keeper missed, hollow, with a list of why (too far away, outside the cone, blocked by a player, passing options out of sight), then the official numbers: shot map colored by saveability, goal mouth, workload and danger from the full match.
-- **Top bar**: the score and the clock in large numerals, and a segmented 90-minute timeline with a tick at half time and a diamond for every goal.
+- **Top bar**: the score and the clock in large numerals, and a segmented timeline of the whole match, added time included, with a tick at half time and a diamond for every goal.
 - **Sidebar**: view, mode (Casual fan or Analyst), favorite club (decides which keeper you follow; with **Both** a small selector switches keepers), language (English or Spanish), replay speed (default 120x, a full match in 45 s), **field of view** (90-180 degrees), Play, Pause and Restart.
 - **Full-time report** tab: the keeper's numbers as the keeper knows them (shot stopping and distribution) plus the Narrator's report.
 
@@ -197,7 +199,9 @@ Accessibility: all reading text is at least 4.5:1 (body text 8.4:1 on cards, hea
 ```
 pip install -r requirements.txt
 az login                            # only needed for the agents
-python3 generate_match.py
+python3 generate_match.py            # match_events.json and tracking.npz (seed 99)
+python3 report_calibration.py       # the engine against its targets
+python3 test_sim.py                 # engine, tracking and contract tests
 streamlit run app.py                # the app
 python3 test_app.py                 # app tests (no Azure needed)
 python3 test_vision.py              # sightline geometry and frames
@@ -210,7 +214,7 @@ python3 test_theme.py               # design tokens, fonts, contrast, Streamlit 
 python3 build_cache.py --dry-run    # count the agent requests still needed (calls nothing)
 python3 build_cache.py              # fill the text cache (resumable)
 python3 hello_agent.py              # checks Foundry auth
-python3 pipeline.py --only 37:43    # one moment as JSON (a two on one: the keeper closed down, the ball was squared)
+python3 pipeline.py --only 56:26    # one moment as JSON (the keeper's back-pass and switch)
 python3 pipeline.py > moments.jsonl # whole match as JSON
 ```
 
@@ -218,4 +222,4 @@ Settings go in a `.env` file (never committed): `PROJECT_ENDPOINT`, `MODEL_DEPLO
 
 ## Status
 
-Built for the hackathon, October 2026. Done: synthetic data, live replay, saveability scoring, Foundry agents, Streamlit interface. Not deployed yet.
+Built for the hackathon, October 2026. Done: position-based match engine with tracking, live replay, saveability scoring, Foundry agents, Streamlit interface. Not deployed yet.

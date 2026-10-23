@@ -19,7 +19,7 @@ import unittest
 ROOT = pathlib.Path(__file__).parent
 
 # The data layer: these may read the raw match
-DATA_LAYER = {"generate_match.py", "replay.py", "scoring.py", "vision.py", "perception.py"}
+DATA_LAYER = {"generate_match.py", "legacy_generator.py", "replay.py", "scoring.py", "vision.py", "perception.py"}
 RAW_NAMES = {"load_match", "stream"}
 RAW_FILE = "match_events.json"
 # Modules the agents' input passes through: they must never see the missed log

@@ -56,13 +56,14 @@ W_SAFE, W_OPEN, W_ZONE, W_DIST = 2.0, 0.5, 0.75, 0.8
 # How much a carrier likes each kind of pass beyond its score: (base, per unit of directness)
 LONG_BIAS, LONG_BIAS_PRESS = (0.2, 1.6), 0.6
 THROUGH_BIAS = (-0.3, 0.6)
-CROSS_BIAS, CROSS_BIAS_WIDE = (-0.8, 2.7), 0.0
+CROSS_BIAS, CROSS_BIAS_WIDE = (-1.0, 2.7), 0.0
 BACK_BIAS, BACK_BIAS_PRESS = -2.2, 1.4
-KEEPER_BACK_BIAS = -3.0            # passing back to the keeper, before pressure
+KEEPER_BACK_BIAS = -1.2            # passing back to the keeper, before pressure
 FAIL_SCALE = 0.8                   # scales every technique error (1.0 = as written in p_success)
-LONG_FAIL, CROSS_FAIL = 0.30, 0.90  # base failure chances of a long ball and a cross
+LONG_FAIL, CROSS_FAIL = 0.30, 0.88  # base failure chances of a long ball and a cross
 RISK_BASE, RISK_RANGE = 0.09, 0.22  # a reachable defender cuts a pass out: 9% up to 31% by time to spare
-CROSS_NOT_OUT = 0.6                # of failed crosses, how many stay in play (cleared or claimed)
+GOAL_LINE_KEEP = 0.5               # of passes that would go over the goal line, how many a defender reaches
+CROSS_NOT_OUT = 0.8                # of failed crosses, how many stay in play (cleared or claimed)
 LOOSE_BALL_SHARE = 0.35
 MARK_PULL = 0.55                   # how far a defender leaves his spot to stand goal-side of a nearby attacker
 REACH_MARGIN = 0.35                # seconds a defender needs to react and get going before he can reach a ball
@@ -103,6 +104,7 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
         self.half = 1
         self.half_start, self.half_end = 0.0, None
         self.finished = False
+        self.half2_start = 0.0
         self.pos = np.zeros((22, 2))
         self.vel = np.zeros((22, 2))
         self.active = np.ones(22, dtype=bool)   # False once a player is sent off
@@ -481,6 +483,9 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
                     fkind = "contested"
                 else:
                     fkind, end = "out", self.exit_point(start, aim)
+                    over_goal_line = min(end[0], PITCH_L - end[0]) < 0.5
+                    if over_goal_line and ptype != "cross" and found is not None and self.rng.random() < GOAL_LINE_KEEP:
+                        fkind, end, interceptor, loose_wait = "contested", aim, found[0], found[1]   # a defender gets there first
         duration = max(0.5, float(np.linalg.norm(end - start)) / PASS_SPEED[ptype], loose_wait)   # a loose ball waits for him
         self.flight = {"start": start, "end": end, "t0": t, "t1": t + duration, "kind": fkind, "passer": c,
                        "receiver": j, "interceptor": interceptor, "team": team, "waited": 0.0, "ptype": ptype,
@@ -714,8 +719,9 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
                  "tactics": {t["name"]: t["tactics"] for t in self.teams},
                  "possession_pct": {home: round(100 * self.poss_time[0] / total, 1),
                                     away: round(100 * self.poss_time[1] / total, 1)},
+                 "half_time_s": round(self.half2_start, 1),
                  "added_time_s": {"first_half": round(self.added.get(1, 0.0)), "second_half": round(self.added.get(2, 0.0))},
-                 "live_minutes": round(live / 60, 1), "tracking": "sim_tracking.npz",
+                 "live_minutes": round(live / 60, 1), "tracking": "tracking.npz",
                  "coordinate_note": ("Most events are in the attacking team's frame: attacking toward x=105, "
                                      "goal centered at y=34. Defending events (tackle, possession_change, saves, "
                                      "claims) are in the attacker's frame. keeper_distribution events are in the "

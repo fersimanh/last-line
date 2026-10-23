@@ -224,6 +224,9 @@ def basics(fingerprint):
 
 match, END_SEC = basics(match_fingerprint())
 HOME, AWAY = match["home"], match["away"]
+END_MIN = max(1, -(-int(END_SEC) // 60))        # full match length in minutes, added time included
+SPAN_MIN = -(-END_MIN // 5) * 5                 # the bar is whole five-minute segments
+HALF_TIME_SEC = match.get("half_time_s", END_SEC / 2)
 
 # The match position lives in session_state, so changing any sidebar option
 # re-renders the page without restarting the match.
@@ -338,26 +341,28 @@ def topbar_html(score, now):
 
 
 def timeline_html(now, ticks=()):
-    """A segmented 90-minute bar: 18 five-minute segments, a tick at half time,
+    """A segmented match bar (five-minute segments, added time included), a tick at half time,
     a diamond for every goal so far, a small tick for every key moment so far
     (`ticks` is a list of (second, label)), and a label like 67' / 90'."""
-    minute = min(90.0, now / 60)
+    minute = min(float(END_MIN), now / 60)
+    count = -(-END_MIN // 5)
     segments = "".join(
         f'<div class="ll-seg"><span style="width:{max(0.0, min(1.0, (minute - i * 5) / 5)) * 100:.0f}%"></span></div>'
-        for i in range(18))
+        for i in range(count))
     goals = [(s, team) for s, team in keeper_eyes(HOME).goal_seconds() if s <= now]
     diamonds = "".join(
-        f'<span class="ll-goal" style="left:{min(s / 60, 90) / 90 * 100:.2f}%" '
+        f'<span class="ll-goal" style="left:{min(s / 60, SPAN_MIN) / SPAN_MIN * 100:.2f}%" '
         f'title="{esc(t["goal"], quote=True)} {int(s // 60)}&#39; {esc(team, quote=True)}"></span>'
         for s, team in goals)
-    marks = "".join(f'<span class="ll-tick" style="left:{min(sec / 60, 90) / 90 * 100:.2f}%" '
+    marks = "".join(f'<span class="ll-tick" style="left:{min(sec / 60, SPAN_MIN) / SPAN_MIN * 100:.2f}%" '
                     f'title="{esc(label, quote=True)}"></span>' for sec, label in ticks if sec <= now)
     goal_text = ", ".join(f"{int(s // 60)}'" for s, _ in goals) or "-"
-    aria = f"{int(minute)} of 90 minutes. {t['goal']}: {goal_text}"
+    aria = f"{int(minute)} of {END_MIN} minutes. {t['goal']}: {goal_text}"
     return (f'<div class="ll-timeline" role="img" aria-label="{esc(aria, quote=True)}">'
-            f'<div class="ll-segs">{segments}</div><span class="ll-ht"></span>{marks}{diamonds}'
-            f'<div class="ll-tl-label"><span>{int(minute)}&#39; / 90&#39;</span><span>HT</span>'
-            f'<span>90&#39;</span></div></div>')
+            f'<div class="ll-segs" style="grid-template-columns:repeat({count},1fr)">{segments}</div>'
+            f'<span class="ll-ht" style="left:{HALF_TIME_SEC / 60 / SPAN_MIN * 100:.2f}%"></span>{marks}{diamonds}'
+            f'<div class="ll-tl-label"><span>{int(minute)}&#39; / {END_MIN}&#39;</span><span>HT {int(HALF_TIME_SEC // 60)}&#39;</span>'
+            f'<span>{END_MIN}&#39;</span></div></div>')
 
 
 # ---------- Charts ----------
@@ -769,9 +774,9 @@ def events_list(f, now, reveal):
 def controls_strip(now, finished):
     """The minute scrubber, Previous / Next key moment, and Back to live."""
     ss = st.session_state
-    ss.scrub = min(90, int(now // 60))          # the slider follows the clock
+    ss.scrub = min(END_MIN, int(now // 60))          # the slider follows the clock
     slider_col, prev_col, next_col, live_col = st.columns([5, 1.6, 1.6, 1.8], vertical_alignment="bottom")
-    slider_col.slider(t["scrub"], 0, 90, key="scrub", on_change=on_scrub)
+    slider_col.slider(t["scrub"], 0, END_MIN, key="scrub", on_change=on_scrub)
     prev_col.button(t["prev_moment"], key="prev_moment", on_click=jump_moment, args=(-1,),
                     icon=":material/skip_previous:")
     next_col.button(t["next_moment"], key="next_moment", on_click=jump_moment, args=(1,),

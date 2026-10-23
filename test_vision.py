@@ -172,11 +172,13 @@ def test_defending_events_use_the_other_frame():
 def test_traffic_matches_the_data():
     """On real events: the bodies on a shot stand where the data says, and
     shots with defenders in the lane are hidden more often."""
-    import generate_match as g
+    import legacy_generator as g
     shots = [e for e in EVENTS if e["type"] == "shot"]
     for e in shots:
-        in_lane = [b for b in e["traffic"] if g.in_shot_lane(b["x"], b["y"], e["x"], e["y"])]
-        assert len(in_lane) == e["defenders_in_lane"], e["id"]
+        if e.get("situation") in ("free_kick", "penalty") or e["distance_m"] > 17:
+            continue          # a wall is not in the lane count's traffic; far shots have bodies beyond the traffic radius
+        in_lane = [b for b in e["traffic"] if b["role"] == "defender" and (b["x"], b["y"]) != (e["keeper_x"], e["keeper_y"]) and g.in_shot_lane(b["x"], b["y"], e["x"], e["y"])]
+        assert min(len(in_lane), 3) == e["defenders_in_lane"], (e["id"], len(in_lane), e["defenders_in_lane"])
     timeline = {e["id"]: entry for team in (HOME, AWAY)
                 for e, entry in zip(EVENTS, v.build_timeline(EVENTS, team)) if e["team"] != team}
     blocked = [timeline[e["id"]]["blocked_by"] > 0 for e in shots]

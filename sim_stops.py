@@ -474,6 +474,7 @@ class StopsMixin:
         if self.half_end is not None and t >= self.half_end and (self.dead or t >= self.half_end + 20.0):
             if self.half == 1:
                 self.half, self.half_start, self.half_end = 2, t, None
+                self.half2_start = t
                 self.dir = [-1, 1]                                    # sides swap
                 self.kickoff(1, t)
                 self.emit(t, "stoppage", 1, self.carrier, 1, np.array([PITCH_L / 2, PITCH_W / 2]), traffic=False,

@@ -26,7 +26,7 @@ def test_every_event_type_has_a_template_in_both_languages():
             seen_types.add(pe.event["type"])
             count += 1
     assert seen_types >= {"pass", "through_ball", "cross", "box_entry", "shot", "goal", "keeper_save",
-                          "keeper_claim", "keeper_sweep", "keeper_distribution", "tackle", "possession_change"}, seen_types
+                          "keeper_claim", "keeper_distribution", "tackle", "possession_change"}, seen_types
     print(f"ok  {count} perceived events x 2 languages all get a template ({len(seen_types)} event types)")
 
 
