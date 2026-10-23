@@ -23,6 +23,8 @@ The keeper's own picture of the match (`state`) is a scoring.MatchState fed
 with perceived events only.
 """
 import hashlib
+import math
+from bisect import bisect_right
 from dataclasses import dataclass, field
 
 import vision
@@ -32,6 +34,9 @@ from scoring import MatchState
 MATCH_PATH = "match_events.json"
 KEEPER_OWN_TYPES = ("keeper_save", "keeper_claim", "keeper_sweep", "keeper_close_down",
                     "keeper_distribution")
+BALL_MOVE_TYPES = ("pass", "through_ball", "cross", "box_entry")   # the ball travels to the next event
+OWN_THIRD_X = 35.0       # a pass starting below this (in its team's attacking frame) is in its own third
+PRESSURE_RADIUS_M = 6.0  # opponents this close to a pass count as pressure
 
 
 def match_fingerprint(path=MATCH_PATH):
@@ -48,6 +53,17 @@ def match_info(path=MATCH_PATH):
 
 def second_of(event):
     return event["minute"] * 60 + event["second"]
+
+
+def clock_of(event):
+    return f"{event['minute']:02d}:{event['second']:02d}"
+
+
+def direction_of(dx, dy):
+    """forward, lateral or backward, for a ball moving (dx, dy) in its team's attacking frame."""
+    if dx < -2:
+        return "backward"
+    return "lateral" if abs(dy) > dx else "forward"
 
 
 def keeper_team_of(event, match):
@@ -107,6 +123,10 @@ class PerceptionFilter:
         self.fov_deg, self.radius_m = fov_deg, radius_m
         self._events = events
         self._timeline = vision.build_timeline(events, followed_team)
+        self._seconds = [second_of(e) for e in events]   # for finding "the event at second t"
+        self._index = {}                  # event id -> ("perceived", PerceivedEvent) or ("missed", MissedEvent)
+        self._assist_shot = {e["assist_id"]: e["id"] for e in events if e["type"] == "shot"}
+        self._keeper_name = None
         self._next = 0                    # index of the next event to replay
         self.state = MatchState(self.match["home"], self.match["away"])
         self.perceived = []               # PerceivedEvent, in time order
@@ -160,6 +180,7 @@ class PerceptionFilter:
             if sight is None:
                 self.missed.append(MissedEvent(event, self._missed_reason(entry), entry["keeper"],
                                                entry["facing_before"], entry["distance_m"]))
+                self._index[event["id"]] = ("missed", self.missed[-1])
                 unseen += 1
                 continue
             if event["type"] == "keeper_distribution":
@@ -175,6 +196,7 @@ class PerceptionFilter:
                                 insight=self.state.update(event))
             unseen = 0
             self.perceived.append(pe)
+            self._index[event["id"]] = ("perceived", pe)
             yield pe
 
     def advance_all(self, upto_sec=None):
@@ -187,6 +209,193 @@ class PerceptionFilter:
         return sum(1 for m in self.missed if m.reason != "unseen_option"
                    and (since_sec is None or second_of(m.event) >= since_sec)
                    and (until_sec is None or second_of(m.event) <= until_sec))
+
+    # ---------- what the screen needs ----------
+
+    def keeper_name(self):
+        """The followed keeper's name."""
+        if self._keeper_name is None:
+            named = self.match.get("keepers", {}).get(self.followed_team)    # the match file may say so
+            self._keeper_name = named or next(e["player"] for e in self._events
+                                              if e["team"] == self.followed_team and e["type"].startswith("keeper_"))
+        return self._keeper_name
+
+    def state_at(self, upto_sec):
+        """The keeper's surroundings at a match second: where they stand, where
+        the ball is (a keeper always tracks the ball, seen or not), and the
+        direction they face. Positions are in the keeper frame."""
+        i = bisect_right(self._seconds, upto_sec) - 1
+        keeper = self._timeline[i]["keeper"] if i >= 0 else vision.DEFAULT_KEEPER
+        ball = self._timeline[i]["ball"] if i >= 0 else (vision.PITCH_LENGTH / 2, vision.PITCH_WIDTH / 2)
+        return {"keeper": keeper, "ball": ball, "facing": vision.facing_angle(keeper, ball)}
+
+    def recent(self, n, upto_sec, include_missed=False, upto_id=None):
+        """The last `n` events up to a match second (and, if given, up to an
+        event id), oldest first. Each is a dict with `event`, `sight` ("own",
+        "seen", "felt", or "missed" when include_missed is on), `position`
+        (keeper frame), `distance_m` and `reason` (why it was missed, else
+        None). Missed events are only included for the Reveal view."""
+        def in_range(event):
+            return second_of(event) <= upto_sec and (upto_id is None or event["id"] <= upto_id)
+        rows = [{"event": pe.event, "sight": pe.sight, "position": pe.position,
+                 "distance_m": pe.distance_m, "reason": None}
+                for pe in self.perceived if in_range(pe.event)][-n:]
+        if include_missed:
+            rows += [{"event": m.event, "sight": "missed", "position": self._timeline[m.event["id"]]["pos"],
+                      "distance_m": m.distance_m, "reason": m.reason}
+                     for m in self.missed
+                     if m.reason != "unseen_option" and in_range(m.event)][-n:]
+            rows = sorted(rows, key=lambda r: r["event"]["id"])[-n:]
+        return rows
+
+    # ---------- picking one event to inspect ----------
+
+    def lookup(self, event_id, reveal=False):
+        """One event the user may select, or None. An event is selectable when it
+        has happened and the keeper perceived it; with `reveal` on (the Reveal
+        view only), missed events are selectable too. Returns a dict with
+        `event`, `sight`, `reason`, `position`, `distance_m`, `keeper_pos`,
+        `facing`, `unseen_before`, `insight` and `key_moment`."""
+        found = self._index.get(event_id)
+        if found is None:
+            return None  # it has not happened yet
+        kind, item = found
+        if kind == "perceived":
+            return {"event": item.event, "sight": item.sight, "reason": None, "position": item.position,
+                    "distance_m": item.distance_m, "keeper_pos": item.keeper_pos, "facing": item.facing,
+                    "unseen_before": item.unseen_before, "insight": item.insight,
+                    "key_moment": item.key_moment}
+        if not reveal:
+            return None  # missed, and not in Reveal: the keeper never perceived it
+        return {"event": item.event, "sight": "missed", "reason": item.reason,
+                "position": self._timeline[event_id]["pos"], "distance_m": item.distance_m,
+                "keeper_pos": item.keeper_pos, "facing": item.facing, "unseen_before": 0,
+                "insight": {}, "key_moment": False}
+
+    def can_select(self, event_id, upto_sec, reveal=False):
+        """May this event be picked at this moment? It must have happened, and the
+        keeper must have perceived it (Reveal: any event)."""
+        row = self.lookup(event_id, reveal)
+        return row is not None and second_of(row["event"]) <= upto_sec
+
+    def selectable_ids(self, upto_sec, reveal=False):
+        """The ids of every event the user may select up to a match second, oldest first."""
+        ids = [pe.event["id"] for pe in self.perceived if pe.second <= upto_sec]
+        if reveal:
+            ids += [m.event["id"] for m in self.missed
+                    if m.reason != "unseen_option" and second_of(m.event) <= upto_sec]
+        return sorted(ids)
+
+    def snapshot(self, event_id):
+        """The keeper's surroundings at one event: where they stood, which way they
+        were facing just BEFORE it (toward where the ball had been), and the ball."""
+        entry = self._timeline[event_id]
+        return {"keeper": entry["keeper"], "ball": entry["ball"], "facing": entry["facing_before"]}
+
+    def window_summary(self, event_id, window_sec=30):
+        """How much the keeper saw and missed in the `window_sec` seconds before an
+        event: counts, plus the missed events themselves (for the Reveal view)."""
+        sec = second_of(self._events[event_id])
+        in_window = lambda e: sec - window_sec <= second_of(e) <= sec and e["id"] < event_id
+        missed = [m for m in self.missed if m.reason != "unseen_option" and in_window(m.event)]
+        return {"seen": sum(1 for pe in self.perceived if in_window(pe.event)),
+                "missed": len(missed), "missed_events": missed}
+
+    def _relevant_keeper(self, event):
+        """The keeper this event matters to most. Key-moment types belong to the
+        keeper they happen to; for the ball moving or a tackle it is whoever
+        defends the nearer goal."""
+        home, away = self.match["home"], self.match["away"]
+        other = lambda team: away if team == home else home
+        if event["type"] in BALL_MOVE_TYPES + ("tackle", "possession_change"):
+            attacker = event["team"] if event["type"] in BALL_MOVE_TYPES else other(event["team"])
+            return other(attacker) if event["x"] >= vision.PITCH_LENGTH / 2 else attacker
+        return keeper_team_of(event, self.match)
+
+    def _text_event_id(self, event):
+        """The id the explanation text is stored under: a scored shot is explained
+        together with its goal, a save together with its shot."""
+        if event["type"] == "shot" and event["outcome"] == "goal":
+            goal = next((e for e in self._events[event["id"] + 1:event["id"] + 4]
+                         if e["type"] == "goal" and e["related_to"] == event["id"]), None)
+            return goal["id"] if goal else event["id"]
+        if event["type"] == "keeper_save":
+            return event["related_to"]
+        return event["id"]
+
+    def _known(self, event, reveal, upto_sec):
+        """May this event be used as a fact? Yes if it has happened by `upto_sec`
+        and (in Reveal) it exists, or (in Keeper's eyes) the keeper perceived it."""
+        if upto_sec is not None and second_of(event) > upto_sec:
+            return False
+        if reveal:
+            return True
+        found = self._index.get(event["id"])
+        return found is not None and found[0] == "perceived"
+
+    def _ball_move(self, event, reveal, upto_sec):
+        """Facts about a ball-moving event, worked out from the NEXT event (the
+        data has no pass destination, so the ball's next position is it). Anything
+        that depends on an event the keeper did not perceive is left as None."""
+        own = event["team"]
+        nxt = self._events[event["id"] + 1] if event["id"] + 1 < len(self._events) else None
+        info = {"distance_m": None, "forward_m": None, "direction": None, "outcome": None,
+                "leads_to_shot": None, "own_third": event["x"] < OWN_THIRD_X, "pressure": None}
+        if nxt is not None and self._known(nxt, reveal, upto_sec) and not (
+                nxt["type"] == "keeper_distribution" and nxt["team"] != own):
+            dx, dy = nxt["x"] - event["x"], nxt["y"] - event["y"]
+            info.update(distance_m=round(math.hypot(dx, dy), 1), forward_m=round(dx, 1),
+                        direction=direction_of(dx, dy))
+            if nxt["team"] == own:
+                info["outcome"] = "shot" if nxt["type"] == "shot" else "completed"
+            elif nxt["type"] in ("tackle", "possession_change"):
+                info["outcome"] = "lost"
+            elif nxt["type"] in ("keeper_claim", "keeper_sweep", "keeper_save"):
+                info["outcome"] = "keeper"
+        shot_id = self._assist_shot.get(event["id"])
+        if shot_id is not None and self._known(self._events[shot_id], reveal, upto_sec):
+            info["leads_to_shot"] = True
+        elif shot_id is None:
+            info["leads_to_shot"] = False
+        if "traffic" in event:   # only events in the attacking third carry the players around them
+            near = sum(1 for b in event["traffic"] if b["team"] != own
+                       and math.hypot(b["x"] - event["x"], b["y"] - event["y"]) <= PRESSURE_RADIUS_M)
+            info["pressure"] = "low" if near == 0 else "medium" if near == 1 else "high"
+        return info
+
+    def facts(self, event_id, reveal=False, upto_sec=None):
+        """Everything known about one event, for the inspector and the agents, or
+        None if it is not selectable (see lookup). With `reveal` off, nothing
+        the keeper did not perceive is included; `upto_sec` hides what has not
+        happened yet. The missed log is never part of it."""
+        row = self.lookup(event_id, reveal)
+        if row is None:
+            return None
+        event = row["event"]
+        shot_ref = None
+        if event["type"] in ("goal", "keeper_save"):   # explained together with their shot
+            shot = self.lookup(event["related_to"], True)
+            if shot is not None:
+                shot_ref = {"event": shot["event"], "insight": shot["insight"]}
+        facts = {
+            "id": event_id, "clock": clock_of(event), "second": second_of(event),
+            "type": event["type"], "team": event["team"], "player": event["player"],
+            "receiver": event.get("receiver"), "sight": row["sight"], "reason": row["reason"],
+            "position": row["position"], "distance_m": round(row["distance_m"], 1),
+            "keeper_off_line_m": round(row["keeper_pos"][0], 1), "keeper_name": self.keeper_name(),
+            "keeper_team": self.followed_team, "relevant_keeper": self._relevant_keeper(event),
+            "text_event_id": self._text_event_id(event), "unseen_before": row["unseen_before"],
+            "key_moment": row["key_moment"], "insight": row["insight"], "event": event,
+            "shot_ref": shot_ref,
+            "ball_move": (self._ball_move(event, reveal, upto_sec)
+                          if event["type"] in BALL_MOVE_TYPES else None),
+        }
+        return facts
+
+    def goal_seconds(self):
+        """(match second, team) of every goal. Goals are always felt, so every
+        keeper knows them all."""
+        return [(pe.second, pe.event["team"]) for pe in self.perceived if pe.event["type"] == "goal"]
 
     def score_at(self, second):
         """The score at a match second, from the goals this keeper felt."""

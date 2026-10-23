@@ -15,6 +15,7 @@ Each moment is printed as one line of JSON (JSON Lines), ready for an app.
 Run it (sign in first with `az login`):
     python3 pipeline.py                 # whole match
     python3 pipeline.py --only 30:05    # just the moment(s) at 30:05
+    python3 pipeline.py --style second_person   # "You're 4 m off your line..." (the Keeper's eyes view)
 """
 import argparse
 import asyncio
@@ -23,6 +24,7 @@ import json
 from datetime import datetime, timezone
 
 from agents import make_analyst, make_client, make_narrator, make_personalizer
+import inspector
 from perception import MATCH_PATH, PerceptionFilter, match_info
 from replay import clock
 
@@ -59,10 +61,18 @@ class LiveMatch:
     def __init__(self, match, path=MATCH_PATH):
         self.match = match
         self.filters = {team: PerceptionFilter(team, path) for team in (match["home"], match["away"])}
+        # A second, fully replayed copy used ONLY to read an event's facts (a pass is
+        # described by where the ball went next). The live filters above stay
+        # as-of-now, because the Analyst's tools read their numbers.
+        self.lookahead = {team: PerceptionFilter(team, path) for team in (match["home"], match["away"])}
+        for f in self.lookahead.values():
+            f.advance_all()
         self.team = match["home"]  # whose eyes
         self.perceived = None      # the PerceivedEvent being processed now
         self.event = None          # its event (as perceived)
         self.insight = {}          # its scoring insight (empty if none)
+        self.facts = None          # PerceptionFilter.facts() for it (perceived-only)
+        self.agent_facts = {}      # the compact version the agents see
 
     @property
     def state(self):
@@ -95,6 +105,9 @@ def fallback_text(live, viewer=None):
     """Plain line used when an agent fails: saveability score and verdict."""
     spanish = viewer is not None and viewer["language"] == "es"
     event, insight = live.event, live.insight
+    if live.facts and event["type"] not in ("shot", "goal", "keeper_claim", "keeper_sweep",
+                                            "keeper_distribution"):
+        return inspector.template_text(live.facts, "es" if spanish else "en")  # passes and the rest
     if insight.get("type") == "distribution":
         if spanish:
             return f"{event['player']} a {event['target_player']}: calidad {insight['quality']}/100."
@@ -121,17 +134,24 @@ async def ask(agent, prompt, errors):
         return None
 
 
-async def personalize(personalizer, text, viewer, errors, context=""):
+VOICE_HINT = {
+    "first_person": "",
+    "second_person": "The narration is in the second person (you). Keep it that way: never switch to 'I'. ",
+}
+
+
+async def personalize(personalizer, text, viewer, errors, context="", style="first_person"):
     """Hand the narration to the Personalizer for one viewer. `context` says
     which club the keeper plays for, so it knows whose side to take."""
     prompt = (f"Viewer: mode={viewer['mode']}, favorite club={viewer['club']}, "
-              f"language={viewer['language']}.\n{context}\n\nNarration:\n{text}")
+              f"language={viewer['language']}.\n{VOICE_HINT[style]}{context}\n\nNarration:\n{text}")
     return await ask(personalizer, prompt, errors)
 
 
-async def process_moment(live, agents, viewers):
+async def process_moment(live, agents, viewers, style="first_person"):
     """Run the Analyst -> Narrator -> Personalizer handoffs for one moment
-    and return a JSON-ready dict."""
+    and return a JSON-ready dict. style "second_person" addresses the keeper
+    as "you" (the Keeper's eyes view)."""
     analyst, narrator, personalizer = agents
     event, insight = live.event, live.insight
     errors = []
@@ -141,15 +161,23 @@ async def process_moment(live, agents, viewers):
 
     # Whose eyes: the keeper this moment belongs to
     keeper_club = live.team
-    keeper_name = insight.get("keeper", event["player"])
+    keeper_name = live.filters[live.team].keeper_name()
     unseen = live.unseen_count()
 
     # 2. Handoff to the Narrator, telling it who it is and what it could see.
     # It gets the sight and the unseen count, never the missed log itself.
     # If the Analyst failed, pass the perceived insight instead.
-    facts = analysis or json.dumps({"event": event, "insight": insight})
-    narration = await ask(narrator, f"You are {keeper_name}, the {keeper_club} goalkeeper. "
-                          f"Moment at {clock(event)}. Sight: {SIGHT_WORDS[live.sight]}. "
+    facts = analysis or json.dumps({"event": event, "insight": insight, "facts": live.agent_facts})
+    where = (f"The keeper stood {live.perceived.keeper_pos[0]:.0f} m off the goal line; "
+             f"this was {live.perceived.distance_m:.0f} m from the keeper. ")
+    if style == "second_person":
+        who = (f"The goalkeeper is {keeper_name} of {keeper_club}. Write in the SECOND person: "
+               "address the keeper as 'you' (for example \"You're 4 m off your line...\") "
+               "and never say 'I'. ")
+    else:
+        who = f"You are {keeper_name}, the {keeper_club} goalkeeper. "
+    narration = await ask(narrator, f"{who}Moment at {clock(event)}. {where}"
+                          f"Sight: {SIGHT_WORDS[live.sight]}. "
                           f"Events you could not see in the last {UNSEEN_WINDOW_SEC} seconds: "
                           f"{unseen}.\nAnalysis:\n{facts}", errors)
 
@@ -159,13 +187,16 @@ async def process_moment(live, agents, viewers):
         news = f"good news for {event['team']}, bad news for {keeper_club}"
     elif turnover:
         news = f"bad news for {keeper_club}: they lost the ball"
+    elif event["type"] in ("pass", "through_ball", "cross", "box_entry", "tackle", "possession_change"):
+        news = "not decisive for either side"
     else:
         news = f"good news for {keeper_club}"
     context = f"The narrator is the {keeper_club} goalkeeper. This moment was {news}."
     # asyncio.gather runs the Personalizer for every viewer at the same time
     texts = [None] * len(viewers)
     if narration:
-        texts = await asyncio.gather(*[personalize(personalizer, narration, viewer, errors, context)
+        texts = await asyncio.gather(*[personalize(personalizer, narration, viewer, errors,
+                                                   context, style)
                                        for viewer in viewers])
     versions = [{"viewer": viewer, "text": text or fallback_text(live, viewer),
                  "fallback": text is None}
@@ -182,6 +213,7 @@ async def process_moment(live, agents, viewers):
         "keeper": insight.get("keeper", event["player"]),
         "score": live.score,
         "sight": live.sight,               # own, seen or felt
+        "style": style,                    # first_person or second_person
         "unseen_count": unseen,            # events missed in the last 30 seconds
         "saveability": insight.get("saveability"),
         "verdict": insight.get("verdict"),
@@ -250,11 +282,14 @@ async def keeper_report(live, agents, viewers, kind):
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
-async def run(only=None, viewers=VIEWERS, path=MATCH_PATH):
+async def run(only=None, viewers=VIEWERS, path=MATCH_PATH, style="first_person", event_ids=None):
     """Replay the match through both keepers' eyes, in time order. Yield one
     JSON-ready dict per key moment, then the full-time report. With
     `only="30:05"`, send just the moment(s) at that clock to the agents
-    (each keeper's perceived picture is still built from everything before it)."""
+    (each keeper's perceived picture is still built from everything before it).
+    With `event_ids={event_id: keeper_team}`, send exactly those events (any
+    type, such as a notable pass) as seen through that keeper's eyes, and no
+    reports."""
     live = LiveMatch(match_info(path), path)
     client = make_client()
     agents = (make_analyst(client, live), make_narrator(client), make_personalizer(client))
@@ -267,13 +302,18 @@ async def run(only=None, viewers=VIEWERS, path=MATCH_PATH):
         # First event of the second half: the halftime report comes first
         if pe.event["half"] == 2 and not halftime_done:
             halftime_done = True
-            if not only:
+            if not only and event_ids is None:
                 yield await keeper_report(live, agents, viewers, "half_time")
-        if not pe.key_moment:
+        if event_ids is not None:
+            if event_ids.get(pe.event["id"]) != pe.followed_team:
+                continue
+        elif not pe.key_moment:
             continue
 
         live.team, live.perceived = pe.followed_team, pe
         live.event, live.insight = pe.event, pe.insight
+        live.facts = live.lookahead[live.team].facts(pe.event["id"], reveal=False)
+        live.agent_facts = inspector.agent_facts(live.facts)
         if pe.event["type"] == "goal":
             # A goal takes its numbers and its clock from the shot that caused
             # it (shots on target at your goal are always felt, so it is there)
@@ -282,9 +322,9 @@ async def run(only=None, viewers=VIEWERS, path=MATCH_PATH):
             live.event = dict(pe.event, minute=shot.event["minute"], second=shot.event["second"])
         if only and clock(live.event) != only:
             continue
-        yield await process_moment(live, agents, viewers)
+        yield await process_moment(live, agents, viewers, style)
 
-    if not only:
+    if not only and event_ids is None:
         live.replay_to_end()
         yield await keeper_report(live, agents, viewers, "full_time")
 
@@ -292,8 +332,9 @@ async def run(only=None, viewers=VIEWERS, path=MATCH_PATH):
 async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", help="process just the moment(s) at this clock, e.g. 30:05")
+    parser.add_argument("--style", choices=["first_person", "second_person"], default="first_person")
     args = parser.parse_args()
-    async for item in run(args.only):
+    async for item in run(args.only, style=args.style):
         # flush=True writes each line right away, even into a file
         print(json.dumps(item, ensure_ascii=False), flush=True)
 

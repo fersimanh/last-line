@@ -1,0 +1,22 @@
+# Last Line is dark only. These colors repeat the tokens in theme.py because
+# Streamlit reads this file before any Python runs; test_theme.py checks they match.
+[theme]
+base = "dark"
+primaryColor = "#c2f160"
+backgroundColor = "#0b0f0a"
+secondaryBackgroundColor = "#131a12"
+textColor = "#a5b7a2"
+borderColor = "#25301a"
+linkColor = "#c2f160"
+# Streamlit's built-in accent hues (used by badges, links and status messages) are
+# set to the palette, so no default red or blue can show anywhere.
+redColor = "#c2f160"
+orangeColor = "#c2f160"
+yellowColor = "#c2f160"
+greenColor = "#c2f160"
+blueColor = "#c2f160"
+violetColor = "#c2f160"
+grayColor = "#a5b7a2"
+
+[client]
+toolbarMode = "minimal"

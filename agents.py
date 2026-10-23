@@ -44,10 +44,13 @@ def make_analyst(client, live):
     def get_current_moment() -> str:
         """The event being analysed now, as the keeper perceived it, plus its
         insight, the score, the sight ('own' action, 'seen', or 'felt' = not
-        seen developing) and unseen_count (events the keeper could not see in
-        the last 30 seconds)."""
+        seen developing), unseen_count (events the keeper could not see in
+        the last 30 seconds) and facts (for a pass: how far, which way, under what
+        pressure, whether the ball was lost or led to a shot; null means the
+        keeper did not see it)."""
         return json.dumps({"event": live.event, "insight": live.insight, "score": live.score,
-                           "sight": live.sight, "unseen_count": live.unseen_count()})
+                           "sight": live.sight, "unseen_count": live.unseen_count(),
+                           "facts": live.agent_facts})
 
     @tool
     def get_keeper_stats() -> str:
@@ -74,8 +77,8 @@ def make_analyst(client, live):
             "Every shot also has a situation: open_play, cutback (pulled back from the byline), "
             "header_from_cross, one_on_one (through on goal, the keeper came out to close down), "
             "two_on_one (the keeper closed down one attacker, who squared it to the other), "
-            "rebound (a follow-up after the keeper parried a save) or second_ball (after a "
-            "blocked shot). It has assist_type, assist_seconds, ball_shift_m (how far the ball "
+            "rebound (a follow-up after the keeper parried a save), second_ball (after a "
+            "blocked shot), or a set piece: corner, free_kick (with a wall) or penalty. It has assist_type, assist_seconds, ball_shift_m (how far the ball "
             "moved sideways from the assist to the shot), seconds_since_keeper_action (how long "
             "since the keeper last had to act, e.g. the save before a rebound) and keeper_set. "
             "Always explain the situation and how it made the save easier or harder. "
@@ -96,6 +99,12 @@ def make_analyst(client, live):
             "(0-100), verdict, key_factor and best_option. Explain WHY the keeper chose that "
             "target: compare it with the other options (how open, how far), mention the pressure "
             "and the outcome, and say if the best option was someone else. "
+            "If the moment is an ordinary event with no saveability or quality (a pass, through "
+            "ball, cross or box entry), summarise it from facts: who played it, how far and which "
+            "way, the pressure, and whether it was lost or led to a shot. State only those facts: "
+            "there is no key factor, and do not say how the event affected the keeper's reaction or "
+            "made a shot easier or harder. A null fact means the keeper did not see it: say so, "
+            "never fill it in. "
             "Report the sight and unseen_count from the tools. If sight is 'felt', the keeper "
             "did not see the move develop: describe only what reached the goal. "
             "Only use numbers from the tools. Never invent facts."
@@ -109,7 +118,9 @@ def make_narrator(client):
         client,
         name="Narrator",
         instructions=(
-            "You are the goalkeeper. Speak in the first person ('I'). "
+            "You are the goalkeeper. Normally speak in the first person ('I'). If the request "
+            "asks for the SECOND person, address the goalkeeper as 'you' instead and never use 'I' "
+            "(for example \"You're 4 m off your line and the shot is on you.\"). "
             "For a single moment: write 1-2 sentences about what you saw and felt, "
             "based only on the analysis you are given. For a shot, mention the saveability "
             "score once; for anything else, do not mention saveability at all. "
@@ -122,10 +133,19 @@ def make_narrator(client):
             "If the sight says you did not see it develop, do not describe the build-up: "
             "say you did not see it coming. If events you could not see are mentioned, you "
             "may say so, but never guess what they were. "
+            "For an ordinary pass or ball movement (no saveability or quality score): 1-2 "
+            "sentences on who played it, how far and which way, what came of it, and what the "
+            "keeper could or could not see. Do not mention a score or that there is none, do not say how you felt or "
+            "that you stayed calm, and do not claim it affected your reaction unless the "
+            "analysis says so. "
+            "A verdict such as 'tough save' or 'should save' only says how hard the shot was "
+            "to stop. If the shot was a goal, you did NOT save it: never call it a save; say it "
+            "was hard (or easy) to stop. "
             "For a distribution, YOU are the keeper who played the ball: say 'I threw it' or "
-            "'I kicked it', never your own name in the third person. Say who you gave it to, "
-            "how, and why you chose them over the other options; mention the quality score "
-            "once (out of 100) and never call it saveability. "
+            "'I kicked it' (in the second person: 'You threw it'), never the keeper's name. Say "
+            "who the ball went to, how, and why that player over the other options; mention the "
+            "quality score once (out of 100) and never call it saveability. Use at most 3 "
+            "sentences for a distribution. "
             "For a halftime or full-time keeper report: write one short paragraph (3-5 sentences) "
             "reflecting on your match so far using the numbers you are given. "
             "A report has no saveability score; use the numbers as they are labelled. "
@@ -145,7 +165,9 @@ def make_personalizer(client):
             "Saveability belongs to a single shot only: never call any other number "
             "(such as goals prevented) saveability. "
             "Mode 'analyst': precise and tactical, keep every number. "
-            "Keep the goalkeeper's first-person voice. "
+            "The context line only tells you whose side to take: never quote it. "
+            "Keep the narration's point of view: if it says 'I', stay in the first person; if "
+            "it says 'you', stay in the second person. "
             "If the viewer's favorite club is involved, acknowledge it briefly "
             "(joy if it helped them, sympathy if it hurt them). "
             "Write in the requested language: 'en' = English, 'es' = Spanish "

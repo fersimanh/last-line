@@ -221,3 +221,7 @@ __marimo__/
 
 # Pipeline output (regenerate with: python3 pipeline.py > moments.jsonl)
 moments.jsonl
+
+# Match engine output (regenerate with: python3 sim_engine.py --seed 1)
+sim_events.json
+sim_tracking.npz

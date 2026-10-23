@@ -71,14 +71,10 @@ class ArchitectureTest(unittest.TestCase):
     def test_insights_reads_only_perception(self):
         self.assert_no_raw_access("insights.py")
 
-    # EXPECTED FAILURE, on purpose: app.py still loads the raw match itself
-    # (replay.load_match) for the current Broadcast view. The follow-up
-    # interface rework makes it read only from PerceptionFilter (Keeper's eyes
-    # as the default, everything outside the cone dimmed, unseen counts, and a
-    # Reveal view instead of Broadcast). When that lands, this test will start
-    # to pass: remove @unittest.expectedFailure then (unittest reports an
-    # "unexpected success" until you do).
-    @unittest.expectedFailure
+    # app.py used to be the one marked expected failure: it loaded the raw match
+    # for the old Broadcast view. Since the interface rework it reads only from
+    # PerceptionFilter (through insights.py and perception.py), so it is now
+    # checked like every other consumer.
     def test_app_reads_only_perception(self):
         self.assert_no_raw_access("app.py")
 
@@ -98,10 +94,24 @@ class ArchitectureTest(unittest.TestCase):
                 self.assertEqual(found, [], f"{name} touches the missed log: {found}")
 
     def test_the_check_itself_works(self):
-        """Guard against a check that always passes: the data layer and
-        app.py really do read the raw match."""
+        """Guard against a check that always passes: it must flag code that
+        reads the raw match, and the data layer really does read it."""
+        import tempfile
         self.assertTrue(raw_access(ROOT / "perception.py"))
-        self.assertTrue(raw_access(ROOT / "app.py"))
+        samples = {
+            "import": "from replay import load_match\n",
+            "attribute": "import replay\nreplay.stream(1, 2)\n",
+            "file name": "open('match_events.json')\n",
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            for name, source in samples.items():
+                path = pathlib.Path(folder) / "sample.py"
+                path.write_text(source)
+                self.assertTrue(raw_access(path), f"a {name} should be flagged")
+            path.write_text("from replay import clock\n")
+            self.assertEqual(raw_access(path), [], "importing clock is fine")
+            path.write_text("agent.missed\nfilter.reveal()\n")
+            self.assertEqual(len(missed_log_access(path)), 2)
 
 
 if __name__ == "__main__":

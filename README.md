@@ -2,6 +2,16 @@
 
 Goalkeeper-lens match intelligence for the Microsoft x Premier League "Inside the Game" hackathon. A replayed synthetic match flows through three Microsoft Foundry agents that score each threat on goal, explain it from the keeper's point of view, and adapt the story to each viewer.
 
+## Match engine (in progress, branch `realism`)
+
+A position-based engine is replacing the event-by-event generator: 22 tracked players and a ball move on the pitch, and the events are read off what happens. It is **football-realistic, calibrated to published league averages where available; not real match data.** Design: `SIM_DESIGN.md`. Targets and their sources: `calibration.py`; run `python3 report_calibration.py`.
+
+- **Verified** targets are published Premier League 2025/26 figures (first 11 matchweeks): completed passes per match, long-pass share, share of passes ending in the final third, goal kicks ending in the opposition half, header share of goals, second-half added time. The simulated 30-match average must be within 15 percent.
+- **Approximate** targets are general football knowledge, **UNVERIFIED**, treated as ranges and held to within 25 percent: pass completion, goals, shots, shots on target, corners, fouls, cards, offsides, crosses, throw-ins and possession.
+- Assumptions of mine: "about 713 completed passes" is read as both teams combined, and a "long" pass is 32 m or more.
+
+Status: Stage 1 (formations, tracking, the possession loop with pass success and failure) is done and writes `sim_events.json` and `sim_tracking.npz` (2 Hz tracking of all 22 players and the ball, loaded with `tracking.py`). The app still runs on the old generator until Stage 3.
+
 ## Synthetic data
 
 All data is invented: fictional clubs (Harbor United, Northgate FC), fictional players, no real match data. `generate_match.py` writes `match_events.json` (seeded, so it is reproducible).
@@ -119,7 +129,7 @@ The keeper's field of view is the INPUT, not an overlay: the agents only ever le
 
 Each keeper perceives about 790-830 of the 1,410 events. Most misses are beyond 55 m (the far half); about 50 per keeper are close but outside the cone, and 10-12 are hidden behind a body. Every key moment reaches its keeper. Defenders in a shot's lane usually narrow the angle rather than fully hide the shooter: only a few screened shots are actually blocked from the keeper's eye.
 
-`test_architecture.py` enforces the rule: only the data layer (`generate_match.py`, `replay.py`, `scoring.py`, `vision.py`, `perception.py`) may read the raw match, and `agents.py` and `pipeline.py` may never touch the missed log. `app.py` is the one marked expected failure: it still loads the raw match for the current Broadcast view until the interface rework (Keeper's eyes by default, everything outside the cone dimmed, unseen counts, and a Reveal view).
+`test_architecture.py` enforces the rule: only the data layer (`generate_match.py`, `replay.py`, `scoring.py`, `vision.py`, `perception.py`) may read the raw match, and `agents.py` and `pipeline.py` may never touch the missed log. Every other module, `app.py` included, reads the match only through `PerceptionFilter` (the app also uses its `missed` list and `reveal()` for the Reveal view, which is display only).
 
 ## Architecture
 
@@ -148,18 +158,39 @@ Each output line is JSON with `clock`, `match_second`, `type`, `player`, `keeper
 
 ## Streamlit app
 
-`app.py` replays the match through the followed keeper's eyes:
+`app.py` has two views of the same match, switched with the **View** control in the sidebar. Switching never restarts the match.
 
-- **Shot map**: a half pitch of the shots the keeper faced, appearing as the match plays. Color is saveability on a colorblind-safe red (hard) to gray to blue (easy) scale; off-target and blocked shots have no score and stay light gray. Each outcome has its own marker (star goal, circle saved, x off target, square blocked) and every marker has a hover label.
-- **Goal mouth**: where each on-target shot crossed the 7.32 x 2.44 m goal, from the shooter's view.
-- **Workload meter and danger indicator** for the followed goal (danger shows an icon and a word, not only a color).
-- **Insight cards** for key moments, newest first: saves, goals, claims, sweeps and notable distributions (keeper -> target, a quality badge, and in Analyst mode the method, distance, pressure and decision score).
-- **Full-time report** tab: `keeper_report()` numbers (shot stopping and distribution) plus the Narrator's report.
-- **Sidebar**: mode (Casual fan or Analyst), favorite club (decides which keeper you follow, or Both), language (English or Spanish), replay speed (default 120x, a full match in 45 s), Play, Pause and Restart.
+- **Keeper's eyes** (the default): a 2D pitch from the followed goal line to just past halfway. A translucent lime cone is the keeper's **modeled sightline** (the data has no real eyeline): 120 degrees by default, 55 m long, always turned toward the ball. Everything outside the cone is dimmed. The last 8 perceived events appear as markers with a fading trail: circle = seen, square = your own action, diamond = felt but not seen, star = goal. A top panel shows the workload meter, the danger level (a shape and a word, not only a color) and **how much the keeper missed** (in the last 30 s and so far). Cards for key moments are written to the keeper in the second person ("You're 4 m off your line..."), each with a mono label row, a headline carrying the verdict, a sight pill (**Seen clearly**, **Late sight** or **Your action**; text, not color alone) and a **Show the numbers** expander.
+- **Reveal**: what the keeper did not perceive. The same pitch also draws the events the keeper missed, hollow, with a list of why (too far away, outside the cone, blocked by a player, passing options out of sight), then the official numbers: shot map colored by saveability, goal mouth, workload and danger from the full match.
+- **Top bar**: the score and the clock in large numerals, and a segmented 90-minute timeline with a tick at half time and a diamond for every goal.
+- **Sidebar**: view, mode (Casual fan or Analyst), favorite club (decides which keeper you follow; with **Both** a small selector switches keepers), language (English or Spanish), replay speed (default 120x, a full match in 45 s), **field of view** (90-180 degrees), Play, Pause and Restart.
+- **Full-time report** tab: the keeper's numbers as the keeper knows them (shot stopping and distribution) plus the Narrator's report.
 
-The match position lives in `st.session_state`, so changing any option mid-match re-renders the cards in the new mode and language without restarting.
+### Click to inspect
 
-Card and report text comes from `insights.py`: first `insight_cache.json` (instant), then the agents on a cache miss (slow, then cached), then a fallback line with the saveability score and verdict. `python3 insights.py --warm` fills the cache for every moment, mode, club and language, so the demo does not depend on live API calls (`--missing` fills only the gaps). The cache records a hash of `match_events.json` plus a text version (`TEXT_VERSION` in `insights.py`, bumped when the agents' input changes) and is ignored when either differs, so it never shows text for the wrong moment or from an older pipeline. Set `LAST_LINE_LIVE_AGENTS=0` to never call the agents.
+Click any event to see what happened and why. Selecting an event **pauses the match**; **Back to live** closes the inspector and resumes. Three ways to pick one:
+
+- **Click a marker on the pitch** (the last 8 events), or a shot on the Reveal shot map.
+- **Click a row in the Events list** (the second tab beside Key moments): scrollable, newest first, with filters for All, Shots, Passes, Keeper and Other.
+- **Drag the minute scrubber** under the timeline, or use **Previous / Next moment**, which jump to the keeper's key moments, select them and pause. Small ticks on the timeline mark the key moments so far (goals stay diamonds).
+
+The perception rule holds: in **Keeper's eyes** only events the keeper perceived can be picked (a forced or stale selection of anything else is refused with a notice); in **Reveal** every event can be picked, and missed ones are flagged with the reason.
+
+The inspector shows a header (minute, event type, sight, whether the text is an **AI insight** or a **Quick insight**, and the players), a small snapshot of that moment (the cone shows where the keeper was looking just before it), the explanation in the current mode, language and view, a line saying how many events you saw and missed in the 30 seconds before (Reveal lists the missed ones), and a **Show the numbers** expander: the 14 saveability factors for shots, difficulty and decision quality for passes out, and distance, direction, pressure and outcome for ordinary passes.
+
+Where the text comes from (`inspector.py`, `insights.get_event_text`): every event type has an instant second-person **Quick insight** template in English and Spanish. Key moments and **notable passes** also have cached **AI insight** text: every keeper pass, passes that gain 20 m or more going forward, long balls of 45 m or more, passes that set up a shot, and passes lost in the team's own third (none in this match: its possessions only break down in the attacking half). Each notable pass is explained for the one keeper it matters to (the one defending the nearer goal). On a cache miss the app asks the agents live and stores the answer; if they are unreachable it shows the Quick insight. Pass facts come from the ball's next position (the data has no pass destination), and anything that depends on an event the keeper did not perceive is left out of Keeper's eyes.
+
+The field-of-view slider is a what-if for the visuals: the cone, the dimming and the missed counts follow it, while the explanations were written for the 120 degree sightline (the app says so under the slider).
+
+The match position lives in `st.session_state`. The live area is an `st.fragment` with `run_every`, so only it reruns while playing (the sidebar and the stylesheet are not re-sent); Pause switches the timer off. The match clock advances by the real time that passed times the replay speed, so playback speed stays right however often the screen refreshes, and a sleeping browser tab cannot make the match jump (a step is capped at 2 s).
+
+Card and report text comes from `insights.py`: first `insight_cache.json` (instant), then the agents on a cache miss (slow, then cached), then a template fallback line built from the scoring fields, in English and Spanish. The cache key is moment, mode, club, language and view; the Reveal view reuses the Keeper's eyes texts. `python3 build_cache.py` fills the cache (key moments, notable passes and the full-time reports; resumable, it skips anything already cached) so the demo does not depend on live API calls: `--dry-run` only counts the requests, `--only notable` or `--only moments` fills one part. (`insights.py --warm` is the older all-in-one fill for the key moments; `--view broadcast` also generates first-person texts.) The cache records a hash of `match_events.json` plus a text version (`TEXT_VERSION` in `insights.py`, bumped when the agents' input changes) and is ignored when either differs, so it never shows text for the wrong moment or from an older pipeline. Set `LAST_LINE_LIVE_AGENTS=0` to never call the agents.
+
+### The look
+
+Dark only, in the style of the "Onside look" brief; Last Line has its own name and mark. Every color, font, radius and spacing is defined once in `theme.py` and used by both the CSS (`theme.build_css()`, sent once per full run by `inject_css()` in `app.py`) and the Plotly charts, and `.streamlit/config.toml` repeats the few colors Streamlit needs before Python runs (`test_theme.py` checks they match). Fonts load from Google Fonts with fallbacks: Fraunces (wordmark, headings, big numbers; fallback Georgia), Outfit (body and controls; fallback system-ui), JetBrains Mono (small uppercase labels and timestamps; fallback ui-monospace). Streamlit's built-in red, blue and other accent hues are repainted from the palette, so no default color shows.
+
+Accessibility: all reading text is at least 4.5:1 (body text 8.4:1 on cards, headings 15:1, dark text on lime 14.8:1). The mono label color (#51694d, about 3:1) is used only for small labels, never for text people must read; the faint caption color is not used anywhere. Every control has a lime focus ring, `prefers-reduced-motion` switches animations and transitions off, and there are no emojis. The hard-to-save end of the saveability scale (#3f4f22) is only 2:1 against the pitch, so every shot marker also has a light outline and its own shape, and the chart keeps a legend and hover labels.
 
 ## Run it
 
@@ -172,8 +203,12 @@ python3 test_app.py                 # app tests (no Azure needed)
 python3 test_vision.py              # sightline geometry and frames
 python3 test_perception.py          # what each keeper perceives
 python3 test_scoring.py             # shot situations in the saveability score
+python3 test_inspector.py           # event wording, notable passes, perception rules for facts
+python3 test_selection.py           # the rules for selecting, pausing and going back to live
 python3 test_architecture.py        # nothing reads the raw match except the data layer
-python3 insights.py --warm          # refill the text cache
+python3 test_theme.py               # design tokens, fonts, contrast, Streamlit config
+python3 build_cache.py --dry-run    # count the agent requests still needed (calls nothing)
+python3 build_cache.py              # fill the text cache (resumable)
 python3 hello_agent.py              # checks Foundry auth
 python3 pipeline.py --only 37:43    # one moment as JSON (a two on one: the keeper closed down, the ball was squared)
 python3 pipeline.py > moments.jsonl # whole match as JSON

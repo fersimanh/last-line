@@ -12,7 +12,11 @@ This file also has replay_to(), which rebuilds the match state up to any
 match second. The app calls it on every screen update. Everything here reads
 the match through perception.PerceptionFilter, never the raw file: key
 moments are the keepers' perceived key moments, and the full event list the
-current Broadcast view needs comes from PerceptionFilter.reveal().
+Reveal view needs comes from PerceptionFilter.reveal().
+
+Views: "eyes" cards are written in the second person ("You're 4 m off your
+line..."). The Reveal view reuses the same texts. Texts are cached per moment,
+mode, club, language and view.
 """
 import argparse
 import asyncio
@@ -20,24 +24,25 @@ import json
 import os
 from datetime import datetime, timezone
 
+import inspector
+from inspector import DIST_VERDICT_ES, VERDICT_ES, second_person_text  # noqa: F401 (the app imports these from here)
 from perception import PerceptionFilter, match_fingerprint, match_info
 from replay import clock
 from scoring import MatchState
+from vision import DEFAULT_FOV_DEG
 
 CACHE_PATH = "insight_cache.json"
 # Bump this when the agents' input changes, so older cached texts are dropped
-TEXT_VERSION = "perception-1"
+TEXT_VERSION = "perception-2"
 # Set LAST_LINE_LIVE_AGENTS=0 to never call the agents (cache or fallback only)
 LIVE_AGENTS = os.getenv("LAST_LINE_LIVE_AGENTS", "1") == "1"
 
 BOTH = "Both"                     # the "follow both keepers" club option
+VIEWS = ("eyes",)                 # views with their own cached text (Reveal reuses "eyes")
+STYLE_OF_VIEW = {"eyes": "second_person", "broadcast": "first_person"}
 MODES = ["casual", "analyst"]
 LANGUAGES = ["en", "es"]
 
-VERDICT_ES = {"should save": "debió pararlo", "tough save": "parada difícil",
-              "near-unstoppable": "casi imparable"}
-DIST_VERDICT_ES = {"excellent": "excelente", "safe": "segura", "risky": "arriesgada",
-                   "turnover": "pérdida"}
 KEEPER_OWN_EVENTS = ("keeper_claim", "keeper_sweep", "keeper_close_down", "keeper_distribution")
 
 
@@ -55,17 +60,36 @@ def keeper_team(event, state):
     return state.other(event["team"])
 
 
-_filters = {}  # (match fingerprint, team) -> a PerceptionFilter replayed to full time
+_filters = {}  # (match fingerprint, team, fov) -> a PerceptionFilter replayed to full time
 
 
-def keeper_eyes(team):
-    """One keeper's PerceptionFilter, replayed to full time once and reused."""
-    key = (match_fingerprint(), team)
+def filter_for(team, fov_deg=DEFAULT_FOV_DEG):
+    """One keeper's PerceptionFilter at a field of view, replayed to full time
+    once and reused. The app's field-of-view slider asks for other angles."""
+    key = (match_fingerprint(), team, int(fov_deg))
     if key not in _filters:
-        f = PerceptionFilter(team)
+        f = PerceptionFilter(team, fov_deg=fov_deg)
         f.advance_all()
         _filters[key] = f
     return _filters[key]
+
+
+def keeper_eyes(team):
+    """The keeper's PerceptionFilter at the default sightline. Cached texts and
+    key moments always use this one."""
+    return filter_for(team, DEFAULT_FOV_DEG)
+
+
+def perceived_state(team, fov_deg, upto_sec):
+    """The keeper's own picture of the match at a second: a MatchState fed with
+    only what they perceived (workload, danger and numbers as they know them)."""
+    f = filter_for(team, fov_deg)
+    state = MatchState(f.match["home"], f.match["away"])
+    for pe in f.perceived:
+        if pe.second > upto_sec:
+            break
+        state.update(pe.event)
+    return state
 
 
 def match_end_second():
@@ -121,6 +145,8 @@ def make_moment(pe, filters):
         distribution = {k: event[k] for k in (
             "trigger", "method", "technique", "target_player", "target_role", "distance_m",
             "direction", "pressure", "reason", "outcome", "x_gain_m", "led_to_shot")}
+        distribution["unseen_options"] = event.get("unseen_options", 0)
+        distribution["options_seen"] = len(event["options"])
         distribution.update({k: insight[k] for k in (
             "difficulty", "decision_score", "quality", "verdict", "best_option")})
         insight = dict(insight, verdict=None)  # "verdict" below is the shot verdict only
@@ -138,6 +164,11 @@ def make_moment(pe, filters):
         "verdict": insight.get("verdict"),
         "key_factor": insight.get("key_factor"),
         "situation": insight.get("situation"),  # shots and goals only, e.g. "rebound"
+        "shot": ({k: timed.get(k) for k in ("distance_m", "speed_kmh", "body_part")}
+                 if timed["type"] == "shot" else None),
+        "keeper_off_line_m": round(pe.keeper_pos[0], 1),   # how far the keeper stood from their line
+        "event_distance_m": round(pe.distance_m, 1),       # keeper to the event
+        "unseen_before": pe.unseen_before,                 # events missed just before this one
         "distribution": distribution,          # None unless type is keeper_distribution
         "score": keeper_filter.score_at(pe.second),
     }
@@ -185,8 +216,8 @@ def save_to_cache(key, text):
     os.replace(CACHE_PATH + ".tmp", CACHE_PATH)
 
 
-def moment_key(event_id, mode, club, language):
-    return f"{event_id}|{mode}|{club}|{language}"
+def moment_key(event_id, mode, club, language, view="eyes"):
+    return f"{event_id}|{mode}|{club}|{language}|{view}"
 
 
 def report_key(team, mode, language):
@@ -203,9 +234,11 @@ def viewer_for(mode, club, language):
 
 # ---------- Text for one moment ----------
 
-def fallback_text(moment, language):
-    """Plain line used when there is no agent text: saveability score and verdict."""
+def fallback_text(moment, language, view="eyes"):
+    """Plain line used when there is no agent text, built from the scoring fields."""
     spanish = language == "es"
+    if view == "eyes":
+        return second_person_text(moment, spanish)
     if moment["saveability"] is not None:
         if spanish:
             return f"Salvabilidad {moment['saveability']}/100: {VERDICT_ES[moment['verdict']]}."
@@ -224,27 +257,29 @@ def fallback_text(moment, language):
     return f"{moment['player']} {'sale a despejar' if spanish else 'sweeps up the danger'}."
 
 
-def get_insight_text(moment, mode, language, club):
+def get_insight_text(moment, mode, language, club, view="eyes"):
     """Text for one key moment. mode: "casual" or "analyst"; language: "en"
-    or "es"; club: a club name or BOTH. Cache first, then the agents, then
-    the fallback line."""
-    key = moment_key(moment["event_id"], mode, club, language)
+    or "es"; club: a club name or BOTH; view: "eyes" (second person) or
+    "broadcast" (first person). Cache first, then the agents, then the
+    fallback line."""
+    key = moment_key(moment["event_id"], mode, club, language, view)
     cached = load_cache().get(key)
     if cached:
         return cached["text"]
     if LIVE_AGENTS:
-        text = generate_moment_text(moment, viewer_for(mode, club, language))
+        text = generate_moment_text(moment, viewer_for(mode, club, language), view)
         if text:
             save_to_cache(key, text)
             return text
-    return fallback_text(moment, language)
+    return fallback_text(moment, language, view)
 
 
-def generate_moment_text(moment, viewer):
+def generate_moment_text(moment, viewer, view="eyes"):
     """Run the agents for one moment and one viewer. Returns None on failure."""
     async def go():
         from pipeline import run  # imported here so the app starts without the agents
-        async for item in run(only=moment["clock"], viewers=[viewer]):
+        async for item in run(only=moment["clock"], viewers=[viewer],
+                              style=STYLE_OF_VIEW[view]):
             if item.get("event_id") == moment["event_id"]:
                 version = item["versions"][0]
                 return None if version["fallback"] else version["text"]
@@ -252,6 +287,86 @@ def generate_moment_text(moment, viewer):
         return asyncio.run(go())
     except Exception:
         return None
+
+
+# ---------- Text for any event the user clicks (the inspector) ----------
+
+def ai_info(team, event_id):
+    """Is this event one the agents explain for this keeper, and under which id
+    is its text cached? Key moments are; so are the notable passes (see
+    inspector.notable_reason) for the keeper they matter to. Decided from the full
+    data at the default sightline, the one the cached texts were written for."""
+    f = keeper_eyes(team)
+    facts = f.facts(event_id, reveal=True)
+    if facts is None:
+        return None
+    text_id = facts["text_event_id"]
+    text_facts = facts if text_id == event_id else f.facts(text_id, reveal=True)
+    why = inspector.notable_reason(text_facts)
+    eligible = why is not None and (why == "key_moment" or text_facts["relevant_keeper"] == team)
+    return {"eligible": eligible, "text_event_id": text_id, "why": why}
+
+
+def get_event_text(team, facts, mode, language, club, view="eyes"):
+    """The text for one clicked event, and where it came from: "ai" (cached or
+    freshly generated by the agents) or "quick" (the instant template). Every
+    event has a template; key moments and notable passes also have agent text."""
+    template = inspector.template_text(facts, language)
+    info = ai_info(team, facts["id"])
+    if not info or not info["eligible"]:
+        return template, "quick"
+    key = moment_key(info["text_event_id"], mode, club, language, view)
+    cached = load_cache().get(key)
+    if cached:
+        return cached["text"], "ai"
+    if LIVE_AGENTS:
+        text = generate_event_text(team, info["text_event_id"], viewer_for(mode, club, language), view)
+        if text:
+            save_to_cache(key, text)
+            return text, "ai"
+    return template, "quick"
+
+
+def generate_event_text(team, event_id, viewer, view="eyes"):
+    """Run the agents for one event as seen through one keeper's eyes. Returns
+    None on failure (no network, no sign-in, a timeout)."""
+    async def go():
+        from pipeline import run  # imported here so the app starts without the agents
+        async for item in run(viewers=[viewer], style=STYLE_OF_VIEW[view], event_ids={event_id: team}):
+            if item.get("event_id") == event_id:
+                version = item["versions"][0]
+                return None if version["fallback"] else version["text"]
+    try:
+        return asyncio.run(go())
+    except Exception:
+        return None
+
+
+def notable_events():
+    """Every event that gets an agent explanation but is not already a key moment:
+    the notable passes and keeper passes, as {event_id, team, why, clock}, one
+    keeper each (the one the event matters to). Decided from the full data."""
+    found = []
+    match = match_info()
+    for team in (match["home"], match["away"]):
+        f = keeper_eyes(team)
+        for pe in f.perceived:
+            facts = f.facts(pe.event["id"], reveal=True)
+            why = inspector.notable_reason(facts)
+            if why and why != "key_moment" and facts["relevant_keeper"] == team:
+                found.append({"event_id": pe.event["id"], "team": team, "why": why, "clock": facts["clock"]})
+    return sorted(found, key=lambda x: x["event_id"])
+
+
+def viewers_for_team(team):
+    """The viewers a team's texts are cached for: its fans and "Both", in each mode and language."""
+    return [viewer_for(m, c, lang) for c in (team, BOTH) for m in MODES for lang in LANGUAGES]
+
+
+def missing_viewers(event_id, team, view="eyes"):
+    cache = load_cache()
+    return [v for v in viewers_for_team(team)
+            if moment_key(event_id, v["mode"], v["key_club"], v["language"], view) not in cache]
 
 
 # ---------- Text for the full-time keeper report ----------
@@ -293,36 +408,37 @@ def generate_report_text(team, viewer):
 
 # ---------- Filling the cache ahead of a demo ----------
 
-async def warm():
-    """Run the whole match through the agents once, for every mode, club
-    (both clubs plus Both) and language, and store every text in the cache."""
+async def warm(views=VIEWS):
+    """Run the whole match through the agents once per view, for every mode,
+    club (both clubs plus Both) and language, and store every text."""
     from pipeline import run
     match = match_info()
     clubs = [match["home"], match["away"], BOTH]
     viewers = [viewer_for(m, c, lang) for m in MODES for c in clubs for lang in LANGUAGES]
 
-    async for item in run(viewers=viewers):
-        stored = 0
-        for version in item["versions"]:
-            v = version["viewer"]
-            if version["fallback"]:
-                continue
-            if item["kind"] == "moment":
-                key = moment_key(item["event_id"], v["mode"], v["key_club"], v["language"])
-            elif item["kind"] == "full_time" and v["key_club"] == version["keeper_team"]:
-                key = report_key(v["key_club"], v["mode"], v["language"])
-            else:
-                continue  # halftime reports are not shown in the app yet
-            save_to_cache(key, version["text"])
-            stored += 1
-        label = item.get("clock", item["kind"])
-        print(f"{label}: cached {stored} texts, {len(item['errors'])} errors", flush=True)
+    for view in views:
+        async for item in run(viewers=viewers, style=STYLE_OF_VIEW[view]):
+            stored = 0
+            for version in item["versions"]:
+                v = version["viewer"]
+                if version["fallback"]:
+                    continue
+                if item["kind"] == "moment":
+                    key = moment_key(item["event_id"], v["mode"], v["key_club"], v["language"], view)
+                elif item["kind"] == "full_time" and v["key_club"] == version["keeper_team"]:
+                    key = report_key(v["key_club"], v["mode"], v["language"])
+                else:
+                    continue  # halftime reports are not shown in the app yet
+                save_to_cache(key, version["text"])
+                stored += 1
+            label = item.get("clock", item["kind"])
+            print(f"[{view}] {label}: cached {stored} texts, {len(item['errors'])} errors", flush=True)
 
     # Agents sometimes fail for a moment (timeouts, rate limits): try those again
-    await fill_missing()
+    await fill_missing(views)
 
 
-async def fill_missing():
+async def fill_missing(views=VIEWS):
     """Generate only the texts the app needs that are not in the cache yet."""
     from pipeline import run
     match = match_info()
@@ -330,23 +446,26 @@ async def fill_missing():
     cache = load_cache()
 
     # Each moment is shown to fans of its keeper's club and to "Both" viewers
-    for moment in moments:
-        viewers = [viewer_for(m, c, lang) for c in (moment["keeper_team"], BOTH)
-                   for m in MODES for lang in LANGUAGES
-                   if moment_key(moment["event_id"], m, c, lang) not in cache]
-        if not viewers:
-            continue
-        stored = 0
-        async for item in run(only=moment["clock"], viewers=viewers):
-            if item.get("event_id") != moment["event_id"]:
+    for view in views:
+        for moment in moments:
+            viewers = [viewer_for(m, c, lang) for c in (moment["keeper_team"], BOTH)
+                       for m in MODES for lang in LANGUAGES
+                       if moment_key(moment["event_id"], m, c, lang, view) not in cache]
+            if not viewers:
                 continue
-            for version in item["versions"]:
-                v = version["viewer"]
-                if not version["fallback"]:
-                    save_to_cache(moment_key(item["event_id"], v["mode"], v["key_club"],
-                                             v["language"]), version["text"])
-                    stored += 1
-        print(f"{moment['clock']}: filled {stored} of {len(viewers)} missing texts", flush=True)
+            stored = 0
+            async for item in run(only=moment["clock"], viewers=viewers,
+                                  style=STYLE_OF_VIEW[view]):
+                if item.get("event_id") != moment["event_id"]:
+                    continue
+                for version in item["versions"]:
+                    v = version["viewer"]
+                    if not version["fallback"]:
+                        save_to_cache(moment_key(item["event_id"], v["mode"], v["key_club"],
+                                                 v["language"], view), version["text"])
+                        stored += 1
+            print(f"[{view}] {moment['clock']}: filled {stored} of {len(viewers)} missing texts",
+                  flush=True)
 
     # The full-time report, for fans of each club
     viewers = [viewer_for(m, team, lang) for team in (match["home"], match["away"])
@@ -360,14 +479,80 @@ async def fill_missing():
         print(f"full time: filled {sum(1 for x in texts if x)} of {len(viewers)} missing texts")
 
 
+def plan_requests(views=VIEWS):
+    """Count the agent requests still needed to fill the cache, without making any.
+    Each event costs 1 Analyst + 1 Narrator request, plus 1 Personalizer request
+    per viewer still missing. Returns {part: {"events": n, "requests": n}}."""
+    cache = load_cache()
+    match = match_info()
+    plan = {part: {"events": 0, "requests": 0} for part in ("key moments", "notable passes", "reports")}
+
+    def add(part, missing):
+        if missing:
+            plan[part]["events"] += 1
+            plan[part]["requests"] += 2 + missing
+
+    _, _, moments, _ = replay_to(match, None, match_end_second())
+    for view in views:
+        for moment in moments:
+            add("key moments", sum(
+                1 for c in (moment["keeper_team"], BOTH) for m in MODES for lang in LANGUAGES
+                if moment_key(moment["event_id"], m, c, lang, view) not in cache))
+        for item in notable_events():
+            add("notable passes", len(missing_viewers(item["event_id"], item["team"], view)))
+    for team in (match["home"], match["away"]):  # one Narrator request per team, one Personalizer per viewer
+        missing = sum(1 for m in MODES for lang in LANGUAGES if report_key(team, m, lang) not in cache)
+        if missing:
+            plan["reports"]["events"] += 1
+            plan["reports"]["requests"] += 1 + missing
+    return plan
+
+
+async def fill_notable(views=VIEWS):
+    """Generate the agent texts for the notable passes and keeper passes that are
+    not cached yet. Safe to stop and run again: events with all their texts
+    cached are skipped. One replay per keeper, so it does not repeat the match
+    for every event."""
+    from pipeline import run
+    for view in views:
+        for team in (match_info()["home"], match_info()["away"]):
+            todo = {}
+            for item in notable_events():
+                if item["team"] == team and missing_viewers(item["event_id"], team, view):
+                    todo[item["event_id"]] = team
+            if not todo:
+                continue
+            # one run per set of missing viewers keeps the requests down; most events share the same set
+            groups = {}
+            for event_id in todo:
+                key = tuple(v["name"] for v in missing_viewers(event_id, team, view))
+                groups.setdefault(key, []).append(event_id)
+            for names, ids in groups.items():
+                viewers = [v for v in viewers_for_team(team) if v["name"] in names]
+                async for item in run(viewers=viewers, style=STYLE_OF_VIEW[view],
+                                      event_ids={i: team for i in ids}):
+                    stored = 0
+                    for version in item["versions"]:
+                        v = version["viewer"]
+                        if not version["fallback"]:
+                            save_to_cache(moment_key(item["event_id"], v["mode"], v["key_club"],
+                                                     v["language"], view), version["text"])
+                            stored += 1
+                    print(f"[{view}] {item['clock']} ({team}): cached {stored} texts, "
+                          f"{len(item['errors'])} errors", flush=True)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--warm", action="store_true", help="fill the whole cache using the agents")
     parser.add_argument("--missing", action="store_true", help="fill only texts not cached yet")
+    parser.add_argument("--view", choices=["eyes", "broadcast", "both"], default="eyes",
+                        help="which view's texts to generate (default: eyes)")
     args = parser.parse_args()
+    chosen = ("eyes", "broadcast") if args.view == "both" else (args.view,)
     if args.warm:
-        asyncio.run(warm())
+        asyncio.run(warm(chosen))
     elif args.missing:
-        asyncio.run(fill_missing())
+        asyncio.run(fill_missing(chosen))
     else:
         parser.print_help()
