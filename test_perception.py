@@ -141,6 +141,19 @@ def test_the_crowd_the_keeper_sees():
     print("ok  Keeper's eyes shows only the players in view; Reveal shows everyone, flagged by the same rule")
 
 
+def test_the_cone_never_points_into_the_keepers_own_net():
+    """Whatever the ball does (a goal kick behind him, a back-pass, a corner), the keeper does not face backward."""
+    for team in TEAMS:
+        f = full(team)
+        facings = [f.snapshot(e["id"])["facing"] for e in RAW]
+        assert all(abs(a) <= 80.0 + 1e-9 for a in facings), max(abs(a) for a in facings)
+        own = [pe for pe in f.perceived if pe.event["type"] == "keeper_distribution" and pe.event["team"] == team]
+        assert own and all(abs(pe.facing) <= 80.0 + 1e-9 for pe in own)
+        for second in range(0, 5400, 37):                         # the live pitch too
+            assert abs(f.state_at(second)["facing"]) <= 80.0 + 1e-9
+    print("ok  the keeper never faces his own net: distributions, goal kicks and the live view all face up the pitch")
+
+
 def test_wider_view_sees_more():
     narrow = PerceptionFilter(TEAMS[0], fov_deg=90)
     wide = PerceptionFilter(TEAMS[0], fov_deg=180)
@@ -160,5 +173,6 @@ if __name__ == "__main__":
     test_bodies_block_the_view()
     test_perception_reads_the_tracking()
     test_the_crowd_the_keeper_sees()
+    test_the_cone_never_points_into_the_keepers_own_net()
     test_wider_view_sees_more()
     print("all perception tests passed")

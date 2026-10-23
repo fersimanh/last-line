@@ -85,8 +85,12 @@ def test_near_bodies_hide_more_than_far_ones():
 
 def test_facing_angle():
     assert v.facing_angle(KEEPER, (30.0, 34.0)) == 0.0          # ball straight up the pitch
-    assert abs(v.facing_angle(KEEPER, (4.0, 60.0)) - 90.0) < 1e-9  # ball level, toward y = 68
+    assert abs(v.facing_angle(KEEPER, (4.0, 60.0)) - v.MAX_TURN_DEG) < 1e-9  # ball level: he turns, but not past the limit
     assert v.facing_angle(KEEPER, KEEPER) == 0.0                # ball at the keeper's feet
+    assert v.facing_angle((6.0, 34.0), (5.5, 34.0)) == 0.0      # a goal kick just behind him: he faces up the pitch
+    for ball in [(0.5, 34.0), (0.5, 10.0), (-1.0, 60.0), (2.0, 20.0), (2.0, 48.0)]:   # behind him, near the goal line
+        assert abs(v.facing_angle((8.0, 34.0), ball)) <= v.MAX_TURN_DEG, ball        # never into his own net
+    assert v.facing_angle((8.0, 34.0), (2.0, 20.0)) < 0 < v.facing_angle((8.0, 34.0), (2.0, 48.0))   # but toward its side
     print("ok  facing angle")
 
 

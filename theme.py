@@ -123,7 +123,9 @@ def _variables():
 _CSS = """
 html,body,.stApp,[data-testid="stAppViewContainer"]{background:var(--ll-bg);color:var(--ll-body);font-family:var(--ll-font-body)}
 [data-testid="stHeader"]{background:transparent}
-[data-testid="stToolbar"],[data-testid="stDecoration"],[data-testid="stStatusWidget"],#MainMenu,footer{display:none!important}
+[data-testid="stToolbarActions"],[data-testid="stDecoration"],[data-testid="stStatusWidget"],#MainMenu,footer{display:none!important}
+/* the toolbar itself stays: it holds the button that reopens a collapsed sidebar */
+[data-testid="stExpandSidebarButton"],[data-testid="stSidebarCollapseButton"]{display:flex!important;visibility:visible!important;opacity:1!important}
 [data-testid="stMainBlockContainer"],.block-container{max-width:MAXWIDTH;padding:2rem 1.5rem 4rem}
 [data-testid="stMainBlockContainer"] [data-testid="stVerticalBlock"]{gap:1rem}
 h1,h2,h3,h4,h5{font-family:var(--ll-font-display);color:var(--ll-heading);font-weight:800;letter-spacing:-.01em}
@@ -150,9 +152,10 @@ div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]:focus-with
 .ll-ht{position:absolute;left:50%;top:8px;bottom:22px;width:2px;background:var(--ll-tile-border);transform:translateX(-50%)}
 .ll-tick{position:absolute;top:27px;width:2px;height:7px;background:var(--ll-body);transform:translateX(-50%)}
 .ll-goal{position:absolute;top:1px;width:10px;height:10px;background:var(--ll-heading);border:1px solid var(--ll-bg);transform:translateX(-50%) rotate(45deg)}
-.ll-tl-label{display:grid;grid-template-columns:1fr auto 1fr;margin-top:16px;font-family:var(--ll-font-mono);font-size:12px;color:var(--ll-body)}
-.ll-tl-label span:last-child{text-align:right}
+.ll-tl-label{position:relative;display:flex;justify-content:space-between;margin-top:16px;font-family:var(--ll-font-mono);font-size:12px;color:var(--ll-body)}
+.ll-tl-label .ll-ht-label{position:absolute;transform:translateX(-50%)}
 [class*="st-key-card_"],[class*="st-key-inspector"]{background:var(--ll-card);border:1px solid var(--ll-border);border-radius:var(--ll-radius-card);padding:var(--ll-pad)}
+[class*="st-key-card_sel_"]{border-color:var(--ll-lime)!important;box-shadow:0 0 0 1px var(--ll-lime)}
 .ll-inspector-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ll-seen-line{font-size:14px;color:var(--ll-body);margin:8px 0 4px}
 .ll-card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}

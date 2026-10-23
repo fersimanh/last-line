@@ -336,6 +336,9 @@ def test_the_clock_a_fan_sees():
     assert display_clock(2700, h2).startswith("45+0:") and display_clock(h2 - 1, h2).startswith("45+")
     assert display_clock(h2, h2) == "45:00" and display_clock(h2 + 60, h2) == "46:00"
     assert display_clock(h2 + 2700, h2) == "90+0:00"
+    from matchclock import minute_label
+    assert minute_label(2699, h2) == "44" and minute_label(2700, h2) == "45+1" and minute_label(2765, h2) == "45+2"
+    assert minute_label(h2, h2) == "45" and minute_label(h2 + 2700 + 30, h2) == "90+1"
     clocks = [e["clock"] for e in EVENTS]
     first = [e["clock"] for e in EVENTS if e["half"] == 1]
     second = [e["clock"] for e in EVENTS if e["half"] == 2 and e["clock"] != first[-1]]

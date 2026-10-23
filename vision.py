@@ -39,6 +39,8 @@ DEFAULT_RADIUS_M = 55          # how far the keeper can make things out
 TRAIL_LENGTH = 8               # events kept for the fading trail
 BODY_HALF_WIDTH_M = 0.3        # half a player's shoulder width: what blocks a sightline
 BLOCK_MARGIN_M = 0.5           # a body must be at least this much nearer than the point
+CLOSE_BALL_M = 3.0               # a ball this close is at the keeper's feet: he looks up the pitch
+MAX_TURN_DEG = 80.0              # a keeper never faces further round than this from straight up the pitch
 GAZE_LAG_SAMPLES = 1           # the keeper looks where the ball was this many tracking samples (0.5 s) before an event
 
 # Done by the defending team, but recorded in the attacking team's frame
@@ -96,13 +98,19 @@ def ball_position(event, followed_team):
 
 
 def facing_angle(keeper_pos, ball_pos):
-    """Degrees the keeper faces: 0 = straight up the pitch (+x), 90 = toward
-    y = 68. The keeper always faces the ball. If the ball is at the keeper's
-    feet there is no direction, so face up the pitch."""
+    """Degrees the keeper faces: 0 = straight up the pitch (+x), positive toward
+    y = 68. The keeper faces the ball, with two limits that keep the cone from
+    pointing into his own net:
+      - the ball is at his feet (within CLOSE_BALL_M): he has it, so he looks up the pitch;
+      - he never turns further than MAX_TURN_DEG from straight up the pitch, however far
+        to the side or behind him the ball is."""
     dx, dy = ball_pos[0] - keeper_pos[0], ball_pos[1] - keeper_pos[1]
-    if math.hypot(dx, dy) < 0.5:
+    if math.hypot(dx, dy) < CLOSE_BALL_M:
         return 0.0
-    return math.degrees(math.atan2(dy, dx))
+    angle = math.degrees(math.atan2(dy, dx))
+    if abs(angle) > 90:                       # behind him: turn toward the ball's side, no further than the limit
+        angle = math.copysign(MAX_TURN_DEG, angle)
+    return max(-MAX_TURN_DEG, min(MAX_TURN_DEG, angle))
 
 
 def off_axis_deg(keeper_pos, facing, event_pos):

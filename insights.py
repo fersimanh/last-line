@@ -22,6 +22,7 @@ import argparse
 import asyncio
 import json
 import os
+import time
 from datetime import datetime, timezone
 
 import inspector
@@ -29,7 +30,7 @@ from inspector import DIST_VERDICT_ES, VERDICT_ES, second_person_text  # noqa: F
 from perception import PerceptionFilter, match_fingerprint, match_info
 from replay import clock
 from scoring import MatchState
-from vision import DEFAULT_FOV_DEG
+from vision import DEFAULT_FOV_DEG, DEFAULT_RADIUS_M
 
 CACHE_PATH = "insight_cache.json"
 # Bump this when the agents' input changes, so older cached texts are dropped
@@ -60,15 +61,15 @@ def keeper_team(event, state):
     return state.other(event["team"])
 
 
-_filters = {}  # (match fingerprint, team, fov) -> a PerceptionFilter replayed to full time
+_filters = {}  # (match fingerprint, team, fov, sight range) -> a PerceptionFilter replayed to full time
 
 
-def filter_for(team, fov_deg=DEFAULT_FOV_DEG):
-    """One keeper's PerceptionFilter at a field of view, replayed to full time
-    once and reused. The app's field-of-view slider asks for other angles."""
-    key = (match_fingerprint(), team, int(fov_deg))
+def filter_for(team, fov_deg=DEFAULT_FOV_DEG, radius_m=DEFAULT_RADIUS_M):
+    """One keeper's PerceptionFilter at a field of view and a sight range, replayed to
+    full time once and reused. The app's sliders ask for other angles and ranges."""
+    key = (match_fingerprint(), team, int(fov_deg), int(radius_m))
     if key not in _filters:
-        f = PerceptionFilter(team, fov_deg=fov_deg)
+        f = PerceptionFilter(team, fov_deg=fov_deg, radius_m=radius_m)
         f.advance_all()
         _filters[key] = f
     return _filters[key]
@@ -80,10 +81,10 @@ def keeper_eyes(team):
     return filter_for(team, DEFAULT_FOV_DEG)
 
 
-def perceived_state(team, fov_deg, upto_sec):
+def perceived_state(team, fov_deg, upto_sec, radius_m=DEFAULT_RADIUS_M):
     """The keeper's own picture of the match at a second: a MatchState fed with
     only what they perceived (workload, danger and numbers as they know them)."""
-    f = filter_for(team, fov_deg)
+    f = filter_for(team, fov_deg, radius_m)
     state = MatchState(f.match["home"], f.match["away"])
     for pe in f.perceived:
         if pe.second > upto_sec:
@@ -257,20 +258,36 @@ def fallback_text(moment, language, view="eyes"):
     return f"{moment['player']} {'sale a despejar' if spanish else 'sweeps up the danger'}."
 
 
-def get_insight_text(moment, mode, language, club, view="eyes"):
+_failed = {}               # cache key -> when the agents last failed for it (see may_ask)
+RETRY_AFTER_SEC = 600      # after a failure, do not ask the agents for the same text again for this long
+
+
+def may_ask(key):
+    """Should the app ask the agents for this text now? Not if they failed for it recently:
+    without this, every click or setting change would wait for the same slow failure again."""
+    return LIVE_AGENTS and time.time() - _failed.get(key, -1e9) > RETRY_AFTER_SEC
+
+
+def note_failure(key):
+    _failed[key] = time.time()
+
+
+def get_insight_text(moment, mode, language, club, view="eyes", live=True):
     """Text for one key moment. mode: "casual" or "analyst"; language: "en"
     or "es"; club: a club name or BOTH; view: "eyes" (second person) or
     "broadcast" (first person). Cache first, then the agents, then the
-    fallback line."""
+    fallback line. `live=False` never calls the agents (the app uses it while the
+    match plays: a slow call would freeze the replay)."""
     key = moment_key(moment["event_id"], mode, club, language, view)
     cached = load_cache().get(key)
     if cached:
         return cached["text"]
-    if LIVE_AGENTS:
+    if live and may_ask(key):
         text = generate_moment_text(moment, viewer_for(mode, club, language), view)
         if text:
             save_to_cache(key, text)
             return text
+        note_failure(key)
     return fallback_text(moment, language, view)
 
 
@@ -319,11 +336,12 @@ def get_event_text(team, facts, mode, language, club, view="eyes"):
     cached = load_cache().get(key)
     if cached:
         return cached["text"], "ai"
-    if LIVE_AGENTS:
+    if may_ask(key):
         text = generate_event_text(team, info["text_event_id"], viewer_for(mode, club, language), view)
         if text:
             save_to_cache(key, text)
             return text, "ai"
+        note_failure(key)
     return template, "quick"
 
 
@@ -378,11 +396,12 @@ def get_report_text(team, mode, language):
     cached = load_cache().get(key)
     if cached:
         return cached["text"]
-    if LIVE_AGENTS:
+    if may_ask(key):
         text = generate_report_text(team, viewer_for(mode, team, language))
         if text:
             save_to_cache(key, text)
             return text
+        note_failure(key)
     return None
 
 

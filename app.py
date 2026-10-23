@@ -26,7 +26,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 import inspector
-from matchclock import display_clock
+from matchclock import display_clock, minute_label
 import selection
 import theme
 import vision
@@ -38,7 +38,8 @@ from perception import match_fingerprint, match_info
 # .env wins over old terminal values (only needed when the agents are called live)
 load_dotenv(override=True)
 
-st.set_page_config(page_title="Last Line", page_icon=":material/sports_soccer:", layout="wide")
+st.set_page_config(page_title="Last Line", page_icon=":material/sports_soccer:", layout="wide",
+                   initial_sidebar_state="expanded")
 
 # ---------- Settings ----------
 
@@ -51,6 +52,12 @@ RECENT_EVENTS = 8                 # events kept in the fading trail
 UNSEEN_WINDOW_SEC = 30            # "missed in the last N seconds"
 PITCH_CUT = 60.0                  # the Keeper's eyes pitch ends here: just past halfway (52.5)
 VIEW_X_MAX = 62.5                 # top edge of the plot, in meters from the followed goal line
+LONG_SIGHT_M = 56                 # with a sight range above this the whole pitch is drawn
+
+
+def view_top(sight_m):
+    """Top edge of the plot: just past halfway normally, the whole pitch for a long sight range."""
+    return 107.0 if sight_m >= LONG_SIGHT_M else VIEW_X_MAX
 
 EYES, REVEAL = "Keeper's eyes", "Reveal"   # values of the View control
 
@@ -90,6 +97,9 @@ TEXT = {
         "keeper": "Keeper", "ball": "Ball", "sightline": "Modeled sightline",
         "legend_seen": "Seen", "legend_own": "Your action", "legend_felt": "Felt, not seen",
         "legend_goal": "Goal", "legend_missed": "Missed",
+        "show_on_pitch": "Show on pitch", "showing_on_pitch": "Showing this moment on the pitch",
+        "pitch_focus": "The pitch shows the selected moment at {clock}. Press Back to live to return to the match.",
+        "focus_far": "It happened in the other half, {d} m from the keeper, beyond the part of the pitch shown.",
         "full_pitch": "Show the full pitch (no dimming)",
         "full_pitch_help": "Turns off the dimming outside the keeper's cone. The cone is still drawn.",
         "players_mine": "Your team", "players_theirs": "Opponents", "players_hidden": "Out of sight",
@@ -117,8 +127,9 @@ TEXT = {
         "shots_faced": "Shots faced", "full_time": "Full time",
         "completion": "Distribution completed", "long_balls": "Long balls",
         "avg_decision": "Avg decision score", "attacks": "Attacks ending in a shot",
-        "fov_note": "Explanations were written for the 120 degree sightline. Other angles are a what-if: "
-                    "the cone, dimming and missed counts change.",
+        "fov_note": "Explanations were written for a 120 degree sightline reaching 55 m. Other angles and "
+                    "ranges are a what-if: the cone, dimming and missed counts change (above 55 m the "
+                    "whole pitch is drawn).",
         "synthetic": "Synthetic match with fictional clubs and players. No real data.",
         "m": "m", "asking_agents": "Asking the agents...", "asking_narrator": "Asking the narrator...",
         "tab_moments": "Key moments", "tab_events": "Events", "filter_all": "All", "filter_shots": "Shots",
@@ -165,6 +176,9 @@ TEXT = {
         "keeper": "Portero", "ball": "Balón", "sightline": "Línea de visión modelada",
         "legend_seen": "Visto", "legend_own": "Tu acción", "legend_felt": "Sentido, no visto",
         "legend_goal": "Gol", "legend_missed": "No visto",
+        "show_on_pitch": "Ver en el campo", "showing_on_pitch": "Mostrando este momento en el campo",
+        "pitch_focus": "El campo muestra el momento elegido ({clock}). Pulsa Volver al directo para regresar al partido.",
+        "focus_far": "Ocurrió en la otra mitad, a {d} m del portero, fuera de la parte del campo mostrada.",
         "full_pitch": "Mostrar todo el campo (sin atenuar)",
         "full_pitch_help": "Quita el oscurecido fuera del cono del portero. El cono se sigue dibujando.",
         "players_mine": "Tu equipo", "players_theirs": "Rivales", "players_hidden": "Fuera de vista",
@@ -268,6 +282,7 @@ language_label = st.sidebar.radio("Language / Idioma", ["English", "Español"], 
 speed = st.sidebar.select_slider("Replay speed", SPEEDS, value=DEFAULT_SPEED, key="speed",
                                  format_func=lambda s: f"{s}x · full match in {round(END_SEC / s)} s")
 fov = st.sidebar.slider("Field of view (degrees)", 90, 180, vision.DEFAULT_FOV_DEG, step=10, key="fov")
+sight = st.sidebar.slider("Sight range (meters)", 30, 100, vision.DEFAULT_RADIUS_M, step=5, key="sight")
 full_pitch = st.sidebar.checkbox("Show the full pitch (no dimming)", key="full_pitch")
 
 play_col, pause_col, restart_col = st.sidebar.columns(3)
@@ -276,6 +291,7 @@ if play_col.button("Play", key="play", type="primary", icon=":material/play_arro
         st.session_state.match_sec = 0  # pressing Play at full time starts again
     st.session_state.playing = True
     st.session_state.last_wall = time.time()
+    st.session_state.selected_event_id = None   # playing again closes the inspector, like Back to live
 if pause_col.button("Pause", key="pause", icon=":material/pause:"):
     st.session_state.playing = False
 if restart_col.button("Restart", key="restart", icon=":material/replay:"):
@@ -301,6 +317,16 @@ st.markdown(f'<div class="ll-header"><span class="ll-eyebrow">{esc(t["eyebrow"])
 def clock_text(seconds):
     """The match clock a fan sees: 45:00 again after half time, 90+3:25 in added time."""
     return display_clock(seconds, HALF_TIME_SEC)
+
+
+def minute_text(seconds):
+    """A short minute label for the slider and the timeline: 56, 45+2, 90+4."""
+    return minute_label(seconds, HALF_TIME_SEC)
+
+
+def event_clock(event):
+    """The clock an event happened at, as a fan sees it (written by the engine on each event)."""
+    return event.get("clock") or clock_text(match_second(event))
 
 
 def verdict_label(verdict):
@@ -364,17 +390,17 @@ def timeline_html(now, ticks=()):
     goals = [(s, team) for s, team in keeper_eyes(HOME).goal_seconds() if s <= now]
     diamonds = "".join(
         f'<span class="ll-goal" style="left:{min(s / 60, SPAN_MIN) / SPAN_MIN * 100:.2f}%" '
-        f'title="{esc(t["goal"], quote=True)} {int(s // 60)}&#39; {esc(team, quote=True)}"></span>'
+        f'title="{esc(t["goal"], quote=True)} {minute_text(s)}&#39; {esc(team, quote=True)}"></span>'
         for s, team in goals)
     marks = "".join(f'<span class="ll-tick" style="left:{min(sec / 60, SPAN_MIN) / SPAN_MIN * 100:.2f}%" '
                     f'title="{esc(label, quote=True)}"></span>' for sec, label in ticks if sec <= now)
-    goal_text = ", ".join(f"{int(s // 60)}'" for s, _ in goals) or "-"
+    goal_text = ", ".join(f"{minute_text(s)}'" for s, _ in goals) or "-"
     aria = f"{clock_text(now)} of {clock_text(END_SEC)}. {t['goal']}: {goal_text}"
     return (f'<div class="ll-timeline" role="img" aria-label="{esc(aria, quote=True)}">'
             f'<div class="ll-segs" style="grid-template-columns:repeat({count},1fr)">{segments}</div>'
             f'<span class="ll-ht" style="left:{HALF_TIME_SEC / 60 / SPAN_MIN * 100:.2f}%"></span>{marks}{diamonds}'
-            f'<div class="ll-tl-label"><span>{esc(clock_text(now).split(":")[0])}&#39;</span><span>HT 45&#39;</span>'
-            f'<span>{esc(clock_text(END_SEC).split(":")[0])}&#39;</span></div></div>')
+            f'<div class="ll-tl-label"><span>{esc(minute_text(now))}&#39;</span><span class="ll-ht-label" style="left:{HALF_TIME_SEC / 60 / SPAN_MIN * 100:.2f}%">HT 45&#39;</span>'
+            f'<span>{esc(minute_text(END_SEC))}&#39;</span></div></div>')
 
 
 # ---------- Charts ----------
@@ -403,15 +429,23 @@ def arc_points(cx, cy, radius, start_deg, end_deg, steps=40):
             for a in angles]
 
 
-def draw_followed_half(fig):
-    """The pitch from the followed goal line (x = 0) to just past halfway."""
+def draw_followed_half(fig, whole=False):
+    """The pitch from the followed goal line (x = 0) to just past halfway (or all 105 m)."""
     line = theme.PITCH_LINE
-    add_path(fig, rect_points(0, PITCH_CUT, 0, 68), closed=True, fill=theme.CARD, color=line)
+    cut = 105.0 if whole else PITCH_CUT
+    add_path(fig, rect_points(0, cut, 0, 68), closed=True, fill=theme.CARD, color=line)
     add_path(fig, rect_points(0, 16.5, 13.84, 54.16), closed=True, color=line)       # penalty area
     add_path(fig, rect_points(0, 5.5, 24.84, 43.16), closed=True, color=line)        # six-yard box
     add_path(fig, rect_points(-2.2, 0, GOAL_Y_MIN, GOAL_Y_MAX), closed=True, color=line)  # goal
     add_path(fig, [(52.5, 0), (52.5, 68)], color=line)                               # halfway line
-    add_path(fig, arc_points(52.5, 34, 9.15, 35, 325), color=line)                   # center circle (cut at 60 m)
+    if whole:                                                                         # the other end of the pitch
+        add_path(fig, arc_points(52.5, 34, 9.15, 0, 360), color=line)
+        add_path(fig, rect_points(88.5, 105, 13.84, 54.16), closed=True, color=line)
+        add_path(fig, rect_points(99.5, 105, 24.84, 43.16), closed=True, color=line)
+        add_path(fig, rect_points(105, 107.2, GOAL_Y_MIN, GOAL_Y_MAX), closed=True, color=line)
+        add_path(fig, arc_points(94, 34, 9.15, 127, 233), color=line)
+    else:
+        add_path(fig, arc_points(52.5, 34, 9.15, 35, 325), color=line)               # center circle (cut at 60 m)
     add_path(fig, arc_points(11, 34, 9.15, -53, 53), color=line)                     # penalty arc
     add_path(fig, arc_points(11, 34, 0.35, 0, 360, 12), closed=True, fill=line)      # penalty spot
 
@@ -426,26 +460,31 @@ def event_hover(row):
     event = row["event"]
     sight = t["legend_missed"] if row["sight"] == "missed" else t["sight_" + row["sight"]]
     why = f" · {t[REASON_KEY[row['reason']]]}" if row["reason"] else ""
-    return (f"{clock_text(match_second(event))} · {t['ev'][event['type']]}<br>"
+    return (f"{event_clock(event)} · {t['ev'][event['type']]}<br>"
             f"{esc(event['player'])} ({esc(event['team'])})<br>{sight}{why} · "
             f"{row['distance_m']:.0f} {t['m']}")
 
 
-def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=False):
+def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=False,
+                 sight_m=vision.DEFAULT_RADIUS_M):
     """The Keeper's eyes pitch. `sense` is the keeper's position, the ball and
     the direction they face; `rows` are the last events (perceived ones; in the
     Reveal view also the missed ones, drawn hollow). Every event marker carries
     its event id, so a click can select it; `selected_id` gets a ring. `full_pitch`
     turns the dimming off. `sense["players"]` are the other players (from the tracking):
-    in Keeper's eyes only those in view, in Reveal everyone, hollow when out of sight."""
+    in Keeper's eyes only those in view, in Reveal everyone, hollow when out of sight.
+    `sight_m` is the sight range: the cone's length, and above LONG_SIGHT_M the whole pitch is drawn."""
     fig = go.Figure()
     keeper, ball, facing = sense["keeper"], sense["ball"], sense["facing"]
-    draw_followed_half(fig)
+    top = view_top(sight_m)
+    height = int(height * (top + 3.2) / (VIEW_X_MAX + 3.2))          # a longer pitch needs a taller plot
+    draw_followed_half(fig, whole=top > VIEW_X_MAX)
 
-    cone = cone_points(keeper, facing, fov_deg)
+    cone = [(min(max(x, 0.0), top), min(max(y, 0.0), 68.0))
+            for x, y in cone_points(keeper, facing, fov_deg, sight_m)]   # keep it on the pitch
     # Dim everything outside the cone: a big rectangle with the cone cut out of it
     # (even-odd fill), in the page background at 70% opacity
-    outer = rect_points(-4, VIEW_X_MAX + 2, -3, 71)
+    outer = rect_points(-4, top + 2, -3, 71)
     if not full_pitch:
         fig.add_shape(type="path", layer="below", fillrule="evenodd", line=dict(width=0),
                       fillcolor=theme.rgba(theme.BG, 0.7),
@@ -455,7 +494,7 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
                   line=dict(color=theme.LIME, width=1), path=path_text(cone) + " Z")
 
     # The other players, from the tracking: filled when in view, hollow when out of sight (Reveal only)
-    crowd = [p for p in sense.get("players", []) if p["x"] <= VIEW_X_MAX + 0.5]
+    crowd = [p for p in sense.get("players", []) if p["x"] <= top + 0.5]
     for mine in (True, False):
         for visible in (True, False):
             group = [p for p in crowd if (p["team"] == sense.get("team")) == mine and p["visible"] == visible]
@@ -473,7 +512,7 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
                 hoverinfo="text"))
 
     # The trail: recent events joined oldest to newest, fading in
-    shown = [r for r in rows if r["position"][0] <= VIEW_X_MAX]
+    shown = [r for r in rows if r["position"][0] <= top]
     n = len(shown)
     for i in range(1, n):
         a, b = shown[i - 1]["position"], shown[i]["position"]
@@ -512,8 +551,8 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
                                  marker=dict(symbol="circle-open", size=27, line=dict(width=3, color=theme.HEADING))))
 
     # The ball: a keeper always tracks it, seen or not
-    near = ball[0] <= VIEW_X_MAX - 1
-    ball_y = ball[0] if near else VIEW_X_MAX - 1.2
+    near = ball[0] <= top - 1
+    ball_y = ball[0] if near else top - 1.2
     hover = t["ball"] if near else t["ball_far"].format(
         d=round(math.hypot(ball[0] - keeper[0], ball[1] - keeper[1])))
     fig.add_trace(go.Scatter(x=[ball[1]], y=[ball_y], mode="markers", name=t["ball"],
@@ -528,7 +567,7 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
                              hovertext=[t["keeper"]], hoverinfo="text"))
 
     # The cone's label, on its axis and kept inside the plot
-    lx = max(4.0, min(58.0, keeper[0] + 24 * math.cos(math.radians(facing))))
+    lx = max(4.0, min(top - 4.5, keeper[0] + 24 * math.cos(math.radians(facing))))
     ly = max(8.0, min(60.0, keeper[1] + 24 * math.sin(math.radians(facing))))
     fig.add_annotation(x=ly, y=lx, text=f"{t['sightline'].upper()} · {fov_deg}°", showarrow=False,
                        font=dict(family=theme.FONT_PLOTLY_MONO, size=10, color=theme.LIME),
@@ -536,13 +575,13 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
 
     fig.update_layout(**theme.plotly_layout(height))
     fig.update_xaxes(range=[69, -1], visible=False)            # reversed: the keeper's left is on the left
-    fig.update_yaxes(range=[-3.2, VIEW_X_MAX], visible=False, scaleanchor="x", scaleratio=1)
+    fig.update_yaxes(range=[-3.2, top], visible=False, scaleanchor="x", scaleratio=1)
     return fig
 
 
 def hover_text(shot):
     event, insight = shot["event"], shot["insight"]
-    text = (f"{clock_text(match_second(event))} · {esc(event['player'])} ({esc(event['team'])})<br>"
+    text = (f"{event_clock(event)} · {esc(event['player'])} ({esc(event['team'])})<br>"
             f"{t[event['outcome']]} · {event['distance_m']} {t['m']} · {event['speed_kmh']} km/h")
     if insight:
         text += f"<br>{t['saveability']} {insight['saveability']} · {verdict_label(insight['verdict'])}"
@@ -663,15 +702,17 @@ def moment_card(moment):
         pills += pill(f"{t['saveability']} {moment['saveability']}")
     if d:
         pills += pill(f"{t['quality']} {d['quality']}")
-    with st.container(key=f"card_{moment['event_id']}"):
+    chosen = st.session_state.selected_event_id == moment["event_id"]
+    with st.container(key=f"card_sel_{moment['event_id']}" if chosen else f"card_{moment['event_id']}"):
         st.markdown(f'<div class="ll-card-head"><span class="ll-clock">{moment["clock"]}</span>'
                     f'<span class="ll-label">{esc(t["tag_" + moment["type"]])}</span>{pills}</div>'
                     f'<div class="ll-headline">{esc(headline)}</div>', unsafe_allow_html=True)
-        with st.spinner(t["asking_agents"]):  # only shows on a slow cache miss
-            body = get_insight_text(moment, mode, lang, club, "eyes")
+        body = get_insight_text(moment, mode, lang, club, "eyes", live=False)   # cache or quick text: never block the replay
         st.markdown(f'<div class="ll-body">{esc(body)}</div>', unsafe_allow_html=True)
         with st.expander(t["numbers"]):
             st.markdown(numbers_markdown(moment))
+        st.button(t["showing_on_pitch"] if chosen else t["show_on_pitch"], key=f"show_{moment['event_id']}",
+                  on_click=choose, args=(moment["event_id"],), disabled=chosen, icon=":material/my_location:")
 
 
 def cards_column(moments, teams):
@@ -691,9 +732,11 @@ FILTERS = {  # the Events list filters: name -> event types (None = all)
     "all": None,
     "shots": ("shot", "goal"),
     "passes": ("pass", "through_ball", "cross", "box_entry"),
-    "keeper": ("keeper_save", "keeper_claim", "keeper_sweep", "keeper_close_down", "keeper_distribution"),
-    "other": ("tackle", "possession_change"),
+    "keeper": ("keeper_save", "keeper_claim", "keeper_sweep", "keeper_close_down", "keeper_distribution",
+               "keeper_punch"),
+    "other": "rest",   # everything the other filters leave out: tackles, set pieces, fouls, cards...
 }
+NAMED_TYPES = {kind for types in FILTERS.values() if isinstance(types, tuple) for kind in types}
 
 
 @st.cache_data
@@ -708,7 +751,8 @@ def current_team():
 
 
 def current_filter():
-    return filter_for(current_team(), st.session_state.get("fov", vision.DEFAULT_FOV_DEG))
+    return filter_for(current_team(), st.session_state.get("fov", vision.DEFAULT_FOV_DEG),
+                      st.session_state.get("sight", vision.DEFAULT_RADIUS_M))
 
 
 def reveal_on():
@@ -789,10 +833,12 @@ def events_list(f, now, reveal):
     for event_id in reversed(f.selectable_ids(now, reveal)):   # newest first
         row = f.lookup(event_id, reveal)
         event = row["event"]
-        if wanted and event["type"] not in wanted:
+        if wanted == "rest" and event["type"] in NAMED_TYPES:
+            continue
+        if isinstance(wanted, tuple) and event["type"] not in wanted:
             continue
         ids.append(event_id)
-        table.append({t["col_clock"]: clock_text(match_second(event)), t["col_event"]: t["ev"][event["type"]],
+        table.append({t["col_clock"]: event_clock(event), t["col_event"]: t["ev"][event["type"]],
                       t["col_player"]: event["player"], t["col_team"]: event["team"],
                       t["col_sight"]: inspector.SIGHT_NAMES[lang][row["sight"]]})
     st.session_state.evlist_ids = ids
@@ -810,7 +856,7 @@ def controls_strip(now, finished):
     ss.scrub = min(END_MIN, int(now // 60))          # the slider follows the clock
     slider_col, prev_col, next_col, live_col = st.columns([5, 1.6, 1.6, 1.8], vertical_alignment="bottom")
     slider_col.select_slider(t["scrub"], options=list(range(END_MIN + 1)), key="scrub", on_change=on_scrub,
-                               format_func=lambda m: clock_text(m * 60).split(":")[0])   # shows 45, 45+2, 90+4 ...
+                               format_func=lambda m: minute_text(m * 60))   # shows 44, 45+1, 45+2, 46, ... 90+4
     prev_col.button(t["prev_moment"], key="prev_moment", on_click=jump_moment, args=(-1,),
                     icon=":material/skip_previous:")
     next_col.button(t["next_moment"], key="next_moment", on_click=jump_moment, args=(1,),
@@ -826,7 +872,7 @@ def inspector_panel(team, now, reveal):
     if event_id is None:
         st.caption(t["inspect_hint"])
         return
-    f = filter_for(team, fov)
+    f = filter_for(team, fov, sight)
     if not f.can_select(event_id, now, reveal):
         st.markdown(f'<div class="ll-panel">{esc(t["not_perceived"])}</div>', unsafe_allow_html=True)
         return
@@ -843,13 +889,7 @@ def inspector_panel(team, now, reveal):
     sight_pill = pill(inspector.SIGHT_NAMES[lang][facts["sight"]], lime=facts["sight"] == "seen")
     window = f.window_summary(event_id)
     with st.container(key="inspector"):
-        snap_col, text_col = st.columns([2, 3], gap="large")
-        with snap_col:
-            st.caption(t["show_snapshot"])
-            rows = f.recent(RECENT_EVENTS, now, include_missed=reveal, upto_id=event_id)
-            st.plotly_chart(keeper_pitch(f.snapshot(event_id, reveal), rows, fov, height=380, selected_id=event_id,
-                                       full_pitch=full_pitch),
-                            key=f"snap_{event_id}", width="stretch", config=CLICK_CONFIG)
+        text_col = st.container()                      # the moment itself is shown on the big pitch below
         with text_col:
             st.markdown(f'<div class="ll-inspector-head"><span class="ll-clock">{facts["clock"]}</span>'
                         f'<span class="ll-label">{esc(t["ev"][facts["type"]])}</span>{sight_pill}{source_pill}</div>'
@@ -860,7 +900,7 @@ def inspector_panel(team, now, reveal):
             if reveal and window["missed"]:       # Reveal lists what was missed; Keeper's eyes only counts it
                 st.markdown(f"**{t['missed_list']}**")
                 st.markdown("".join(
-                    f'<div class="ll-missed"><span class="ll-clock">{clock_text(match_second(m.event))}</span>'
+                    f'<div class="ll-missed"><span class="ll-clock">{event_clock(m.event)}</span>'
                     f'<span>{esc(t["ev"][m.event["type"]])} · {esc(m.event["player"])}</span>'
                     f'<span>{esc(inspector.MISSED_WHY[lang][m.reason])}</span></div>'
                     for m in window["missed_events"][-8:]), unsafe_allow_html=True)
@@ -883,19 +923,38 @@ def unseen_counts(f, now):
     return (f.unseen_count(since_sec=now - UNSEEN_WINDOW_SEC, until_sec=now), f.unseen_count(until_sec=now))
 
 
+def pitch_focus(f, now, reveal):
+    """What the big pitch shows: the live moment, or the selected event as it was (its keeper,
+    ball and players, and the events leading up to it). Returns (sense, rows, focused)."""
+    chosen = st.session_state.selected_event_id
+    if chosen is not None and f.can_select(chosen, now, reveal):
+        return (f.snapshot(chosen, reveal), f.recent(RECENT_EVENTS, now, include_missed=reveal, upto_id=chosen), True)
+    return f.state_at(now, reveal=reveal), f.recent(RECENT_EVENTS, now, include_missed=reveal), False
+
+
+def focus_note(f):
+    row = f.lookup(st.session_state.selected_event_id, True)
+    note = t["pitch_focus"].format(clock=event_clock(row["event"]))
+    if row["position"][0] > view_top(sight):            # the pitch may only show the keeper's half
+        note += " " + t["focus_far"].format(d=round(row["distance_m"]))
+    st.caption(note)
+
+
 def eyes_view(team, now, moments):
-    f = filter_for(team, fov)
-    rows = f.recent(RECENT_EVENTS, now)
+    f = filter_for(team, fov, sight)
+    sense, rows, focused = pitch_focus(f, now, False)
     pitch_col, cards_col = st.columns([3, 2], gap="large")  # pitch about 60%, cards about 40%
     with pitch_col:
         st.markdown(f"#### {f.keeper_name()} · {team}")
-        keeper_panel(perceived_state(team, fov, now).snapshot(now)[team], unseen_counts(f, now))
+        keeper_panel(perceived_state(team, fov, now, sight).snapshot(now)[team], unseen_counts(f, now))
         chart_key = f"pitch_{team}"
-        st.plotly_chart(keeper_pitch(f.state_at(now), rows, fov, selected_id=st.session_state.selected_event_id,
-                                     full_pitch=full_pitch),
+        if focused:
+            focus_note(f)
+        st.plotly_chart(keeper_pitch(sense, rows, fov, selected_id=st.session_state.selected_event_id,
+                                     full_pitch=full_pitch, sight_m=sight),
                         key=chart_key, width="stretch", config=CLICK_CONFIG,
                         on_select=partial(on_chart_pick, chart_key), selection_mode="points")
-        hidden = sum(1 for r in rows if r["position"][0] > VIEW_X_MAX)
+        hidden = sum(1 for r in rows if r["position"][0] > view_top(sight))
         st.caption(t["pitch_help"] + (" " + t["beyond_view"].format(n=hidden) if hidden else ""))
     with cards_col:
         side_tabs(t["tab_moments"], lambda: cards_column(moments, [team]), f, now, reveal=False)
@@ -918,7 +977,7 @@ def missed_panel(f, now):
                    for k, v in sorted(counts.items(), key=lambda kv: -kv[1]))
     rows += (f'<div class="ll-missed"><span>{esc(t["options_out"])}</span>'
              f'<span class="ll-clock">{options_out}</span></div>')
-    latest = "".join(f'<div class="ll-missed"><span class="ll-clock">{clock_text(match_second(m.event))}</span>'
+    latest = "".join(f'<div class="ll-missed"><span class="ll-clock">{event_clock(m.event)}</span>'
                      f'<span>{esc(t["ev"][m.event["type"]])} · {esc(m.event["player"])}</span></div>'
                      for m in missed[-6:][::-1])
     st.markdown(f'<div class="ll-panel">{rows}<div style="height:12px"></div>{latest}</div>',
@@ -926,15 +985,17 @@ def missed_panel(f, now):
 
 
 def reveal_view(team, now, moments, shots, official_state):
-    f = filter_for(team, fov)
-    rows = f.recent(RECENT_EVENTS, now, include_missed=True)
+    f = filter_for(team, fov, sight)
+    sense, rows, focused = pitch_focus(f, now, True)
     pitch_col, side_col = st.columns([3, 2], gap="large")
     with pitch_col:
         st.markdown(f"#### {f.keeper_name()} · {team}")
-        keeper_panel(perceived_state(team, fov, now).snapshot(now)[team], unseen_counts(f, now))
+        keeper_panel(perceived_state(team, fov, now, sight).snapshot(now)[team], unseen_counts(f, now))
         chart_key = f"reveal_pitch_{team}"
-        st.plotly_chart(keeper_pitch(f.state_at(now, reveal=True), rows, fov, selected_id=st.session_state.selected_event_id,
-                                     full_pitch=full_pitch),
+        if focused:
+            focus_note(f)
+        st.plotly_chart(keeper_pitch(sense, rows, fov, selected_id=st.session_state.selected_event_id,
+                                     full_pitch=full_pitch, sight_m=sight),
                         key=chart_key, width="stretch", config=CLICK_CONFIG,
                         on_select=partial(on_chart_pick, chart_key), selection_mode="points")
         st.caption(t["pitch_help"] + t["pitch_help_reveal"])

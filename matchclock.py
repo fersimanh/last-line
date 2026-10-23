@@ -17,3 +17,13 @@ def display_clock(seconds, half2_start):
         return f"{shown // 60:02d}:{shown % 60:02d}"
     extra = shown - base
     return f"{base // 60}+{extra // 60}:{extra % 60:02d}"
+
+
+def minute_label(seconds, half2_start):
+    """The minute as fans say it, for short labels (the slider, the timeline): "56", and in
+    added time "45+1" for its first minute, "45+2" for the second, and so on."""
+    clock = display_clock(seconds, half2_start)
+    if "+" not in clock:
+        return clock.split(":")[0]
+    base, extra = clock.split("+")
+    return f"{base}+{int(extra.split(':')[0]) + 1}"

@@ -303,10 +303,133 @@ def test_selecting_an_event_shows_the_inspector():
     assert "In the 30 seconds before: you saw" in text       # what you saw / what you missed (a count)
     assert any(e.label == "Show the numbers" for e in at.expander)
     assert "You&#x27;re" in text and "off your line" in text  # second person, from the template
-    assert len(at.get("plotly_chart")) == 2                  # the pitch and the inspector's snapshot
+    assert len(at.get("plotly_chart")) == 1                  # the one big pitch shows the selected moment
+    assert any("The pitch shows the selected moment" in c.value for c in at.caption)
     row = filter_for(HOME, 120).lookup(seen_id)
     assert f'<span class="ll-clock">{row["event"]["clock"]}</span>' in text
-    print("ok  selecting an event shows the inspector: header, snapshot, text, count and numbers")
+    print("ok  selecting an event shows the inspector (text, count, numbers) and puts the moment on the pitch")
+
+
+def test_a_key_moment_card_shows_its_moment_on_the_pitch():
+    """Clicking a key moment's button selects the event, pauses, and the left pitch shows that moment."""
+    moments = [m for m in replay_to(MATCH, None, END_SEC)[2] if m["keeper_team"] == HOME]
+    target = moments[len(moments) // 2]
+    at = new_app()
+    at.session_state.match_sec = END_SEC
+    at.session_state.playing = False
+    at.run()
+    at.button(key=f"show_{target['event_id']}").click().run()
+    assert not at.exception, at.exception
+    assert at.session_state.selected_event_id == target["event_id"] and at.session_state.playing is False
+    assert at.session_state.match_sec == END_SEC                         # the clock stays where it was
+    assert has_inspector(at)
+    assert any("The pitch shows the selected moment" in c.value for c in at.caption)
+    spec = chart_spec(at)
+    rings = [tr for tr in spec["data"] if tr.get("marker", {}).get("symbol") == "circle-open" and tr.get("showlegend") is False
+             and tr.get("hoverinfo") == "skip"]
+    assert rings, "the selected moment has a ring on the pitch"
+    assert at.button(key=f"show_{target['event_id']}").disabled         # the chosen card says so
+    at.button(key="inspector_back_to_live").click().run()
+    assert at.session_state.selected_event_id is None
+    assert not any("The pitch shows the selected moment" in c.value for c in at.caption)
+    print("ok  clicking a key moment shows it on the pitch, marks the card, and Back to live returns")
+
+
+def test_events_filters_cover_every_event_type():
+    """Every event lands in All and in exactly one of the other filters (Other takes the rest)."""
+    at = new_app()
+    at.session_state.match_sec = END_SEC
+    at.run()
+    at.radio(key="view").set_value("Reveal").run()
+    counts = {}
+    for name in ("all", "shots", "passes", "keeper", "other"):
+        at.radio(key="ev_filter").set_value(name).run()
+        assert not at.exception, at.exception
+        counts[name] = list(at.session_state.evlist_ids)
+    parts = counts["shots"] + counts["passes"] + counts["keeper"] + counts["other"]
+    assert sorted(parts) == sorted(counts["all"]), "a filter misses or repeats some events"
+    other_types = {filter_for(HOME, 120).lookup(i, True)["event"]["type"] for i in counts["other"]}
+    assert {"foul", "stoppage", "throw_in"} <= other_types, other_types
+    print(f"ok  the Events filters split all {len(counts['all'])} events with nothing lost (Other has set pieces, fouls...)")
+
+
+def test_play_closes_the_inspector_and_restarts_at_full_time():
+    moments = [m for m in replay_to(MATCH, None, END_SEC)[2] if m["keeper_team"] == HOME]
+    at = new_app()
+    at.session_state.match_sec = END_SEC
+    at.run()
+    at.button(key=f"show_{moments[0]['event_id']}").click().run()
+    assert at.session_state.selected_event_id is not None
+    at.button(key="play").click().run()
+    assert at.session_state.selected_event_id is None and at.session_state.playing is True
+    assert at.session_state.match_sec < 5, "Play at full time starts the match again"
+    print("ok  Play closes the inspector (the pitch never freezes on an old moment) and restarts at full time")
+
+
+def test_goal_markers_use_the_fan_clock():
+    at = new_app()
+    at.session_state.match_sec = END_SEC
+    at.run()
+    timeline = next(m.value for m in at.markdown if 'class="ll-timeline"' in m.value)
+    goals = [e for e in insights.keeper_eyes(HOME)._events if e["type"] == "goal"]
+    for g in goals:
+        assert f"{g['clock'].split(':')[0]}&#39; {g['team']}" in timeline, (g["clock"], timeline[-400:])
+    print(f"ok  goal diamonds and the timeline speak the fan clock ({', '.join(g['clock'] for g in goals)})")
+
+
+def test_a_failed_agent_call_is_not_repeated_on_every_rerun():
+    calls = []
+    saved = insights.LIVE_AGENTS, insights.generate_event_text
+    insights.LIVE_AGENTS = True
+    insights.generate_event_text = lambda *a, **k: calls.append(1)        # the agents "fail" (None)
+    try:
+        f = filter_for(HOME, 120)
+        pe = next(pe for pe in f.perceived if insights.ai_info(HOME, pe.event["id"])["eligible"]
+                  and insights.moment_key(insights.ai_info(HOME, pe.event["id"])["text_event_id"],
+                                          "analyst", "Nobody", "es", "eyes") not in insights.load_cache())
+        facts = f.facts(pe.event["id"], reveal=False)
+        for _ in range(3):
+            text, source = insights.get_event_text(HOME, facts, "analyst", "es", "Nobody", "eyes")
+            assert text and source == "quick"
+        assert len(calls) == 1, f"the agents were asked {len(calls)} times"
+    finally:
+        insights.LIVE_AGENTS, insights.generate_event_text = saved
+        insights._failed.clear()
+    print("ok  after a failed agent call the same text is not requested again on every rerun")
+
+
+def test_a_moment_beyond_the_shown_pitch_says_so():
+    """Reveal can select an event in the other half; the pitch only shows the keeper's half, so the note says where it was."""
+    f = filter_for(HOME, 120)
+    far = next(m for m in f.missed if m.reason == "beyond_radius" and m.event["type"] == "pass")
+    at = new_app()
+    at.session_state.match_sec = END_SEC
+    at.run()
+    at.radio(key="view").set_value("Reveal").run()
+    at.session_state.selected_event_id = far.event["id"]
+    at.run()
+    assert not at.exception, at.exception
+    assert any("beyond the part of the pitch shown" in c.value for c in at.caption)
+    print("ok  a selected moment in the other half is explained, not silently missing from the pitch")
+
+
+def test_sight_range_what_if_draws_the_whole_pitch():
+    """A longer sight range stretches the cone, and above 55 m the whole pitch is drawn."""
+    at = new_app()
+    at.session_state.match_sec = MID_SEC
+    at.run()
+    top = lambda spec: spec["layout"]["yaxis"]["range"][1]
+    assert top(chart_spec(at)) < 70, "the default view stops just past halfway"
+    at.slider(key="sight").set_value(90).run()
+    assert not at.exception, at.exception
+    assert top(chart_spec(at)) > 100, "a 90 m sight range draws the whole pitch"
+    at.radio(key="view").set_value("Reveal").run()
+    assert not at.exception, at.exception
+    assert top(chart_spec(at)) > 100
+    assert at.session_state.match_sec == MID_SEC
+    short, long_ = filter_for(HOME, 120, 55), filter_for(HOME, 120, 90)
+    assert len(long_.perceived) > len(short.perceived), "a longer range perceives more of the match"
+    print(f"ok  sight range 90 m: whole pitch drawn, {len(long_.perceived)} events perceived against {len(short.perceived)} at 55 m")
 
 
 def test_no_selection_shows_only_a_hint():
@@ -455,6 +578,13 @@ if __name__ == "__main__":
     test_a_long_gap_does_not_make_the_match_jump()
     test_full_time_report()
     test_selecting_an_event_shows_the_inspector()
+    test_a_key_moment_card_shows_its_moment_on_the_pitch()
+    test_events_filters_cover_every_event_type()
+    test_play_closes_the_inspector_and_restarts_at_full_time()
+    test_goal_markers_use_the_fan_clock()
+    test_a_failed_agent_call_is_not_repeated_on_every_rerun()
+    test_a_moment_beyond_the_shown_pitch_says_so()
+    test_sight_range_what_if_draws_the_whole_pitch()
     test_no_selection_shows_only_a_hint()
     test_unperceived_events_are_not_selectable_in_keepers_eyes()
     test_the_events_list_follows_the_perception_rule()
