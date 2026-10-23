@@ -11,6 +11,7 @@ import vision
 from scoring import option_value, pick_method
 
 BEST_OPTION_RATE = 0.70    # how often the keeper picks the best visible option
+SCAN_RANGE_M = 55.0          # how far a keeper picks out a passing option (kept fixed: the match is generated with it)
 GOAL_KICK_LONG = (0.12, 0.75)   # chance a goal kick goes long: base + directness * slope
 CLOSE_DOWN_P = 0.25        # a lone attacker through on goal: how often the keeper comes out
 LONG_PASS_M = 32.0
@@ -153,7 +154,8 @@ class KeeperMixin:
             options.append({"player": self.names[mates[k]], "role": self.role[mates[k]], "x": round(px, 1),
                             "y": round(py, 1), "distance_m": round(float(dist[k]), 1),
                             "open_m": round(float(np.linalg.norm(O - P[k], axis=1).min()), 1),
-                            "visible": bool(vision.is_visible(tuple(me), facing, (px, py), blockers=blockers))})
+                            "visible": bool(vision.is_visible(tuple(me), facing, (px, py), radius_m=SCAN_RANGE_M,
+                                                            blockers=blockers))})
         if long_kick:                                                    # a keeper lining up a long kick picks his man out
             for o in options:
                 o["visible"] = o["visible"] or o["x"] >= 55

@@ -50,14 +50,9 @@ MAX_STEP_SEC = 2.0                # a sleeping browser tab must not make the mat
 WORKLOAD_MAX = 25                 # the workload meter is full at this many actions
 RECENT_EVENTS = 8                 # events kept in the fading trail
 UNSEEN_WINDOW_SEC = 30            # "missed in the last N seconds"
-PITCH_CUT = 60.0                  # the Keeper's eyes pitch ends here: just past halfway (52.5)
-VIEW_X_MAX = 62.5                 # top edge of the plot, in meters from the followed goal line
-LONG_SIGHT_M = 56                 # with a sight range above this the whole pitch is drawn
+PLOT_TOP = 107.0                  # the pitch is drawn whole: the keeper's goal line to the far goal
+PITCH_HEIGHT = 820                # pixels: the whole pitch is long, so the plot is tall
 
-
-def view_top(sight_m):
-    """Top edge of the plot: just past halfway normally, the whole pitch for a long sight range."""
-    return 107.0 if sight_m >= LONG_SIGHT_M else VIEW_X_MAX
 
 EYES, REVEAL = "Keeper's eyes", "Reveal"   # values of the View control
 
@@ -99,11 +94,9 @@ TEXT = {
         "legend_goal": "Goal", "legend_missed": "Missed",
         "show_on_pitch": "Show on pitch", "showing_on_pitch": "Showing this moment on the pitch",
         "pitch_focus": "The pitch shows the selected moment at {clock}. Press Back to live to return to the match.",
-        "focus_far": "It happened in the other half, {d} m from the keeper, beyond the part of the pitch shown.",
         "full_pitch": "Show the full pitch (no dimming)",
         "full_pitch_help": "Turns off the dimming outside the keeper's cone. The cone is still drawn.",
         "players_mine": "Your team", "players_theirs": "Opponents", "players_hidden": "Out of sight",
-        "beyond_view": "{n} recent events are beyond the part of the pitch shown.",
         "ball_far": "Ball {d} m away",
         "pitch_help": "The cone is the keeper's modeled sightline: the data has no real eyeline. "
                       "Everything outside it is dimmed. Dots are the players the keeper can see, "
@@ -127,9 +120,6 @@ TEXT = {
         "shots_faced": "Shots faced", "full_time": "Full time",
         "completion": "Distribution completed", "long_balls": "Long balls",
         "avg_decision": "Avg decision score", "attacks": "Attacks ending in a shot",
-        "fov_note": "Explanations were written for a 120 degree sightline reaching 55 m. Other angles and "
-                    "ranges are a what-if: the cone, dimming and missed counts change (above 55 m the "
-                    "whole pitch is drawn).",
         "synthetic": "Synthetic match with fictional clubs and players. No real data.",
         "m": "m", "asking_agents": "Asking the agents...", "asking_narrator": "Asking the narrator...",
         "tab_moments": "Key moments", "tab_events": "Events", "filter_all": "All", "filter_shots": "Shots",
@@ -178,11 +168,9 @@ TEXT = {
         "legend_goal": "Gol", "legend_missed": "No visto",
         "show_on_pitch": "Ver en el campo", "showing_on_pitch": "Mostrando este momento en el campo",
         "pitch_focus": "El campo muestra el momento elegido ({clock}). Pulsa Volver al directo para regresar al partido.",
-        "focus_far": "Ocurrió en la otra mitad, a {d} m del portero, fuera de la parte del campo mostrada.",
         "full_pitch": "Mostrar todo el campo (sin atenuar)",
         "full_pitch_help": "Quita el oscurecido fuera del cono del portero. El cono se sigue dibujando.",
         "players_mine": "Tu equipo", "players_theirs": "Rivales", "players_hidden": "Fuera de vista",
-        "beyond_view": "{n} jugadas recientes quedan fuera de la parte del campo mostrada.",
         "ball_far": "Balón a {d} m",
         "pitch_help": "El cono es la línea de visión modelada del portero: los datos no tienen una "
                       "mirada real. Todo lo que queda fuera está atenuado. Los puntos son los jugadores "
@@ -206,8 +194,6 @@ TEXT = {
         "shots_faced": "Tiros recibidos", "full_time": "Final",
         "completion": "Distribución completada", "long_balls": "Balones largos",
         "avg_decision": "Decisión media", "attacks": "Ataques que acabaron en tiro",
-        "fov_note": "Las explicaciones se escribieron para la visión de 120 grados. Otros ángulos son un "
-                    "\"y si\": cambian el cono, la atenuación y el recuento de jugadas no vistas.",
         "synthetic": "Partido sintético con clubes y jugadores ficticios. Sin datos reales.",
         "m": "m", "asking_agents": "Consultando a los agentes...", "asking_narrator": "Consultando al narrador...",
         "tab_moments": "Momentos clave", "tab_events": "Jugadas", "filter_all": "Todas", "filter_shots": "Disparos",
@@ -281,8 +267,7 @@ language_label = st.sidebar.radio("Language / Idioma", ["English", "Español"], 
                                   horizontal=True)
 speed = st.sidebar.select_slider("Replay speed", SPEEDS, value=DEFAULT_SPEED, key="speed",
                                  format_func=lambda s: f"{s}x · full match in {round(END_SEC / s)} s")
-fov = st.sidebar.slider("Field of view (degrees)", 90, 180, vision.DEFAULT_FOV_DEG, step=10, key="fov")
-sight = st.sidebar.slider("Sight range (meters)", 30, 100, vision.DEFAULT_RADIUS_M, step=5, key="sight")
+fov, sight = vision.DEFAULT_FOV_DEG, vision.DEFAULT_RADIUS_M      # the keeper's modeled sightline is fixed
 full_pitch = st.sidebar.checkbox("Show the full pitch (no dimming)", key="full_pitch")
 
 play_col, pause_col, restart_col = st.sidebar.columns(3)
@@ -301,7 +286,7 @@ mode = "casual" if mode_label == "Casual fan" else "analyst"
 lang = "en" if language_label == "English" else "es"
 t = TEXT[lang]
 followed = [HOME, AWAY] if club == BOTH else [club]
-st.sidebar.caption(t["fov_note"] + " " + t["full_pitch_help"])
+st.sidebar.caption(t["full_pitch_help"])
 
 esc = html.escape
 
@@ -429,25 +414,20 @@ def arc_points(cx, cy, radius, start_deg, end_deg, steps=40):
             for a in angles]
 
 
-def draw_followed_half(fig, whole=False):
-    """The pitch from the followed goal line (x = 0) to just past halfway (or all 105 m)."""
+def draw_pitch(fig):
+    """The whole pitch, from the followed goal line (x = 0) to the far goal (x = 105)."""
     line = theme.PITCH_LINE
-    cut = 105.0 if whole else PITCH_CUT
-    add_path(fig, rect_points(0, cut, 0, 68), closed=True, fill=theme.CARD, color=line)
-    add_path(fig, rect_points(0, 16.5, 13.84, 54.16), closed=True, color=line)       # penalty area
-    add_path(fig, rect_points(0, 5.5, 24.84, 43.16), closed=True, color=line)        # six-yard box
-    add_path(fig, rect_points(-2.2, 0, GOAL_Y_MIN, GOAL_Y_MAX), closed=True, color=line)  # goal
+    add_path(fig, rect_points(0, 105.0, 0, 68), closed=True, fill=theme.CARD, color=line)
     add_path(fig, [(52.5, 0), (52.5, 68)], color=line)                               # halfway line
-    if whole:                                                                         # the other end of the pitch
-        add_path(fig, arc_points(52.5, 34, 9.15, 0, 360), color=line)
-        add_path(fig, rect_points(88.5, 105, 13.84, 54.16), closed=True, color=line)
-        add_path(fig, rect_points(99.5, 105, 24.84, 43.16), closed=True, color=line)
-        add_path(fig, rect_points(105, 107.2, GOAL_Y_MIN, GOAL_Y_MAX), closed=True, color=line)
-        add_path(fig, arc_points(94, 34, 9.15, 127, 233), color=line)
-    else:
-        add_path(fig, arc_points(52.5, 34, 9.15, 35, 325), color=line)               # center circle (cut at 60 m)
-    add_path(fig, arc_points(11, 34, 9.15, -53, 53), color=line)                     # penalty arc
-    add_path(fig, arc_points(11, 34, 0.35, 0, 360, 12), closed=True, fill=line)      # penalty spot
+    add_path(fig, arc_points(52.5, 34, 9.15, 0, 360), color=line)                    # center circle
+    for goal_line, direction in ((0.0, 1), (105.0, -1)):                             # the same markings at both ends
+        far = goal_line + direction
+        add_path(fig, rect_points(goal_line, goal_line + direction * 16.5, 13.84, 54.16), closed=True, color=line)  # penalty area
+        add_path(fig, rect_points(goal_line, goal_line + direction * 5.5, 24.84, 43.16), closed=True, color=line)   # six-yard box
+        add_path(fig, rect_points(goal_line - direction * 2.2, goal_line, GOAL_Y_MIN, GOAL_Y_MAX), closed=True, color=line)  # goal
+        spot = goal_line + direction * 11
+        add_path(fig, arc_points(spot, 34, 9.15, -53, 53) if direction == 1 else arc_points(spot, 34, 9.15, 127, 233), color=line)  # penalty arc
+        add_path(fig, arc_points(spot, 34, 0.35, 0, 360, 12), closed=True, fill=line)   # penalty spot
 
 
 def cone_points(keeper, facing, fov_deg, radius=vision.DEFAULT_RADIUS_M):
@@ -465,7 +445,7 @@ def event_hover(row):
             f"{row['distance_m']:.0f} {t['m']}")
 
 
-def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=False,
+def keeper_pitch(sense, rows, fov_deg, height=PITCH_HEIGHT, selected_id=None, full_pitch=False,
                  sight_m=vision.DEFAULT_RADIUS_M):
     """The Keeper's eyes pitch. `sense` is the keeper's position, the ball and
     the direction they face; `rows` are the last events (perceived ones; in the
@@ -473,12 +453,11 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=
     its event id, so a click can select it; `selected_id` gets a ring. `full_pitch`
     turns the dimming off. `sense["players"]` are the other players (from the tracking):
     in Keeper's eyes only those in view, in Reveal everyone, hollow when out of sight.
-    `sight_m` is the sight range: the cone's length, and above LONG_SIGHT_M the whole pitch is drawn."""
+    `sight_m` is the sight range: the cone's length."""
     fig = go.Figure()
     keeper, ball, facing = sense["keeper"], sense["ball"], sense["facing"]
-    top = view_top(sight_m)
-    height = int(height * (top + 3.2) / (VIEW_X_MAX + 3.2))          # a longer pitch needs a taller plot
-    draw_followed_half(fig, whole=top > VIEW_X_MAX)
+    top = PLOT_TOP
+    draw_pitch(fig)
 
     cone = [(min(max(x, 0.0), top), min(max(y, 0.0), 68.0))
             for x, y in cone_points(keeper, facing, fov_deg, sight_m)]   # keep it on the pitch
@@ -934,10 +913,7 @@ def pitch_focus(f, now, reveal):
 
 def focus_note(f):
     row = f.lookup(st.session_state.selected_event_id, True)
-    note = t["pitch_focus"].format(clock=event_clock(row["event"]))
-    if row["position"][0] > view_top(sight):            # the pitch may only show the keeper's half
-        note += " " + t["focus_far"].format(d=round(row["distance_m"]))
-    st.caption(note)
+    st.caption(t["pitch_focus"].format(clock=event_clock(row["event"])))
 
 
 def eyes_view(team, now, moments):
@@ -954,8 +930,7 @@ def eyes_view(team, now, moments):
                                      full_pitch=full_pitch, sight_m=sight),
                         key=chart_key, width="stretch", config=CLICK_CONFIG,
                         on_select=partial(on_chart_pick, chart_key), selection_mode="points")
-        hidden = sum(1 for r in rows if r["position"][0] > view_top(sight))
-        st.caption(t["pitch_help"] + (" " + t["beyond_view"].format(n=hidden) if hidden else ""))
+        st.caption(t["pitch_help"])
     with cards_col:
         side_tabs(t["tab_moments"], lambda: cards_column(moments, [team]), f, now, reveal=False)
 

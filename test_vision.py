@@ -55,8 +55,10 @@ def test_fov_edge():
 
 
 def test_beyond_radius():
-    assert v.is_visible(KEEPER, FACING_UP, (4 + 54, 34.0))       # 54 m: inside
-    assert not v.is_visible(KEEPER, FACING_UP, (4 + 56, 34.0))   # 56 m: beyond 55
+    edge = v.DEFAULT_RADIUS_M
+    assert v.is_visible(KEEPER, FACING_UP, (4 + edge - 1, 34.0))       # just inside the default range
+    assert not v.is_visible(KEEPER, FACING_UP, (4 + edge + 1, 34.0))   # just beyond it
+    assert v.is_visible(KEEPER, FACING_UP, (4 + 70, 34.0), radius_m=80)  # a longer range sees further
     print("ok  beyond the radius is not visible")
 
 

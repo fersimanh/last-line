@@ -164,10 +164,9 @@ def test_switching_everything_keeps_position():
     assert any(s in all_markdown(at) for s in spanish_sights)
 
     at.radio(key="mode").set_value("Analyst").run()
-    at.slider(key="fov").set_value(150).run()
     assert not at.exception, at.exception
     assert at.session_state.match_sec == MID_SEC
-    assert "150°" in chart_spec(at)["layout"]["annotations"][0]["text"]   # the cone widened
+    assert "120°" in chart_spec(at)["layout"]["annotations"][0]["text"]   # the cone is fixed at 120 degrees
 
     at.selectbox(key="club").set_value("Both").run()
     assert not at.exception, at.exception
@@ -398,38 +397,22 @@ def test_a_failed_agent_call_is_not_repeated_on_every_rerun():
     print("ok  after a failed agent call the same text is not requested again on every rerun")
 
 
-def test_a_moment_beyond_the_shown_pitch_says_so():
-    """Reveal can select an event in the other half; the pitch only shows the keeper's half, so the note says where it was."""
-    f = filter_for(HOME, 120)
-    far = next(m for m in f.missed if m.reason == "beyond_radius" and m.event["type"] == "pass")
-    at = new_app()
-    at.session_state.match_sec = END_SEC
-    at.run()
-    at.radio(key="view").set_value("Reveal").run()
-    at.session_state.selected_event_id = far.event["id"]
-    at.run()
-    assert not at.exception, at.exception
-    assert any("beyond the part of the pitch shown" in c.value for c in at.caption)
-    print("ok  a selected moment in the other half is explained, not silently missing from the pitch")
-
-
-def test_sight_range_what_if_draws_the_whole_pitch():
-    """A longer sight range stretches the cone, and above 55 m the whole pitch is drawn."""
+def test_the_whole_pitch_and_a_long_sightline_and_no_sliders():
+    """The cone reaches the opponents' box, the whole pitch is drawn, and the sidebar has no field-of-view or range slider."""
+    import vision
     at = new_app()
     at.session_state.match_sec = MID_SEC
     at.run()
-    top = lambda spec: spec["layout"]["yaxis"]["range"][1]
-    assert top(chart_spec(at)) < 70, "the default view stops just past halfway"
-    at.slider(key="sight").set_value(90).run()
     assert not at.exception, at.exception
-    assert top(chart_spec(at)) > 100, "a 90 m sight range draws the whole pitch"
-    at.radio(key="view").set_value("Reveal").run()
-    assert not at.exception, at.exception
-    assert top(chart_spec(at)) > 100
-    assert at.session_state.match_sec == MID_SEC
-    short, long_ = filter_for(HOME, 120, 55), filter_for(HOME, 120, 90)
+    assert not [sl for sl in at.slider if sl.key in ("fov", "sight")], "the sightline is fixed"
+    spec = chart_spec(at)
+    assert spec["layout"]["yaxis"]["range"][1] > 100, "the whole pitch is drawn"
+    assert vision.DEFAULT_RADIUS_M >= 80, "the cone reaches toward the opponents' box"
+    short, long_ = filter_for(HOME, 120, 55), filter_for(HOME, 120, vision.DEFAULT_RADIUS_M)
     assert len(long_.perceived) > len(short.perceived), "a longer range perceives more of the match"
-    print(f"ok  sight range 90 m: whole pitch drawn, {len(long_.perceived)} events perceived against {len(short.perceived)} at 55 m")
+    f = filter_for(HOME)                                         # the default is the long one
+    assert f.radius_m == vision.DEFAULT_RADIUS_M and f.fov_deg == vision.DEFAULT_FOV_DEG
+    print(f"ok  fixed sightline: {vision.DEFAULT_FOV_DEG} degrees reaching {vision.DEFAULT_RADIUS_M} m, the whole pitch drawn, no sliders")
 
 
 def test_no_selection_shows_only_a_hint():
@@ -482,9 +465,9 @@ def test_selection_survives_language_mode_and_view_changes():
     assert at.session_state.selected_event_id == seen_id and has_inspector(at)
     at.radio(key="view").set_value("Reveal").run()
     assert at.session_state.selected_event_id == seen_id and has_inspector(at)
-    at.slider(key="fov").set_value(150).run()
+    at.checkbox(key="full_pitch").set_value(True).run()
     assert at.session_state.selected_event_id == seen_id and not at.exception
-    print("ok  the selection survives language, mode, view and field-of-view changes")
+    print("ok  the selection survives language, mode, view and full-pitch changes")
 
 
 def test_restart_clears_the_selection():
@@ -583,8 +566,7 @@ if __name__ == "__main__":
     test_play_closes_the_inspector_and_restarts_at_full_time()
     test_goal_markers_use_the_fan_clock()
     test_a_failed_agent_call_is_not_repeated_on_every_rerun()
-    test_a_moment_beyond_the_shown_pitch_says_so()
-    test_sight_range_what_if_draws_the_whole_pitch()
+    test_the_whole_pitch_and_a_long_sightline_and_no_sliders()
     test_no_selection_shows_only_a_hint()
     test_unperceived_events_are_not_selectable_in_keepers_eyes()
     test_the_events_list_follows_the_perception_rule()
