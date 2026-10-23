@@ -41,6 +41,16 @@ OUTLINE = "#52514e"
 PITCH_LINE = "#9a9890"
 SYMBOLS = {"goal": "star", "saved": "circle", "off_target": "x", "blocked": "square"}
 
+# Shot situations, as words on screen
+SITUATION_WORDS = {
+    "en": {"open_play": "open play", "cutback": "cutback", "header_from_cross": "header from a cross",
+           "one_on_one": "one on one", "two_on_one": "two on one", "rebound": "rebound",
+           "second_ball": "second ball"},
+    "es": {"open_play": "juego abierto", "cutback": "pase atrás", "header_from_cross": "cabezazo tras centro",
+           "one_on_one": "mano a mano", "two_on_one": "dos contra uno", "rebound": "rechace",
+           "second_ball": "segunda jugada"},
+}
+
 # Words on screen, in English and Spanish
 TEXT = {
     "en": {
@@ -51,7 +61,7 @@ TEXT = {
         "led_to_shot": "led to a shot", "completion": "Distribution completed",
         "long_balls": "Long balls", "avg_decision": "Avg decision score",
         "attacks": "Attacks ending in a shot", "saveability": "Saveability", "workload": "Workload",
-        "workload_help": "Shots faced + crosses claimed + sweeps",
+        "workload_help": "Shots faced + crosses claimed + sweeps + close-downs",
         "danger": "Danger at this goal", "low": "Low", "medium": "Medium", "high": "High",
         "live": "Live", "report": "Full-time report", "shot_map": "Shots faced",
         "goal_mouth": "Where on-target shots crossed the line (shooter's view)",
@@ -74,7 +84,7 @@ TEXT = {
         "led_to_shot": "acabó en tiro", "completion": "Distribución completada",
         "long_balls": "Balones largos", "avg_decision": "Decisión media",
         "attacks": "Ataques que acabaron en tiro", "saveability": "Salvabilidad", "workload": "Carga de trabajo",
-        "workload_help": "Tiros recibidos + centros atrapados + salidas",
+        "workload_help": "Tiros recibidos + centros atrapados + salidas + achiques",
         "danger": "Peligro en esta portería", "low": "Bajo", "medium": "Medio", "high": "Alto",
         "live": "En vivo", "report": "Informe final", "shot_map": "Tiros recibidos",
         "goal_mouth": "Dónde cruzaron la línea los tiros a puerta (vista del tirador)",
@@ -298,6 +308,8 @@ def insight_card(moment):
             if d["led_to_shot"]:
                 details += f" · {t['led_to_shot']}"
             st.caption(details)
+        if mode == "analyst" and moment.get("situation"):
+            st.caption(SITUATION_WORDS[lang][moment["situation"]].capitalize())
         if mode == "analyst" and moment["key_factor"] and lang == "en":
             st.caption(f"{t['key_factor']}: {moment['key_factor']}")
 

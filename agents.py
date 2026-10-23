@@ -8,9 +8,11 @@
   Personalizer  - rewrites the narration for one viewer: casual or analyst
                   mode, their favorite club, English or Spanish.
 
-The agents never touch scoring.py directly. The Shot Analyst's tools read
-from a shared LiveMatch object (see pipeline.py), so the numbers the agents
-talk about always come from the transparent saveability formula.
+The agents never touch the raw match. The Shot Analyst's tools read from a
+shared LiveMatch object (see pipeline.py), which is built only from what the
+keeper perceived (perception.PerceptionFilter): events they saw, their own
+actions, and shots or goals they could not miss. They get the sight and a
+count of unseen events, never the missed log itself.
 """
 import json
 import os
@@ -40,20 +42,25 @@ def make_analyst(client, live):
     # model what the tool does. They return JSON text the model can read.
     @tool
     def get_current_moment() -> str:
-        """The event being analysed now, plus its saveability insight
-        (score 0-100, verdict, key factor, and the four factor values)."""
-        return json.dumps({"event": live.event, "insight": live.insight, "score": live.score})
+        """The event being analysed now, as the keeper perceived it, plus its
+        insight, the score, the sight ('own' action, 'seen', or 'felt' = not
+        seen developing) and unseen_count (events the keeper could not see in
+        the last 30 seconds)."""
+        return json.dumps({"event": live.event, "insight": live.insight, "score": live.score,
+                           "sight": live.sight, "unseen_count": live.unseen_count()})
 
     @tool
     def get_keeper_stats() -> str:
-        """Each keeper's numbers so far: shots faced, saves, goals conceded,
-        claims, sweeps, expected saves and goals prevented."""
-        return json.dumps(live.state.keeper_report())
+        """This keeper's numbers so far, from what they perceived: shots faced,
+        saves, goals conceded, claims, sweeps, expected saves, goals prevented
+        and distribution numbers."""
+        return json.dumps(live.state.keeper_report()[live.team])
 
     @tool
     def get_pressure() -> str:
-        """Current workload and danger level (low/medium/high) for each goal."""
-        return json.dumps(live.state.snapshot(live.now()))
+        """Workload and danger level (low/medium/high) at this keeper's goal,
+        from what they perceived."""
+        return json.dumps(live.state.snapshot(live.now())[live.team])
 
     return Agent(
         client,
@@ -64,11 +71,20 @@ def make_analyst(client, live):
             "Then write a short factual summary (max 4 bullet points): what happened, "
             "the saveability score and verdict, the key factor, and how busy the keeper has been. "
             "Saveability runs 0-100: 100 is a routine stop, 0 is nearly unstoppable. "
-            "The insight lists twelve factors, each from 0 (hard for the keeper) to 1 (easy): "
+            "Every shot also has a situation: open_play, cutback (pulled back from the byline), "
+            "header_from_cross, one_on_one (through on goal, the keeper came out to close down), "
+            "two_on_one (the keeper closed down one attacker, who squared it to the other), "
+            "rebound (a follow-up after the keeper parried a save) or second_ball (after a "
+            "blocked shot). It has assist_type, assist_seconds, ball_shift_m (how far the ball "
+            "moved sideways from the assist to the shot), seconds_since_keeper_action (how long "
+            "since the keeper last had to act, e.g. the save before a rebound) and keeper_set. "
+            "Always explain the situation and how it made the save easier or harder. "
+            "The insight lists fourteen factors, each from 0 (hard for the keeper) to 1 (easy): "
             "placement, reaction (time the ball gives the keeper), distance, speed, reach, "
             "angle, no_deflection (0 = it was deflected, 1 = clean strike), lane (defenders in the way), depth "
-            "(keeper's distance off the line), swerve, keeper_set (0 = keeper caught moving) "
-            "and foot_strike (0 = header, 1 = foot). For a 'tough save' or 'near-unstoppable' shot, name the "
+            "(keeper's distance off the line), swerve, keeper_set (0 = keeper caught moving), "
+            "foot_strike (0 = header, 1 = foot), recovery (0 = the keeper had just acted and was "
+            "still recovering) and shift (0 = the ball was moved across the keeper very fast). For a 'tough save' or 'near-unstoppable' shot, name the "
             "one or two LOW factors that made it hard. For a 'should save' shot, name the "
             "one or two HIGH factors that made it easy. Round factor values to 2 decimals. "
             "If the moment is a keeper_distribution (the keeper giving the ball away), there "
@@ -80,6 +96,8 @@ def make_analyst(client, live):
             "(0-100), verdict, key_factor and best_option. Explain WHY the keeper chose that "
             "target: compare it with the other options (how open, how far), mention the pressure "
             "and the outcome, and say if the best option was someone else. "
+            "Report the sight and unseen_count from the tools. If sight is 'felt', the keeper "
+            "did not see the move develop: describe only what reached the goal. "
             "Only use numbers from the tools. Never invent facts."
         ),
         tools=[get_current_moment, get_keeper_stats, get_pressure],
@@ -99,6 +117,11 @@ def make_narrator(client):
             "say it in plain words. "
             "Never add details that are not in the analysis (no curl, corner, "
             "deflection or direction unless it says so). "
+            "If the analysis names the situation (a rebound after your save, a square pass "
+            "after you came out, a cutback, a header from a cross), say it in plain words. "
+            "If the sight says you did not see it develop, do not describe the build-up: "
+            "say you did not see it coming. If events you could not see are mentioned, you "
+            "may say so, but never guess what they were. "
             "For a distribution, YOU are the keeper who played the ball: say 'I threw it' or "
             "'I kicked it', never your own name in the third person. Say who you gave it to, "
             "how, and why you chose them over the other options; mention the quality score "

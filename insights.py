@@ -9,19 +9,24 @@ Fill the cache before a demo, so the app never waits on the agents:
     python3 insights.py --warm
 
 This file also has replay_to(), which rebuilds the match state up to any
-match second. The app calls it on every screen update.
+match second. The app calls it on every screen update. Everything here reads
+the match through perception.PerceptionFilter, never the raw file: key
+moments are the keepers' perceived key moments, and the full event list the
+current Broadcast view needs comes from PerceptionFilter.reveal().
 """
 import argparse
 import asyncio
-import hashlib
 import json
 import os
 from datetime import datetime, timezone
 
-from replay import clock, is_key_moment, load_match, stream
+from perception import PerceptionFilter, match_fingerprint, match_info
+from replay import clock
 from scoring import MatchState
 
 CACHE_PATH = "insight_cache.json"
+# Bump this when the agents' input changes, so older cached texts are dropped
+TEXT_VERSION = "perception-1"
 # Set LAST_LINE_LIVE_AGENTS=0 to never call the agents (cache or fallback only)
 LIVE_AGENTS = os.getenv("LAST_LINE_LIVE_AGENTS", "1") == "1"
 
@@ -33,7 +38,7 @@ VERDICT_ES = {"should save": "debió pararlo", "tough save": "parada difícil",
               "near-unstoppable": "casi imparable"}
 DIST_VERDICT_ES = {"excellent": "excelente", "safe": "segura", "risky": "arriesgada",
                    "turnover": "pérdida"}
-KEEPER_OWN_EVENTS = ("keeper_claim", "keeper_sweep", "keeper_distribution")
+KEEPER_OWN_EVENTS = ("keeper_claim", "keeper_sweep", "keeper_close_down", "keeper_distribution")
 
 
 # ---------- Replaying the match ----------
@@ -50,38 +55,67 @@ def keeper_team(event, state):
     return state.other(event["team"])
 
 
+_filters = {}  # (match fingerprint, team) -> a PerceptionFilter replayed to full time
+
+
+def keeper_eyes(team):
+    """One keeper's PerceptionFilter, replayed to full time once and reused."""
+    key = (match_fingerprint(), team)
+    if key not in _filters:
+        f = PerceptionFilter(team)
+        f.advance_all()
+        _filters[key] = f
+    return _filters[key]
+
+
+def match_end_second():
+    match = match_info()
+    return max(match_second(event) for _, event in keeper_eyes(match["home"]).reveal())
+
+
 def replay_to(match, events, upto_sec):
-    """Replay every event up to `upto_sec` match seconds.
+    """The match up to `upto_sec` match seconds, read through PerceptionFilter.
+    (`events` is no longer used; it stays so callers keep working.)
     Returns (state, shots, moments, score):
-      state   - a scoring.MatchState with workload, danger and keeper stats
+      state   - a scoring.MatchState with workload, danger and keeper stats for
+                the Broadcast view (built from reveal(): the official numbers)
       shots   - every shot so far, each {"event", "insight", "keeper_team"}
-      moments - every key moment so far (see make_moment), oldest first
+      moments - every key moment so far, from each keeper's PERCEIVED events
+                (see make_moment), oldest first
       score   - "home-away", e.g. "1-2"
     """
-    state = MatchState(match["home"], match["away"])
-    visible = [e for e in events if match_second(e) <= upto_sec]
-    shots, moments, insights, score = [], [], {}, "0-0"
+    filters = [keeper_eyes(match["home"]), keeper_eyes(match["away"])]
 
-    for event, insight, _ in stream(visible, state, speed=0):
-        insights[event["id"]] = insight  # empty dict for quiet events
+    # The Broadcast view's official picture: every event, from reveal()
+    state = MatchState(match["home"], match["away"])
+    shots, score = [], "0-0"
+    for _, event in filters[0].reveal():
+        if match_second(event) > upto_sec:
+            break
+        insight = state.update(event)
         if event["type"] == "shot":
             shots.append({"event": event, "insight": insight,
                           "keeper_team": keeper_team(event, state)})
         if event["type"] == "goal":
             score = event["score"]
-        if is_key_moment(event):
-            moments.append(make_moment(event, events, state, insights, score))
+
+    # Key moments: what each keeper perceived
+    perceived = sorted((pe for f in filters for pe in f.perceived
+                        if pe.key_moment and pe.second <= upto_sec),
+                       key=lambda pe: (pe.second, pe.event["id"]))
+    moments = [make_moment(pe, filters) for pe in perceived]
     return state, shots, moments, score
 
 
-def make_moment(event, events, state, insights, score):
-    """A key moment as a plain dict. A goal takes its numbers and its clock
-    from the shot that caused it, so a 67:04 'goal' shows as 67:03."""
-    insight = insights.get(event["id"], {})
-    timed = event
+def make_moment(pe, filters):
+    """A key moment (a PerceivedEvent) as a plain dict. A goal takes its
+    numbers and its clock from the shot that caused it, so a 67:04 'goal'
+    shows as 67:03."""
+    event, insight, timed = pe.event, pe.insight, pe.event
+    keeper_filter = next(f for f in filters if f.followed_team == pe.followed_team)
     if event["type"] == "goal":
-        insight = insights.get(event["related_to"], {})
-        timed = next(e for e in events if e["id"] == event["related_to"])
+        shot = keeper_filter.find_perceived(event["related_to"])
+        insight, timed = shot.insight, shot.event
     distribution = None
     if event["type"] == "keeper_distribution":
         distribution = {k: event[k] for k in (
@@ -98,12 +132,14 @@ def make_moment(event, events, state, insights, score):
         "team": event["team"],
         "player": event["player"],
         "keeper": insight.get("keeper", event["player"]),
-        "keeper_team": keeper_team(event, state),
+        "keeper_team": pe.followed_team,
+        "sight": pe.sight,                     # own, seen or felt
         "saveability": insight.get("saveability"),
         "verdict": insight.get("verdict"),
         "key_factor": insight.get("key_factor"),
+        "situation": insight.get("situation"),  # shots and goals only, e.g. "rebound"
         "distribution": distribution,          # None unless type is keeper_distribution
-        "score": score,
+        "score": keeper_filter.score_at(pe.second),
     }
 
 
@@ -113,11 +149,11 @@ _cache = {}
 _cache_mtime = None
 
 
-def match_fingerprint(path="match_events.json"):
-    """A short code that changes whenever the match file changes. Cached texts
-    are keyed by event id, so texts made for an older match must not be used."""
-    with open(path, "rb") as f:
-        return hashlib.sha256(f.read()).hexdigest()[:16]
+def cache_fingerprint():
+    """Cached texts are keyed by event id, so texts made for another match, or
+    by an older version of the agents' input, must not be used. This code
+    changes when either changes."""
+    return f"{match_fingerprint()}-{TEXT_VERSION}"
 
 
 def load_cache():
@@ -133,8 +169,8 @@ def load_cache():
         if mtime is not None:
             with open(CACHE_PATH) as f:
                 cache = json.load(f)
-        if cache.get("_match") != match_fingerprint():
-            cache = {"_match": match_fingerprint()}  # wrong or no match: start empty
+        if cache.get("_match") != cache_fingerprint():
+            cache = {"_match": cache_fingerprint()}  # wrong or no match: start empty
         _cache, _cache_mtime = cache, mtime
     return _cache
 
@@ -240,13 +276,8 @@ async def report_texts(viewers):
     Returns a list of texts, with None where the agents failed."""
     from agents import make_client, make_narrator, make_personalizer
     from pipeline import LiveMatch, keeper_report
-    match, events = load_match()
-    live = LiveMatch(match)
-    for event in events:  # replay the whole match to get the final numbers
-        live.event = event
-        live.state.update(event)
-        if event["type"] == "goal":
-            live.score = event["score"]
+    live = LiveMatch(match_info())
+    live.replay_to_end()  # each keeper's perceived numbers at full time
     client = make_client()
     agents = (None, make_narrator(client), make_personalizer(client))  # no Analyst needed
     report = await keeper_report(live, agents, viewers, "full_time")
@@ -266,7 +297,7 @@ async def warm():
     """Run the whole match through the agents once, for every mode, club
     (both clubs plus Both) and language, and store every text in the cache."""
     from pipeline import run
-    match, _ = load_match()
+    match = match_info()
     clubs = [match["home"], match["away"], BOTH]
     viewers = [viewer_for(m, c, lang) for m in MODES for c in clubs for lang in LANGUAGES]
 
@@ -294,8 +325,8 @@ async def warm():
 async def fill_missing():
     """Generate only the texts the app needs that are not in the cache yet."""
     from pipeline import run
-    match, events = load_match()
-    _, _, moments, _ = replay_to(match, events, match_second(events[-1]))
+    match = match_info()
+    _, _, moments, _ = replay_to(match, None, match_end_second())
     cache = load_cache()
 
     # Each moment is shown to fans of its keeper's club and to "Both" viewers

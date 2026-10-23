@@ -8,9 +8,10 @@ can explain exactly which factors drove it.
 
 import math
 
-SPREAD = 1.7            # how far to stretch scores away from the center
-CENTER = 60              # the raw score that maps to a score of 50: the average raw
-                         # score with these weights, so a typical shot lands near 50
+SPREAD = 2.0             # how far to stretch scores away from the center (gives about 25% / 50% / 25% verdicts over seeds 1-40)
+CENTER = 50              # the raw score that maps to a score of 50: the average raw
+                         # score with these weights (measured over seeds 1-40), so a
+                         # typical shot lands near 50
 GOAL_HALF_WIDTH = 3.66   # meters (goal is 7.32 m wide)
 GOAL_HEIGHT = 2.44       # meters
 
@@ -18,19 +19,25 @@ GOAL_HEIGHT = 2.44       # meters
 KEEPER_DELAY_SEC = 0.25  # time for the keeper to read the shot and start moving
 KEEPER_DIVE_MS = 4.5     # sideways speed of a dive, meters per second
 
+# Assumptions behind the situation factors
+RECOVERY_SEC = 4.0       # seconds a keeper needs to be fully ready again after acting
+SHIFT_SPEED_MAX = 12.0   # ball moving across at this many m/s (or faster) leaves no time to shuffle
+
 # How much each factor counts toward the score (adds up to 1.0)
 WEIGHTS = {
-    "placement": 0.18,    # where the ball crosses the line
-    "reaction": 0.16,     # time the ball gives the keeper vs time the keeper needs
-    "distance": 0.12,     # how far the shot was struck from
-    "speed": 0.12,        # how hard it was struck
-    "reach": 0.10,        # how far the keeper was from where the ball ended up
-    "angle": 0.08,        # how wide of the goal's center line it was struck from
-    "no_deflection": 0.06,  # a deflection takes away reaction time
+    "placement": 0.16,    # where the ball crosses the line
+    "reaction": 0.14,     # time the ball gives the keeper vs time the keeper needs
+    "distance": 0.11,     # how far the shot was struck from
+    "speed": 0.11,        # how hard it was struck
+    "reach": 0.09,        # how far the keeper was from where the ball ended up
+    "angle": 0.07,        # how wide of the goal's center line it was struck from
+    "no_deflection": 0.05,  # a deflection takes away reaction time
     "lane": 0.05,         # defenders standing between the ball and the keeper
+    "recovery": 0.05,     # time since the keeper last had to act (a save, a close-down)
+    "keeper_set": 0.05,   # keeper balanced and ready, or caught moving
     "depth": 0.04,        # keeper's distance off the goal line vs the ideal for this shot
-    "swerve": 0.04,       # late movement in the air
-    "keeper_set": 0.04,   # keeper balanced and ready, or caught moving
+    "shift": 0.04,        # how fast the ball moved across the keeper just before the shot
+    "swerve": 0.03,       # late movement in the air
     "foot_strike": 0.01,  # headers are harder to read than foot strikes
 }
 
@@ -67,9 +74,24 @@ def saveability(shot):
     angle_deg = math.degrees(math.atan2(abs(shot["y"] - 34), 105 - shot["x"]))
     angle = 1 - clamp(angle_deg / 60)
 
-    # Depth: the ideal spot off the line is further out against longer shots
+    # Depth: the ideal spot off the line is further out against longer shots.
+    # One on one, the keeper should come out to narrow the angle (about 6 m
+    # from the shooter), so coming out is right there, not a mistake.
     depth_m = 105 - shot["keeper_x"]
-    depth = 1 - clamp(abs(depth_m - (1 + shot["distance_m"] / 15)) / 2.5)
+    ideal = 1 + shot["distance_m"] / 15
+    if shot.get("situation") == "one_on_one":
+        ideal = max(ideal, shot["distance_m"] - 6)
+    depth = 1 - clamp(abs(depth_m - ideal) / 2.5)
+
+    # Recovery: a keeper who had to act a moment ago (a save, a close-down) is
+    # still getting up or turning. Fully ready after RECOVERY_SEC seconds.
+    since = shot.get("seconds_since_keeper_action")
+    recovery = 1.0 if since is None else clamp((since - 0.5) / RECOVERY_SEC)
+
+    # Shift: how fast the ball moved across the keeper from the assist to the
+    # shot (a square pass or a cutback forces a lateral scramble)
+    shift_speed = shot.get("ball_shift_m", 0.0) / max(shot.get("assist_seconds", 3), 0.5)
+    shift = 1 - clamp(shift_speed / SHIFT_SPEED_MAX)
 
     factors = {
         "placement": placement,
@@ -84,6 +106,8 @@ def saveability(shot):
         "swerve": 1 - shot["swerve"],
         "keeper_set": 1.0 if shot["keeper_set"] else 0.0,
         "foot_strike": 0.0 if shot["body_part"] == "head" else 1.0,
+        "recovery": recovery,
+        "shift": shift,
     }
     raw = 100 * sum(WEIGHTS[name] * value for name, value in factors.items())
     # Averaging many factors bunches scores near the middle, so stretch them
@@ -115,6 +139,8 @@ HARD_REASONS = {
     "swerve": "it moved late in the air",
     "keeper_set": "the keeper was caught moving",
     "foot_strike": "it was a header",
+    "recovery": "the keeper was still recovering from the last action",
+    "shift": "the ball was moved across the keeper just before the shot",
 }
 EASY_REASONS = {
     "distance": "it came from long range",
@@ -129,6 +155,8 @@ EASY_REASONS = {
     "swerve": "it flew straight",
     "keeper_set": "the keeper was set and ready",
     "foot_strike": "it was a foot strike",
+    "recovery": "the keeper had time to reset",
+    "shift": "the ball came straight at the keeper with no switch",
 }
 
 
@@ -228,10 +256,12 @@ def distribution_insight(event):
                         + 0.20 * METHOD_DIFFICULTY[event["method"]]
                         + 0.15 * (1 - clamp(target["open_m"] / 12)))
 
-    # Decision: the chosen option's value against the best option on offer.
+    # Decision: the chosen option's value against the best option the keeper
+    # could SEE (options outside the sightline have "visible": false; older
+    # match files have no flag, so every option counts there).
     # Each 0.005 of value given up costs 1 point; choosing the best scores 100.
     values = {o["player"]: option_value(event["trigger"], o, pressure, event["x"])
-              for o in event["options"]}
+              for o in event["options"] if o.get("visible", True)}
     best_player = max(values, key=values.get)
     decision = 100 * clamp(1 - (values[best_player] - values[event["target_player"]]) / 0.5)
 
@@ -277,7 +307,7 @@ class MatchState:
         self.teams = [home, away]
         self.keeper_stats = {
             t: {"shots_faced": 0, "on_target": 0, "saves": 0, "goals_conceded": 0,
-                "claims": 0, "sweeps": 0, "expected_saves": 0.0,
+                "claims": 0, "sweeps": 0, "close_downs": 0, "expected_saves": 0.0,
                 # distribution
                 "distributions": 0, "completed": 0, "progressive_m": 0.0,
                 "pressure_completions": 0, "led_to_shot": 0,
@@ -291,7 +321,7 @@ class MatchState:
 
     def workload(self, team):
         s = self.keeper_stats[team]
-        return s["shots_faced"] + s["claims"] + s["sweeps"]
+        return s["shots_faced"] + s["claims"] + s["sweeps"] + s["close_downs"]
 
     def danger_points(self, team, now):
         self.recent[team] = [(t, p) for t, p in self.recent[team] if now - t <= DANGER_WINDOW_SEC]
@@ -322,6 +352,7 @@ class MatchState:
                     stats["saves"] += 1
                 insight = {
                     "type": "shot",
+                    "situation": event.get("situation", "open_play"),
                     "defender": defender,
                     "keeper": event["keeper"],
                     "saveability": score,
@@ -333,6 +364,8 @@ class MatchState:
             self.keeper_stats[event["team"]]["claims"] += 1
         elif etype == "keeper_sweep":
             self.keeper_stats[event["team"]]["sweeps"] += 1
+        elif etype == "keeper_close_down":
+            self.keeper_stats[event["team"]]["close_downs"] += 1
         elif etype == "keeper_distribution":
             stats = self.keeper_stats[event["team"]]
             rating = distribution_insight(event)

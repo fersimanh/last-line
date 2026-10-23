@@ -69,7 +69,9 @@ def describe(event, insight):
     t = clock(event)
     kind = event["type"]
     if kind == "shot":
-        line = (f"{t}  SHOT   {event['team']} {event['player']} "
+        situation = event.get("situation", "open_play")
+        tag = "" if situation == "open_play" else f" [{situation.replace('_', ' ')}]"
+        line = (f"{t}  SHOT   {event['team']} {event['player']}{tag} "
                 f"({event['distance_m']} m, {event['speed_kmh']} km/h) -> {event['outcome']}")
         if insight:
             line += (f"\n         {insight['keeper']}: saveability {insight['saveability']}/100, "
@@ -78,7 +80,11 @@ def describe(event, insight):
     if kind == "goal":
         return f"{t}  GOAL!  {event['player']} scores. Score now {event['score']}"
     if kind == "keeper_save":
-        return f"{t}  SAVE   {event['player']}"
+        held = event.get("held")
+        how = "" if held is None else (" (holds it)" if held else " (parries it)")
+        return f"{t}  SAVE   {event['player']}{how}"
+    if kind == "keeper_close_down":
+        return f"{t}  CLOSE  {event['player']} comes out to close down {event['target_player']}"
     if kind == "keeper_claim":
         return f"{t}  CLAIM  {event['player']} collects the cross"
     if kind == "keeper_sweep":
@@ -108,7 +114,7 @@ def print_report(state):
     for team, r in state.keeper_report().items():
         print(f"{team}: faced {r['on_target']} on target, saved {r['saves']}, "
               f"conceded {r['goals_conceded']}, expected saves {r['expected_saves']}, "
-              f"goals prevented {r['goals_prevented']:+}")
+              f"goals prevented {r['goals_prevented']:+}, {r['close_downs']} close-downs")
         print(f"  distribution: {r['distributions']} played, {r['distribution_completion_pct']}% completed, "
               f"{r['long_ball_pct']}% long, {r['long_completed']}/{r['long_attempts']} long balls won, "
               f"{r['pressure_completions']} completed under high pressure, "

@@ -89,18 +89,28 @@ def test_switching_options_keeps_position():
 
 
 def test_distribution_card():
-    """The showcase: 89:25, Mateo Rios volleys to striker Luca Ferro under high
-    pressure, the long ball is won and leads to a shot."""
+    """The showcase: the best-rated distribution that led to a shot, or the
+    best-rated distribution if none did. Its expected card is built from the
+    data, so this works for any seed."""
+    _, _, moments, _ = replay_to(MATCH, EVENTS, END_SEC)
+    dists = [m for m in moments if m["distribution"]]
+    to_shot = [m for m in dists if m["distribution"]["led_to_shot"]]
+    m = max(to_shot or dists, key=lambda m: m["distribution"]["quality"])
+    d = m["distribution"]
     at = new_app()
     at.session_state.match_sec = END_SEC
+    at.selectbox(key="club").set_value(m["keeper_team"]).run()
     at.radio(key="mode").set_value("Analyst").run()
     assert not at.exception, at.exception
     text = all_markdown(at)
-    assert "**89:25** · **Distribution** · Mateo Rios → Luca Ferro" in text
-    assert ":blue-badge[Quality 90 · excellent]" in text
+    assert f"**{m['clock']}** · **Distribution** · {m['player']} → {d['target_player']}" in text
+    assert f"[Quality {d['quality']} · {d['verdict']}]" in text
     captions = "\n".join(c.value for c in at.caption)
-    assert "kick (volley) · ST · 73.4 m · high pressure · decision 100 · led to a shot" in captions
-    print("ok  distribution card at 89:25")
+    expected = (f"{d['method'].replace('_', ' ')} ({d['technique'].replace('_', ' ')}) · "
+                f"{d['target_role']} · {d['distance_m']} m · {d['pressure']} pressure · "
+                f"decision {d['decision_score']}" + (" · led to a shot" if d["led_to_shot"] else ""))
+    assert expected in captions, expected
+    print(f"ok  distribution card at {m['clock']} ({m['player']} → {d['target_player']})")
 
 
 def test_play_pause_restart():
