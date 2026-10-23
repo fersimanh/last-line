@@ -26,6 +26,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 import inspector
+from matchclock import display_clock
 import selection
 import theme
 import vision
@@ -287,8 +288,8 @@ st.markdown(f'<div class="ll-header"><span class="ll-eyebrow">{esc(t["eyebrow"])
 # ---------- Small helpers ----------
 
 def clock_text(seconds):
-    seconds = int(seconds)
-    return f"{seconds // 60:02d}:{seconds % 60:02d}"
+    """The match clock a fan sees: 45:00 again after half time, 90+3:25 in added time."""
+    return display_clock(seconds, HALF_TIME_SEC)
 
 
 def verdict_label(verdict):
@@ -357,12 +358,12 @@ def timeline_html(now, ticks=()):
     marks = "".join(f'<span class="ll-tick" style="left:{min(sec / 60, SPAN_MIN) / SPAN_MIN * 100:.2f}%" '
                     f'title="{esc(label, quote=True)}"></span>' for sec, label in ticks if sec <= now)
     goal_text = ", ".join(f"{int(s // 60)}'" for s, _ in goals) or "-"
-    aria = f"{int(minute)} of {END_MIN} minutes. {t['goal']}: {goal_text}"
+    aria = f"{clock_text(now)} of {clock_text(END_SEC)}. {t['goal']}: {goal_text}"
     return (f'<div class="ll-timeline" role="img" aria-label="{esc(aria, quote=True)}">'
             f'<div class="ll-segs" style="grid-template-columns:repeat({count},1fr)">{segments}</div>'
             f'<span class="ll-ht" style="left:{HALF_TIME_SEC / 60 / SPAN_MIN * 100:.2f}%"></span>{marks}{diamonds}'
-            f'<div class="ll-tl-label"><span>{int(minute)}&#39; / {END_MIN}&#39;</span><span>HT {int(HALF_TIME_SEC // 60)}&#39;</span>'
-            f'<span>{END_MIN}&#39;</span></div></div>')
+            f'<div class="ll-tl-label"><span>{esc(clock_text(now).split(":")[0])}&#39;</span><span>HT 45&#39;</span>'
+            f'<span>{esc(clock_text(END_SEC).split(":")[0])}&#39;</span></div></div>')
 
 
 # ---------- Charts ----------
@@ -776,7 +777,8 @@ def controls_strip(now, finished):
     ss = st.session_state
     ss.scrub = min(END_MIN, int(now // 60))          # the slider follows the clock
     slider_col, prev_col, next_col, live_col = st.columns([5, 1.6, 1.6, 1.8], vertical_alignment="bottom")
-    slider_col.slider(t["scrub"], 0, END_MIN, key="scrub", on_change=on_scrub)
+    slider_col.select_slider(t["scrub"], options=list(range(END_MIN + 1)), key="scrub", on_change=on_scrub,
+                               format_func=lambda m: clock_text(m * 60).split(":")[0])   # shows 45, 45+2, 90+4 ...
     prev_col.button(t["prev_moment"], key="prev_moment", on_click=jump_moment, args=(-1,),
                     icon=":material/skip_previous:")
     next_col.button(t["next_moment"], key="next_moment", on_click=jump_moment, args=(1,),

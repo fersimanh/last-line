@@ -113,7 +113,15 @@ def test_view_toggle_and_reveal():
     assert "What the keeper missed" in text and "Official numbers" in text
     assert len(at.get("plotly_chart")) == 3                         # pitch + shot map + goal mouth
     spec = chart_spec(at)
+    for extra in range(1, 40):                                      # the last 8 events may all have been seen: move on a bit
+        if any(t.get("name") == "Missed" for t in spec["data"]):
+            break
+        at.session_state.match_sec = MID_SEC + extra * 30
+        at.run()
+        spec = chart_spec(at)
     assert any(t.get("name") == "Missed" for t in spec["data"]), "missed events should be drawn hollow"
+    at.session_state.match_sec = MID_SEC
+    at.run()
     at.radio(key="view").set_value("Keeper's eyes").run()
     assert len(at.get("plotly_chart")) == 1
     assert at.session_state.match_sec == MID_SEC
@@ -275,7 +283,7 @@ def test_selecting_an_event_shows_the_inspector():
     assert "You&#x27;re" in text and "off your line" in text  # second person, from the template
     assert len(at.get("plotly_chart")) == 2                  # the pitch and the inspector's snapshot
     row = filter_for(HOME, 120).lookup(seen_id)
-    assert f'<span class="ll-clock">{row["event"]["minute"]:02d}:{row["event"]["second"]:02d}</span>' in text
+    assert f'<span class="ll-clock">{row["event"]["clock"]}</span>' in text
     print("ok  selecting an event shows the inspector: header, snapshot, text, count and numbers")
 
 
@@ -357,12 +365,12 @@ def test_scrubber_pauses_and_drops_a_selection_from_the_future():
     at = select_and_run(seen_id)
     at.button(key="play").click().run()
     assert at.session_state.playing is True
-    at.slider(key="scrub").set_value(5).run()               # five minutes: before the selected event
+    at.select_slider(key="scrub").set_value(5).run()               # five minutes: before the selected event
     assert at.session_state.playing is False
     assert at.session_state.match_sec == 300
     assert at.session_state.selected_event_id is None        # that event has not happened yet
     at = select_and_run(seen_id)
-    at.slider(key="scrub").set_value(85).run()              # later: the selection is kept
+    at.select_slider(key="scrub").set_value(85).run()              # later: the selection is kept
     assert at.session_state.match_sec == 5100 and at.session_state.selected_event_id == seen_id
     print("ok  the scrubber pauses, and drops a selection that is now in the future")
 

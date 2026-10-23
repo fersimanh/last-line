@@ -31,6 +31,7 @@ import time
 import numpy as np
 
 import formations as F
+from matchclock import display_clock
 from sim_keeper import KeeperMixin
 from sim_shots import ShotsMixin
 from sim_stops import StopsMixin
@@ -62,8 +63,8 @@ KEEPER_BACK_BIAS = -1.2            # passing back to the keeper, before pressure
 FAIL_SCALE = 0.8                   # scales every technique error (1.0 = as written in p_success)
 LONG_FAIL, CROSS_FAIL = 0.30, 0.88  # base failure chances of a long ball and a cross
 RISK_BASE, RISK_RANGE = 0.09, 0.22  # a reachable defender cuts a pass out: 9% up to 31% by time to spare
-GOAL_LINE_KEEP = 0.5               # of passes that would go over the goal line, how many a defender reaches
-CROSS_NOT_OUT = 0.8                # of failed crosses, how many stay in play (cleared or claimed)
+GOAL_LINE_KEEP = 1.0               # of passes that would go over the goal line, how many a defender reaches
+CROSS_NOT_OUT = 0.92               # of failed crosses, how many stay in play (cleared or claimed)
 LOOSE_BALL_SHARE = 0.35
 MARK_PULL = 0.55                   # how far a defender leaves his spot to stand goal-side of a nearby attacker
 REACH_MARGIN = 0.35                # seconds a defender needs to react and get going before he can reach a ball
@@ -151,6 +152,7 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
         """Record one event. `frame_team` decides the frame x, y are written in."""
         xy = self.f(frame_team, xy_abs)
         event = {"t": round(t, 2), "minute": int(t // 60), "second": int(t % 60), "half": self.half,
+                 "clock": display_clock(t, self.half2_start if self.half == 2 else 1e9),
                  "team": self.teams[team]["name"], "player": self.names[actor], "type": etype,
                  "x": round(float(xy[0]), 1), "y": round(float(xy[1]), 1), "_k": self.keys}
         self.keys += 1

@@ -16,17 +16,18 @@ REBOUND_BONUS = 1.6                          # a follow-up shot is almost automa
 BLOCK_P = 0.22                               # chance each defender in the lane blocks a shot
 AIM_SIGMA = (2.6, 0.17, 1.7)                 # aiming error: base, per meter, extra under pressure
 HELD_SAVE_RATE = 0.55                        # saves the keeper holds; the rest are parried
-CLEAR_CORNER = 0.30                           # cleared crosses put behind for a corner
+WIDE_CORNER = 0.30                           # off-target shots that end as corners
+CLEAR_CORNER = 0.13                           # cleared crosses put behind for a corner
 PARRY_CORNER = 0.40                          # parries pushed out for a corner
 BLOCK_CORNER = 0.35                          # blocked shots deflected out for a corner
-HEADER_SHOT_P = 0.50                         # an attacker who wins a header at a cross shoots
+HEADER_SHOT_P = 0.52                         # an attacker who wins a header at a cross shoots
 CLAIM_REACH = 8.0                            # meters: a keeper comes for a cross inside this
-AIR_ATT, AIR_DEF, AIR_OUT = 1.0, 1.15, 0.1   # weights in the fight for a corner or a free-kick delivery
+AIR_ATT, AIR_DEF, AIR_OUT = 1.0, 1.15, 0.01   # weights in the fight for a corner or a free-kick delivery
 KEEPER_AIR = 2.6
 SITUATION_BONUS = {"cutback": 0.05, "header_from_cross": 0.0, "one_on_one": 0.13, "two_on_one": 0.20,
                    "rebound": 0.20, "second_ball": 0.0, "open_play": 0.0, "corner": 0.0, "free_kick": 0.0}
 SHOT_POW = 0.6                               # below 1: players also shoot from range, not only from six yards
-HEADER_PENALTY = 0.02
+HEADER_PENALTY = 0.0
 P_GOAL_BASE = -0.10
 PENALTY_GOAL_P = 0.78
 NO_ASSIST = ("stoppage", "foul", "card", "offside", "substitution", "goal", "off_ball_run", "keeper_close_down",
@@ -243,7 +244,10 @@ class ShotsMixin:
             else:
                 self.loose_ball(t, fl["end"], shooter_team=team, kind="block", window=("second", event))
         else:                                                         # off target: over the bar or wide
-            self.ball_out(t, team, fl["end"])
+            if self.rng.random() < WIDE_CORNER:                       # a last touch by a defender sends it behind: a corner
+                self.ball_out(t, 1 - team, fl["end"])
+            else:
+                self.ball_out(t, team, fl["end"])
 
     # ---------- a ball that is loose: who gets it first? ----------
 

@@ -10,6 +10,7 @@ import math
 import numpy as np
 
 import formations as F
+from matchclock import display_clock
 
 PITCH_L, PITCH_W = F.PITCH_L, F.PITCH_W
 HALF_SEC = 2700.0
@@ -21,7 +22,7 @@ DUR = {"throw_in": (7, 15), "goal_kick": (13, 28), "corner": (20, 38), "free_kic
        "penalty": (60, 85), "goal": (36, 56), "injury": (40, 110), "substitution": (28, 48), "pause": (10, 20)}
 PENALTY_CALL = 0.22              # of fouls inside the box, how many are given as penalties
 FOUL_RATE = 0.050                 # chance per second of a foul when a defender challenges the ball carrier
-YELLOW_P, RED_P = 0.22, 0.001    # per foul: a yellow card, a straight red
+YELLOW_P, RED_P = 0.22, 0.0006   # per foul: a yellow card, a straight red
 OFFSIDE_CALL = 0.50              # of passes to a player in an offside position, how many are flagged
 INJURY_RATE = 0.00035            # per second of live play
 ADDED_FACTOR, ADDED_NOISE = 0.95, (-20.0, 40.0)   # added time = factor * countable stoppage time + noise (seconds)
@@ -401,7 +402,7 @@ class StopsMixin:
         if self.slot[fouler] == "GK":
             return
         roll = self.rng.random()
-        if self.yellows.get(fouler) and self.rng.random() > 0.2:       # a booked player is more careful
+        if self.yellows.get(fouler) and self.rng.random() > 0.12:      # a booked player is more careful
             return
         card = reason = None
         if roll < RED_P:
@@ -517,6 +518,7 @@ class StopsMixin:
                     continue
                 t_run = (k0 + a) * 0.5
                 event = {"t": round(t_run, 2), "minute": int(t_run // 60), "second": int(t_run % 60), "half": half,
+                         "clock": display_clock(t_run, self.half2_start if half == 2 else 1e9),
                          "team": shot["team"], "player": self.names_at(i, k0 + a), "type": "off_ball_run",
                          "x": round(float(st[0]), 1), "y": round(float(st[1]), 1), "end_x": round(float(en[0]), 1),
                          "end_y": round(float(en[1]), 1), "length_m": round(length, 1),

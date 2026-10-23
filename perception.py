@@ -56,7 +56,8 @@ def second_of(event):
 
 
 def clock_of(event):
-    return f"{event['minute']:02d}:{event['second']:02d}"
+    """The clock a fan sees (45+2:10, second half from 45:00); older match files have only minute and second."""
+    return event.get("clock") or f"{event['minute']:02d}:{event['second']:02d}"
 
 
 def direction_of(dx, dy):

@@ -38,7 +38,7 @@ def stream(events, state, speed=600):
 
 
 def clock(event):
-    return f"{event['minute']:02d}:{event['second']:02d}"
+    return event.get("clock") or f"{event['minute']:02d}:{event['second']:02d}"
 
 
 def is_notable_distribution(event):

@@ -14,7 +14,7 @@ import json
 
 import sim_engine
 
-SEED = 99  # chosen from seeds 1-120: 2 goals, one busy keeper (6 saves) vs one quiet, a keeper back-pass and switch, a claimed corner, a free-kick wall
+SEED = 15  # chosen from seeds 1-60: 2 goals, one busy keeper (6 saves) vs one quiet, a keeper back-pass and switch, a claimed corner, a free-kick wall
 EVENTS_PATH, TRACKING_PATH = "match_events.json", "tracking.npz"
 
 

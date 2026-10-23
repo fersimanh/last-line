@@ -328,6 +328,22 @@ def test_inspector_and_scoring_read_every_engine_event():
     print(f"ok  the inspector and scoring handle {shown} event views of {len(kinds)} event types, in both languages")
 
 
+def test_the_clock_a_fan_sees():
+    """45:00 again after half time, 45+x and 90+x in added time, and the match ends on 90+."""
+    from matchclock import display_clock
+    h2 = MATCH["half_time_s"]
+    assert display_clock(0, h2) == "00:00" and display_clock(2699, h2) == "44:59"
+    assert display_clock(2700, h2).startswith("45+0:") and display_clock(h2 - 1, h2).startswith("45+")
+    assert display_clock(h2, h2) == "45:00" and display_clock(h2 + 60, h2) == "46:00"
+    assert display_clock(h2 + 2700, h2) == "90+0:00"
+    clocks = [e["clock"] for e in EVENTS]
+    first = [e["clock"] for e in EVENTS if e["half"] == 1]
+    second = [e["clock"] for e in EVENTS if e["half"] == 2 and e["clock"] != first[-1]]
+    assert second[0] >= "45:00" and clocks[-1].startswith("90+"), (second[0], clocks[-1])
+    assert all(c[:2] != "46" or "+" in c for c in first), "no 46:00 style clock in the first half"
+    print(f"ok  the fan clock: half 1 ends on {first[-1]}, half 2 starts on {second[0]} and ends on {clocks[-1]}")
+
+
 def test_the_perception_layer_still_reads_the_events():
     """The existing PerceptionFilter must accept engine events unchanged (the contract)."""
     for team in (HOME, AWAY):
@@ -357,5 +373,6 @@ if __name__ == "__main__":
     test_off_ball_runs_come_from_the_tracking()
     test_the_keeper_is_part_of_the_game()
     test_inspector_and_scoring_read_every_engine_event()
+    test_the_clock_a_fan_sees()
     test_the_perception_layer_still_reads_the_events()
     print("all sim tests passed")

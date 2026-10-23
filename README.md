@@ -9,8 +9,8 @@ The match is produced by a position-based engine: 22 tracked players and a ball 
 - **Verified** targets are published Premier League 2025/26 figures (first 11 matchweeks): completed passes per match, long-pass share, share of passes ending in the final third, goal kicks ending in the opposition half, header share of goals, second-half added time. The simulated average must be within 15 percent.
 - **Approximate** targets are general football knowledge, **UNVERIFIED**, treated as ranges and held to within 25 percent: pass completion, goals, shots, shots on target, corners, fouls, cards, offsides, crosses, throw-ins and possession. The report also says whether a value is inside the range or only within 25 percent of it.
 - Assumptions of mine: "about 713 completed passes" is read as both teams combined, and a "long" pass is 32 m or more.
-- Over 60 seeds all 19 targets pass: for example 732 completed passes, 12.2% long, 35% ending in the final third, 51% of goal kicks reaching the opposition half, 20.9% of goals headers, 401 s of second-half added time, 2.9 goals and 24.9 shots per match. Corners (11.1 against 10-11) are just outside their stated range, inside the 25% band. A match takes 2-5 s to simulate.
-- Known gaps: about 30-40 goal kicks per match is higher than real football (roughly 16), which gives each keeper more distributions than a real one; no fatigue, VAR, weather or referee judgment beyond foul and card rates.
+- Over 120 seeds all 19 targets pass: for example 757 completed passes, 12.0% long, 35% ending in the final third, 48.5% of goal kicks reaching the opposition half, 23.3% of goals headers, 384 s of second-half added time, 2.8 goals, 25.6 shots and 10.6 corners per match. Red cards (0.2 against 0.1-0.15) and crosses (40 against 30-40) sit just outside their stated ranges, inside the 25% band. Header share is noisy, so fewer than about 60 seeds can show a false FAIL. A match takes 2-5 s to simulate.
+- Known gaps: about 22 goal kicks per match is a little above real football (my rough figure is 16-18, UNVERIFIED); no fatigue, VAR, weather or referee judgment beyond foul and card rates.
 - `tracking.npz` holds all 22 players and the ball every 0.5 s in absolute pitch coordinates (int16 centimeters), read with `tracking.py`; it also records which player stands in each slot, so substitutions are visible. `contract.json` freezes the fields the original event types had, and `test_sim.py` checks the engine never drops one.
 - The earlier rule-based generator is kept as `legacy_generator.py` (used by one geometry test).
 
@@ -23,7 +23,7 @@ Pitch: 105 x 68 m, goal centered at y = 34 (goal width 7.32 m, height 2.44 m). T
 - **Attacking frame** (every event except `keeper_distribution`): the team in possession attacks toward x = 105. Defending events in that possession (saves, claims, sweeps, tackles) use the same frame, so a keeper making a save stands near x = 101-104.
 - **Own frame** (`keeper_distribution` only, including `target_x`, `target_y` and every option): the distributing keeper's team attacks toward x = 105, so its keeper stands near x = 2-6. To move a point between frames: x -> 105 - x, y -> 68 - y.
 
-The match uses seed 99, chosen from seeds 1-120 because it has 2 goals (1-1), one busy keeper (Elias Novak, 6 saves) and one quiet one (Mateo Rios, 1 save), a goalkeeper back-pass followed by a switch of play (56:26), a corner the keeper claims (55:01) and direct free kicks with a wall. It has 1,681 events, 32 shots (9 on target), 6 corners, 55 throw-ins, 20 fouls, 6 cards, 9 substitutions and 50 keeper distributions (23 and 27). The match clock keeps running through half time and added time: the first half ends at 47:37 and the match at about 100 minutes. (The numbers further down in the distribution and saveability sections were measured on the earlier generator, seeds 1-40, and are kept as design notes.)
+The match uses seed 15, chosen from seeds 1-60 because it has 2 goals (Northgate FC 2-0), one busy keeper (Mateo Rios, 6 saves) and one quiet one (Elias Novak, 2 saves), a goalkeeper back-pass followed by a switch of play (49:04), a corner the keeper claims (06:40) and a direct free kick with a four-man wall (13:55). It has 1,771 events, 7 corners, 46 throw-ins and 22 goal kicks. Each event carries `clock`, the time a fan sees: the first half runs 00:00 to 45:00 and then added time as `45+3:34`; the second half starts again at 45:00 and runs to 90:00, then `90+8:11`. The fields `minute` and `second` stay on the engine's own continuous clock (no half-time gap), which the app uses to order and scrub. (The numbers further down in the distribution and saveability sections were measured on the earlier generator, seeds 1-40, and are kept as design notes.)
 
 ### Fields on every event
 
@@ -199,7 +199,7 @@ Accessibility: all reading text is at least 4.5:1 (body text 8.4:1 on cards, hea
 ```
 pip install -r requirements.txt
 az login                            # only needed for the agents
-python3 generate_match.py            # match_events.json and tracking.npz (seed 99)
+python3 generate_match.py            # match_events.json and tracking.npz (seed 15)
 python3 report_calibration.py       # the engine against its targets
 python3 test_sim.py                 # engine, tracking and contract tests
 streamlit run app.py                # the app
@@ -214,7 +214,7 @@ python3 test_theme.py               # design tokens, fonts, contrast, Streamlit 
 python3 build_cache.py --dry-run    # count the agent requests still needed (calls nothing)
 python3 build_cache.py              # fill the text cache (resumable)
 python3 hello_agent.py              # checks Foundry auth
-python3 pipeline.py --only 56:26    # one moment as JSON (the keeper's back-pass and switch)
+python3 pipeline.py --only 49:04    # one moment as JSON (the keeper's back-pass and switch)
 python3 pipeline.py > moments.jsonl # whole match as JSON
 ```
 

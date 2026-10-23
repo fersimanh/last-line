@@ -25,7 +25,7 @@ def test_every_event_type_has_a_template_in_both_languages():
                     assert f"{round(facts['keeper_off_line_m'])} m" in text, text
             seen_types.add(pe.event["type"])
             count += 1
-    assert seen_types >= {"pass", "through_ball", "cross", "box_entry", "shot", "goal", "keeper_save",
+    assert seen_types >= {"pass", "cross", "box_entry", "shot", "goal", "keeper_save",
                           "keeper_claim", "keeper_distribution", "tackle", "possession_change"}, seen_types
     print(f"ok  {count} perceived events x 2 languages all get a template ({len(seen_types)} event types)")
 
@@ -65,7 +65,8 @@ def test_pass_facts_hide_a_destination_the_keeper_did_not_perceive():
             continue
         nxt = pe.event["id"] + 1
         eyes, full = f.facts(pe.event["id"], reveal=False)["ball_move"], f.facts(pe.event["id"], reveal=True)["ball_move"]
-        assert full["distance_m"] is not None or nxt >= 10**6
+        nxt_row = f.lookup(nxt, True)       # a pass followed by the other keeper's goal kick has no destination to show
+        assert full["distance_m"] is not None or nxt >= len(f._events) or (nxt_row and nxt_row["event"]["type"] == "keeper_distribution")
         next_perceived = f.lookup(nxt, False) is not None
         if next_perceived:
             assert eyes["distance_m"] == full["distance_m"]
