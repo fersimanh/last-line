@@ -92,7 +92,7 @@ class KeeperMixin:
                 return
         if self.rng.random() > CLOSE_DOWN_P:
             return
-        self.emit(t, "keeper_close_down", opp, g, team, self.pos[g], traffic=False, target_player=self.names[c])
+        self.emit(t, "keeper_close_down", opp, g, team, self.pos[g], target_player=self.names[c])
         self.keeper_out[opp] = {"until": t + 5.0, "target": c}
         self.ctx["close_down"][opp] = {"t": t, "target": c}
         self.last_keeper_action[opp] = t
@@ -105,7 +105,7 @@ class KeeperMixin:
         """The keeper gets to a through ball or a loose ball first."""
         g = fl["interceptor"]
         keeper_team = int(self.team_of[g])
-        self.emit(t, etype, keeper_team, g, fl["team"], fl["end"], traffic=False)
+        self.emit(t, etype, keeper_team, g, fl["team"], fl["end"])
         self.last_keeper_action[keeper_team] = t
         self.give_ball(g, t, wait=self.rng.uniform(1.0, 3.0), trigger="back_pass")
 
@@ -184,7 +184,7 @@ class KeeperMixin:
                       direction=direction_of(target["x"] - me[0], target["y"] - me[1]), pressure=pressure,
                       opponents_close=close, options=options,
                       reason=pick_reason(trigger, method, pressure, target, me[1]), outcome=None,
-                      x_gain_m=round(target["x"] - float(me[0]), 1), led_to_shot=False, shot_id=None, traffic=True)
+                      x_gain_m=round(target["x"] - float(me[0]), 1), led_to_shot=False, shot_id=None)
         self.keeper_trigger = None
         self.launch(g, j, ptype, p, risk, press_m, t, etype="keeper_distribution", fields=fields)
 

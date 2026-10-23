@@ -90,10 +90,15 @@ TEXT = {
         "keeper": "Keeper", "ball": "Ball", "sightline": "Modeled sightline",
         "legend_seen": "Seen", "legend_own": "Your action", "legend_felt": "Felt, not seen",
         "legend_goal": "Goal", "legend_missed": "Missed",
+        "full_pitch": "Show the full pitch (no dimming)",
+        "full_pitch_help": "Turns off the dimming outside the keeper's cone. The cone is still drawn.",
+        "players_mine": "Your team", "players_theirs": "Opponents", "players_hidden": "Out of sight",
         "beyond_view": "{n} recent events are beyond the part of the pitch shown.",
         "ball_far": "Ball {d} m away",
         "pitch_help": "The cone is the keeper's modeled sightline: the data has no real eyeline. "
-                      "Everything outside it is dimmed.",
+                      "Everything outside it is dimmed. Dots are the players the keeper can see, "
+                      "from the tracking: a player behind another body is hidden.",
+        "pitch_help_reveal": " Hollow dots are players the keeper cannot see.",
         "keeper_pick": "Keeper", "moments": "Key moments",
         "no_moments": "No key moments yet. Press Play.",
         "reveal_title": "What the keeper missed",
@@ -160,10 +165,15 @@ TEXT = {
         "keeper": "Portero", "ball": "Balón", "sightline": "Línea de visión modelada",
         "legend_seen": "Visto", "legend_own": "Tu acción", "legend_felt": "Sentido, no visto",
         "legend_goal": "Gol", "legend_missed": "No visto",
+        "full_pitch": "Mostrar todo el campo (sin atenuar)",
+        "full_pitch_help": "Quita el oscurecido fuera del cono del portero. El cono se sigue dibujando.",
+        "players_mine": "Tu equipo", "players_theirs": "Rivales", "players_hidden": "Fuera de vista",
         "beyond_view": "{n} jugadas recientes quedan fuera de la parte del campo mostrada.",
         "ball_far": "Balón a {d} m",
         "pitch_help": "El cono es la línea de visión modelada del portero: los datos no tienen una "
-                      "mirada real. Todo lo que queda fuera está atenuado.",
+                      "mirada real. Todo lo que queda fuera está atenuado. Los puntos son los jugadores "
+                      "que el portero ve, según el tracking: un jugador tapado por otro no se ve.",
+        "pitch_help_reveal": " Los puntos huecos son jugadores que el portero no ve.",
         "keeper_pick": "Portero", "moments": "Momentos clave",
         "no_moments": "Aún no hay momentos clave. Pulsa Play.",
         "reveal_title": "Lo que el portero no vio",
@@ -258,6 +268,7 @@ language_label = st.sidebar.radio("Language / Idioma", ["English", "Español"], 
 speed = st.sidebar.select_slider("Replay speed", SPEEDS, value=DEFAULT_SPEED, key="speed",
                                  format_func=lambda s: f"{s}x · full match in {round(END_SEC / s)} s")
 fov = st.sidebar.slider("Field of view (degrees)", 90, 180, vision.DEFAULT_FOV_DEG, step=10, key="fov")
+full_pitch = st.sidebar.checkbox("Show the full pitch (no dimming)", key="full_pitch")
 
 play_col, pause_col, restart_col = st.sidebar.columns(3)
 if play_col.button("Play", key="play", type="primary", icon=":material/play_arrow:"):
@@ -274,7 +285,7 @@ mode = "casual" if mode_label == "Casual fan" else "analyst"
 lang = "en" if language_label == "English" else "es"
 t = TEXT[lang]
 followed = [HOME, AWAY] if club == BOTH else [club]
-st.sidebar.caption(t["fov_note"])
+st.sidebar.caption(t["fov_note"] + " " + t["full_pitch_help"])
 
 esc = html.escape
 
@@ -420,11 +431,13 @@ def event_hover(row):
             f"{row['distance_m']:.0f} {t['m']}")
 
 
-def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None):
+def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None, full_pitch=False):
     """The Keeper's eyes pitch. `sense` is the keeper's position, the ball and
     the direction they face; `rows` are the last events (perceived ones; in the
     Reveal view also the missed ones, drawn hollow). Every event marker carries
-    its event id, so a click can select it; `selected_id` gets a ring."""
+    its event id, so a click can select it; `selected_id` gets a ring. `full_pitch`
+    turns the dimming off. `sense["players"]` are the other players (from the tracking):
+    in Keeper's eyes only those in view, in Reveal everyone, hollow when out of sight."""
     fig = go.Figure()
     keeper, ball, facing = sense["keeper"], sense["ball"], sense["facing"]
     draw_followed_half(fig)
@@ -433,12 +446,31 @@ def keeper_pitch(sense, rows, fov_deg, height=520, selected_id=None):
     # Dim everything outside the cone: a big rectangle with the cone cut out of it
     # (even-odd fill), in the page background at 70% opacity
     outer = rect_points(-4, VIEW_X_MAX + 2, -3, 71)
-    fig.add_shape(type="path", layer="below", fillrule="evenodd", line=dict(width=0),
-                  fillcolor=theme.rgba(theme.BG, 0.7),
-                  path=path_text(outer) + " Z " + path_text(cone) + " Z")
+    if not full_pitch:
+        fig.add_shape(type="path", layer="below", fillrule="evenodd", line=dict(width=0),
+                      fillcolor=theme.rgba(theme.BG, 0.7),
+                      path=path_text(outer) + " Z " + path_text(cone) + " Z")
     # The cone itself: lime at 18%, 1 px lime edge
     fig.add_shape(type="path", layer="below", fillcolor=theme.rgba(theme.LIME, 0.18),
                   line=dict(color=theme.LIME, width=1), path=path_text(cone) + " Z")
+
+    # The other players, from the tracking: filled when in view, hollow when out of sight (Reveal only)
+    crowd = [p for p in sense.get("players", []) if p["x"] <= VIEW_X_MAX + 0.5]
+    for mine in (True, False):
+        for visible in (True, False):
+            group = [p for p in crowd if (p["team"] == sense.get("team")) == mine and p["visible"] == visible]
+            if not group:
+                continue
+            colour = theme.BODY if mine else theme.HEADING
+            fig.add_trace(go.Scatter(
+                x=[p["y"] for p in group], y=[p["x"] for p in group], mode="markers",
+                name=t["players_mine"] if mine else t["players_theirs"],
+                showlegend=visible, legendgroup="mine" if mine else "theirs",
+                marker=dict(symbol="circle" if visible else "circle-open", size=8 if visible else 9,
+                            color=colour, opacity=0.9 if visible else 0.5,
+                            line=dict(width=1, color=theme.BG if visible else colour)),
+                hovertext=[f"{p['name']} · {p['role']}" + ("" if visible else f" · {t['players_hidden']}") for p in group],
+                hoverinfo="text"))
 
     # The trail: recent events joined oldest to newest, fading in
     shown = [r for r in rows if r["position"][0] <= VIEW_X_MAX]
@@ -815,7 +847,8 @@ def inspector_panel(team, now, reveal):
         with snap_col:
             st.caption(t["show_snapshot"])
             rows = f.recent(RECENT_EVENTS, now, include_missed=reveal, upto_id=event_id)
-            st.plotly_chart(keeper_pitch(f.snapshot(event_id), rows, fov, height=380, selected_id=event_id),
+            st.plotly_chart(keeper_pitch(f.snapshot(event_id, reveal), rows, fov, height=380, selected_id=event_id,
+                                       full_pitch=full_pitch),
                             key=f"snap_{event_id}", width="stretch", config=CLICK_CONFIG)
         with text_col:
             st.markdown(f'<div class="ll-inspector-head"><span class="ll-clock">{facts["clock"]}</span>'
@@ -858,7 +891,8 @@ def eyes_view(team, now, moments):
         st.markdown(f"#### {f.keeper_name()} · {team}")
         keeper_panel(perceived_state(team, fov, now).snapshot(now)[team], unseen_counts(f, now))
         chart_key = f"pitch_{team}"
-        st.plotly_chart(keeper_pitch(f.state_at(now), rows, fov, selected_id=st.session_state.selected_event_id),
+        st.plotly_chart(keeper_pitch(f.state_at(now), rows, fov, selected_id=st.session_state.selected_event_id,
+                                     full_pitch=full_pitch),
                         key=chart_key, width="stretch", config=CLICK_CONFIG,
                         on_select=partial(on_chart_pick, chart_key), selection_mode="points")
         hidden = sum(1 for r in rows if r["position"][0] > VIEW_X_MAX)
@@ -899,10 +933,11 @@ def reveal_view(team, now, moments, shots, official_state):
         st.markdown(f"#### {f.keeper_name()} · {team}")
         keeper_panel(perceived_state(team, fov, now).snapshot(now)[team], unseen_counts(f, now))
         chart_key = f"reveal_pitch_{team}"
-        st.plotly_chart(keeper_pitch(f.state_at(now), rows, fov, selected_id=st.session_state.selected_event_id),
+        st.plotly_chart(keeper_pitch(f.state_at(now, reveal=True), rows, fov, selected_id=st.session_state.selected_event_id,
+                                     full_pitch=full_pitch),
                         key=chart_key, width="stretch", config=CLICK_CONFIG,
                         on_select=partial(on_chart_pick, chart_key), selection_mode="points")
-        st.caption(t["pitch_help"])
+        st.caption(t["pitch_help"] + t["pitch_help_reveal"])
     with side_col:
         side_tabs(t["reveal_title"], lambda: missed_panel(f, now), f, now, reveal=True)
     st.markdown(f"#### {t['official']}")

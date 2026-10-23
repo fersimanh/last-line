@@ -7,8 +7,10 @@ PASS / FAIL per target (see calibration.py for the tolerances); targets a later
 stage can measure print "n/a". The final line counts the failures.
 """
 import argparse
+import os
 import statistics
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 import calibration
 import sim_engine
@@ -16,14 +18,24 @@ import sim_engine
 STAGE = 3   # the stage the engine has reached; raise it as stages are finished
 
 
+def one_match(seed):
+    """Play one seed and measure it. Runs in a worker process; the same seed always gives the same numbers."""
+    started = time.time()
+    result = sim_engine.simulate(seed)
+    return calibration.metrics_for(result), time.time() - started
+
+
 def run(seeds):
-    per_match = []
-    slowest = 0.0
-    for seed in seeds:
-        started = time.time()
-        result = sim_engine.simulate(seed)
-        slowest = max(slowest, time.time() - started)
-        per_match.append(calibration.metrics_for(result))
+    """All seeds, spread over the machine's cores (each match is independent). Same numbers as a plain loop."""
+    seeds = list(seeds)
+    workers = min(len(seeds), os.cpu_count() or 1)
+    if workers > 1:
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            results = list(pool.map(one_match, seeds))
+    else:
+        results = [one_match(seed) for seed in seeds]
+    per_match = [metrics for metrics, _ in results]
+    slowest = max(seconds for _, seconds in results)
     keys = {k for m in per_match for k in m}
     means = {k: statistics.mean(m[k] for m in per_match if k in m) for k in keys}
     return means, per_match, slowest

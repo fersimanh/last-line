@@ -128,6 +128,28 @@ def test_view_toggle_and_reveal():
     print("ok  the view toggle works and never restarts the match")
 
 
+def test_full_pitch_toggle_and_players_on_the_pitch():
+    at = new_app()
+    at.session_state.match_sec = MID_SEC
+    at.run()
+    dims = lambda spec: [sh for sh in spec["layout"].get("shapes", []) if sh.get("fillrule") == "evenodd"]
+    spec = chart_spec(at)
+    assert len(dims(spec)) == 1, "the pitch is dimmed outside the cone by default"
+    named = {tr.get("name") for tr in spec["data"]}
+    assert {"Your team", "Opponents"} & named, "the players in view are drawn"
+    hollow = [tr for tr in spec["data"] if tr.get("marker", {}).get("symbol") == "circle-open" and tr.get("name") in ("Your team", "Opponents")]
+    assert not hollow, "Keeper's eyes never draws a player the keeper cannot see"
+    at.checkbox(key="full_pitch").set_value(True).run()
+    assert not at.exception, at.exception
+    assert not dims(chart_spec(at)), "no dimming with the full-pitch toggle on"
+    assert at.session_state.match_sec == MID_SEC                    # the toggle does not move the match
+    at.radio(key="view").set_value("Reveal").run()
+    spec = chart_spec(at)
+    assert any(tr.get("marker", {}).get("symbol") == "circle-open" and tr.get("name") in ("Your team", "Opponents")
+               for tr in spec["data"]), "Reveal also draws the players out of sight, hollow"
+    print("ok  the full-pitch toggle removes the dimming; players in view are drawn, hidden ones only in Reveal")
+
+
 def test_switching_everything_keeps_position():
     at = new_app()
     at.session_state.match_sec = MID_SEC
@@ -424,6 +446,7 @@ if __name__ == "__main__":
     test_mid_match_cards_and_the_pitch()
     test_unseen_counts_are_shown()
     test_view_toggle_and_reveal()
+    test_full_pitch_toggle_and_players_on_the_pitch()
     test_switching_everything_keeps_position()
     test_distribution_card()
     test_shot_card_has_headline_pills_and_numbers()

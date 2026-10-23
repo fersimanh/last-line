@@ -19,7 +19,12 @@ in the frame of ONE team, the team that "attacks toward x = 105" in it:
 So an event is already in the followed keeper's frame when the frame's owner is
 the followed team; otherwise flip it: x -> 105 - x, y -> 68 - y.
 
-BODIES IN THE WAY. Events near a goal carry `traffic`: the other players
+TRACKING. When the match comes with tracking (tracking.npz: all 22 players and the
+ball every 0.5 s), the keeper's position, where the ball was, and EVERY body that
+could stand in the sightline are read from it, for every event on the pitch.
+Without tracking (older match files) the events' own `traffic` lists are used.
+
+BODIES IN THE WAY (older files). Events near a goal carry `traffic`: the other players
 standing around (same frame as the event). A body hides a point when it stands
 between the keeper and the point and the keeper's sightline passes through it.
 A body close to the keeper hides a wide angle; a far one only a sliver.
@@ -34,6 +39,7 @@ DEFAULT_RADIUS_M = 55          # how far the keeper can make things out
 TRAIL_LENGTH = 8               # events kept for the fading trail
 BODY_HALF_WIDTH_M = 0.3        # half a player's shoulder width: what blocks a sightline
 BLOCK_MARGIN_M = 0.5           # a body must be at least this much nearer than the point
+GAZE_LAG_SAMPLES = 1           # the keeper looks where the ball was this many tracking samples (0.5 s) before an event
 
 # Done by the defending team, but recorded in the attacking team's frame
 DEFENDING_TYPES = ("keeper_save", "keeper_claim", "keeper_sweep", "keeper_close_down",
@@ -152,7 +158,7 @@ def traffic_in_keeper_frame(event, followed_team):
 
 # ---------- The whole match, event by event ----------
 
-def build_timeline(events, followed_team):
+def build_timeline(events, followed_team, tracking=None):
     """For every event (in order), the geometry from the followed keeper's side.
 
     Returns a list with one dict per event, in the same order:
@@ -168,6 +174,8 @@ def build_timeline(events, followed_team):
       blocked_by    how many of them stand in the keeper's sightline to it
     Whether the event was SEEN is was_seen(entry, fov): it depends on the
     field of view, so callers work it out themselves."""
+    if tracking is not None and events and "t" in events[0]:
+        return build_timeline_tracked(events, followed_team, tracking)
     keeper = DEFAULT_KEEPER
     ball = (PITCH_LENGTH / 2, PITCH_WIDTH / 2)  # kickoff: the ball starts on the center spot
     timeline = []
@@ -195,3 +203,37 @@ def was_seen(entry, fov_deg=DEFAULT_FOV_DEG, radius_m=DEFAULT_RADIUS_M):
     when it happened?"""
     return is_visible(entry["keeper"], entry["facing_before"], entry["pos"], fov_deg, radius_m,
                       entry.get("blockers", ()))
+
+
+def build_timeline_tracked(events, followed_team, tracking):
+    """Same result as build_timeline, but from the tracking: the keeper stands where
+    the tracking says, faces where the ball was half a second before the event, and
+    every other player on the pitch is a body that may block the view."""
+    players, ball_path = tracking.frame_arrays(followed_team)       # keeper frame, every sample
+    on_pitch = tracking.on_pitch_mask()
+    gk = tracking.keeper_slot(followed_team)
+    last = len(tracking.times) - 1
+    timeline = []
+    for event in events:
+        k = tracking.sample_index(event["t"])
+        decided = max(k - 1, 0)                                     # the engine acts on the previous sample
+        gaze = max(decided - GAZE_LAG_SAMPLES, 0)
+        keeper = (float(players[decided, gk, 0]), float(players[decided, gk, 1]))
+        ball_before = (float(ball_path[gaze, 0]), float(ball_path[gaze, 1]))
+        ball_after = (float(ball_path[min(k, last), 0]), float(ball_path[min(k, last), 1]))
+        pos = to_keeper_frame(event, followed_team)
+        facing_before = facing_angle(keeper, ball_before)
+        alive = on_pitch[decided].copy()
+        alive[gk] = False
+        blockers = [(float(x), float(y)) for x, y in players[decided][alive]]
+        timeline.append({
+            "pos": pos,
+            "keeper": keeper,
+            "ball": ball_after,
+            "facing_before": facing_before,
+            "distance_m": math.hypot(pos[0] - keeper[0], pos[1] - keeper[1]),
+            "off_axis": off_axis_deg(keeper, facing_before, pos),
+            "blockers": blockers,
+            "blocked_by": len(blockers_of(keeper, pos, blockers)),
+        })
+    return timeline

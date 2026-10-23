@@ -24,10 +24,12 @@ with perceived events only.
 """
 import hashlib
 import math
+import os
 from bisect import bisect_right
 from dataclasses import dataclass, field
 
 import vision
+from tracking import Tracking
 from replay import is_key_moment, load_match
 from scoring import MatchState
 
@@ -37,6 +39,23 @@ KEEPER_OWN_TYPES = ("keeper_save", "keeper_claim", "keeper_sweep", "keeper_close
 BALL_MOVE_TYPES = ("pass", "through_ball", "cross", "box_entry")   # the ball travels to the next event
 OWN_THIRD_X = 35.0       # a pass starting below this (in its team's attacking frame) is in its own third
 PRESSURE_RADIUS_M = 6.0  # opponents this close to a pass count as pressure
+
+
+_tracking_cache = {}   # tracking file path -> (modified time, Tracking)
+_timeline_cache = {}   # (match file, modified time, tracking, team) -> the vision timeline
+
+
+def load_tracking(match, events_path):
+    """The match's tracking, or None for an older match file without one. The file named in
+    the match metadata sits beside the events file. Loaded once per file version."""
+    name = match.get("tracking")
+    path = os.path.join(os.path.dirname(os.path.abspath(events_path)), name) if name else None
+    if not path or not os.path.exists(path):
+        return None
+    stamp = os.path.getmtime(path)
+    if _tracking_cache.get(path, (None,))[0] != stamp:
+        _tracking_cache[path] = (stamp, Tracking(path))
+    return _tracking_cache[path][1]
 
 
 def match_fingerprint(path=MATCH_PATH):
@@ -123,7 +142,11 @@ class PerceptionFilter:
         self.followed_team = followed_team
         self.fov_deg, self.radius_m = fov_deg, radius_m
         self._events = events
-        self._timeline = vision.build_timeline(events, followed_team)
+        self.tracking = load_tracking(self.match, path)               # None for older match files
+        key = (os.path.abspath(path), os.path.getmtime(path), self.tracking is not None, followed_team)
+        if key not in _timeline_cache:                                # the timeline does not depend on the field of view
+            _timeline_cache[key] = vision.build_timeline(events, followed_team, self.tracking)
+        self._timeline = _timeline_cache[key]
         self._seconds = [second_of(e) for e in events]   # for finding "the event at second t"
         self._index = {}                  # event id -> ("perceived", PerceivedEvent) or ("missed", MissedEvent)
         self._assist_shot = {e["assist_id"]: e["id"] for e in events if e["type"] == "shot"}
@@ -221,14 +244,44 @@ class PerceptionFilter:
                                               if e["team"] == self.followed_team and e["type"].startswith("keeper_"))
         return self._keeper_name
 
-    def state_at(self, upto_sec):
+    def _crowd(self, seconds, keeper, facing, reveal):
+        """The other players around, in the keeper frame, each with whether the keeper can see
+        them right now (inside the cone, in range, and no other body in the way). Keeper's eyes
+        gets only the ones in view; Reveal gets everyone, with `visible` telling which is which."""
+        if self.tracking is None:
+            return []
+        frame = self.tracking.frame_at(seconds, self.followed_team)
+        names = self.tracking.names_at(seconds)
+        gk = self.tracking.keeper_slot(self.followed_team)
+        alive = [i for i in range(22) if frame["on_pitch"][i] and i != gk]
+        points = {i: (float(frame["players"][i][0]), float(frame["players"][i][1])) for i in alive}
+        crowd = []
+        for i in alive:
+            others = [points[j] for j in alive if j != i]
+            seen = vision.is_visible(keeper, facing, points[i], self.fov_deg, self.radius_m, others)
+            if seen or reveal:
+                crowd.append({"name": names[i], "team": self.tracking.teams[i], "role": self.tracking.roles[i],
+                              "x": points[i][0], "y": points[i][1], "visible": seen})
+        return crowd
+
+    def state_at(self, upto_sec, reveal=False):
         """The keeper's surroundings at a match second: where they stand, where
-        the ball is (a keeper always tracks the ball, seen or not), and the
-        direction they face. Positions are in the keeper frame."""
+        the ball is (a keeper always tracks the ball, seen or not), the direction
+        they face, and (with tracking) the players around. Positions are in the
+        keeper frame."""
+        if self.tracking is not None:
+            now = self.tracking.frame_at(upto_sec, self.followed_team)
+            before = self.tracking.frame_at(max(upto_sec - 0.5, 0.0), self.followed_team)
+            gk = self.tracking.keeper_slot(self.followed_team)
+            keeper = (float(now["players"][gk][0]), float(now["players"][gk][1]))
+            ball = (float(now["ball"][0]), float(now["ball"][1]))
+            facing = vision.facing_angle(keeper, (float(before["ball"][0]), float(before["ball"][1])))
+            return {"keeper": keeper, "ball": ball, "facing": facing, "team": self.followed_team,
+                    "players": self._crowd(upto_sec, keeper, facing, reveal)}
         i = bisect_right(self._seconds, upto_sec) - 1
         keeper = self._timeline[i]["keeper"] if i >= 0 else vision.DEFAULT_KEEPER
         ball = self._timeline[i]["ball"] if i >= 0 else (vision.PITCH_LENGTH / 2, vision.PITCH_WIDTH / 2)
-        return {"keeper": keeper, "ball": ball, "facing": vision.facing_angle(keeper, ball)}
+        return {"keeper": keeper, "ball": ball, "facing": vision.facing_angle(keeper, ball), "team": self.followed_team, "players": []}
 
     def recent(self, n, upto_sec, include_missed=False, upto_id=None):
         """The last `n` events up to a match second (and, if given, up to an
@@ -287,11 +340,17 @@ class PerceptionFilter:
                     if m.reason != "unseen_option" and second_of(m.event) <= upto_sec]
         return sorted(ids)
 
-    def snapshot(self, event_id):
+    def snapshot(self, event_id, reveal=False):
         """The keeper's surroundings at one event: where they stood, which way they
-        were facing just BEFORE it (toward where the ball had been), and the ball."""
+        were facing just BEFORE it (toward where the ball had been), the ball, and
+        (with tracking) the players around."""
         entry = self._timeline[event_id]
-        return {"keeper": entry["keeper"], "ball": entry["ball"], "facing": entry["facing_before"]}
+        crowd = []
+        if self.tracking is not None and "t" in self._events[event_id]:
+            crowd = self._crowd(max(self._events[event_id]["t"] - 0.5, 0.0), entry["keeper"],
+                                entry["facing_before"], reveal)
+        return {"keeper": entry["keeper"], "ball": entry["ball"], "facing": entry["facing_before"],
+                "team": self.followed_team, "players": crowd}
 
     def window_summary(self, event_id, window_sec=30):
         """How much the keeper saw and missed in the `window_sec` seconds before an
@@ -358,11 +417,26 @@ class PerceptionFilter:
             info["leads_to_shot"] = True
         elif shot_id is None:
             info["leads_to_shot"] = False
-        if "traffic" in event:   # only events in the attacking third carry the players around them
-            near = sum(1 for b in event["traffic"] if b["team"] != own
-                       and math.hypot(b["x"] - event["x"], b["y"] - event["y"]) <= PRESSURE_RADIUS_M)
+        near = self._opponents_near(event)
+        if near is not None:
             info["pressure"] = "low" if near == 0 else "medium" if near == 1 else "high"
         return info
+
+    def _opponents_near(self, event):
+        """How many opponents stood within PRESSURE_RADIUS_M of the player on the ball, from the
+        tracking (any part of the pitch). Older match files only know it near the goals, from
+        `traffic`; None when it is not known."""
+        if self.tracking is not None and "t" in event:
+            k = max(self.tracking.sample_index(event["t"]) - 1, 0)
+            slots = [i for i, team in enumerate(self.tracking.teams) if team != event["team"]]
+            alive = self.tracking.on_pitch_mask()[k]
+            me = self.tracking.players[k][self.tracking.index_of(event["player"])]
+            gaps = [math.hypot(*(self.tracking.players[k][i] - me)) for i in slots if alive[i]]
+            return sum(1 for g in gaps if g <= PRESSURE_RADIUS_M)
+        if "traffic" in event:
+            return sum(1 for b in event["traffic"] if b["team"] != event["team"]
+                       and math.hypot(b["x"] - event["x"], b["y"] - event["y"]) <= PRESSURE_RADIUS_M)
+        return None
 
     def facts(self, event_id, reveal=False, upto_sec=None):
         """Everything known about one event, for the inspector and the agents, or

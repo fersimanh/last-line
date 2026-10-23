@@ -33,6 +33,7 @@ class Tracking:
         self.slots = [str(n) for n in z["slots"]]
         self.home, self.away = str(z["home"]), str(z["away"])
         self.hz = float(z["hz"])
+        self._cache = {}                                       # arrays built on first use
         # Substitutions: `who[k, slot]` is the roster entry standing in that slot at sample k.
         # Roster entries 0-21 are the starters; the rest are the benches.
         self.who = z["who"].astype(int) if "who" in z.files else np.tile(np.arange(22), (len(self.times), 1))
@@ -77,6 +78,42 @@ class Tracking:
         return {"players": self.players[k] * (1 - w) + self.players[k + 1] * w,
                 "ball": self.ball[k] * (1 - w) + self.ball[k + 1] * w,
                 "half": int(self.half[k])}
+
+    # ---------- whole-match views, for perception ----------
+
+    def sample_index(self, seconds):
+        """The index of the sample taken at a time (the engine records one after every 0.5 s step)."""
+        k = int(np.searchsorted(self.times, float(seconds) - 1e-6, side="left"))
+        return min(max(k, 0), len(self.times) - 1)
+
+    def keeper_slot(self, team):
+        """The slot (0-21) of a team's goalkeeper."""
+        return next(i for i in self.indices(team) if self.slots[i] == "GK")
+
+    def on_pitch_mask(self):
+        """(samples, 22) booleans: False while a player is off the pitch (sent off)."""
+        if "_mask" not in self._cache:
+            self._cache["_mask"] = self.players[..., 1] >= 0.0
+        return self._cache["_mask"]
+
+    def frame_arrays(self, team):
+        """Every player and the ball at every sample, in one team's frame (own goal at x = 0):
+        (players (samples, 22, 2), ball (samples, 2)). Built once per team and kept."""
+        if team not in self._cache:
+            flip = np.array([self.attack_dir(team, int(h)) == -1 for h in self.half])
+            players, ball = self.players.copy(), self.ball.copy()
+            players[flip] = np.stack([PITCH_L - players[flip][..., 0], PITCH_W - players[flip][..., 1]], axis=-1)
+            ball[flip] = np.stack([PITCH_L - ball[flip][:, 0], PITCH_W - ball[flip][:, 1]], axis=-1)
+            self._cache[team] = (players, ball)
+        return self._cache[team]
+
+    def frame_at(self, seconds, team):
+        """Everyone and the ball at a time, interpolated, in a team's frame:
+        {"players": (22, 2), "ball": (2,), "on_pitch": (22,) booleans}."""
+        now = self.positions_at(seconds)
+        return {"players": self.to_team_frame(now["players"], team, now["half"]),
+                "ball": self.to_team_frame(now["ball"], team, now["half"]),
+                "on_pitch": now["players"][:, 1] >= 0.0}
 
     # ---------- frames ----------
 

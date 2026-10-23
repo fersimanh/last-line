@@ -169,24 +169,38 @@ def test_defending_events_use_the_other_frame():
     print("ok  defending events use the other team's frame")
 
 
-def test_traffic_matches_the_data():
-    """On real events: the bodies on a shot stand where the data says, and
-    shots with defenders in the lane are hidden more often."""
-    import legacy_generator as g
-    shots = [e for e in EVENTS if e["type"] == "shot"]
-    for e in shots:
-        if e.get("situation") in ("free_kick", "penalty") or e["distance_m"] > 17:
-            continue          # a wall is not in the lane count's traffic; far shots have bodies beyond the traffic radius
-        in_lane = [b for b in e["traffic"] if b["role"] == "defender" and (b["x"], b["y"]) != (e["keeper_x"], e["keeper_y"]) and g.in_shot_lane(b["x"], b["y"], e["x"], e["y"])]
-        assert min(len(in_lane), 3) == e["defenders_in_lane"], (e["id"], len(in_lane), e["defenders_in_lane"])
-    timeline = {e["id"]: entry for team in (HOME, AWAY)
-                for e, entry in zip(EVENTS, v.build_timeline(EVENTS, team)) if e["team"] != team}
-    blocked = [timeline[e["id"]]["blocked_by"] > 0 for e in shots]
-    screened = [b for e, b in zip(shots, blocked) if e["defenders_in_lane"] > 0]
-    clear = [b for e, b in zip(shots, blocked) if e["defenders_in_lane"] == 0]
-    assert not any(clear), "a shot with an empty lane was blocked"
-    print(f"ok  shot traffic matches defenders_in_lane; {sum(screened)} of {len(screened)} "
-          f"screened shots hid the shooter from the keeper, 0 of {len(clear)} clear ones")
+def test_the_tracked_timeline():
+    """With tracking the bodies in the way come from the tracked players, on any part of the pitch."""
+    from perception import load_tracking
+    tracking = load_tracking(MATCH, "match_events.json")
+    assert tracking is not None
+    timeline = v.build_timeline(EVENTS, HOME, tracking)
+    assert len(timeline) == len(EVENTS)
+    players, _ = tracking.frame_arrays(HOME)
+    gk = tracking.keeper_slot(HOME)
+    shots = [i for i, e in enumerate(EVENTS) if e["type"] == "shot"]
+    for i in sorted(set(list(range(0, len(EVENTS), 7)) + shots)):
+        entry, k = timeline[i], max(tracking.sample_index(EVENTS[i]["t"]) - 1, 0)
+        assert abs(entry["keeper"][0] - players[k, gk, 0]) < 1e-6
+        assert len(entry["blockers"]) == int(tracking.on_pitch_mask()[k].sum()) - 1     # everyone but the keeper
+        assert entry["blocked_by"] == len(v.blockers_of(entry["keeper"], entry["pos"], entry["blockers"]))
+        assert all(0 <= b[0] <= 105 and 0 <= b[1] <= 68 for b in entry["blockers"])
+    some_blocked = [e for e in timeline if e["blocked_by"] > 0]
+    assert some_blocked and any(e["pos"][0] < 60 for e in some_blocked), "bodies block the view in midfield too"
+    clear = [e for e in timeline if e["blocked_by"] == 0 and e["distance_m"] <= v.DEFAULT_RADIUS_M
+             and e["off_axis"] <= v.DEFAULT_FOV_DEG / 2]
+    assert all(v.was_seen(e) for e in clear), "nothing in the way, in range and in the cone: seen"
+    print(f"ok  tracked timeline: {len(some_blocked)} of {len(timeline)} events have a body in the sightline, "
+          f"including in midfield")
+
+
+def test_the_older_traffic_path_still_works():
+    """Match files without tracking keep using the events' own `traffic` lists."""
+    shot = {"type": "shot", "team": HOME, "t": 1.0, "x": 90.0, "y": 34.0, "keeper_x": 4.0, "keeper_y": 34.0,
+            "traffic": [{"team": AWAY, "role": "defender", "x": 4.0 + 1.0, "y": 34.0}]}
+    entry = v.build_timeline([shot], AWAY)[0]          # followed by the other team: the point is flipped into that keeper frame
+    assert entry["blockers"], "traffic is read when there is no tracking"
+    print("ok  older match files without tracking keep working from `traffic`")
 
 
 def test_timeline_is_consistent():
@@ -214,6 +228,7 @@ if __name__ == "__main__":
     test_claim_by_followed_keeper()
     test_distribution_in_own_frame()
     test_defending_events_use_the_other_frame()
-    test_traffic_matches_the_data()
+    test_the_tracked_timeline()
+    test_the_older_traffic_path_still_works()
     test_timeline_is_consistent()
     print("all vision tests passed")

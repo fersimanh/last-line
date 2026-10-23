@@ -142,6 +142,8 @@ div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]:focus-with
 .ll-score{font-family:var(--ll-font-display);font-weight:900;font-size:52px;line-height:1;color:var(--ll-heading)}
 .ll-clock-big{font-family:var(--ll-font-display);font-weight:800;font-size:22px;color:var(--ll-lime)}
 .ll-timeline{position:relative;padding:14px 0 4px;margin-top:6px}
+/* While the match plays the live area reruns every tick; Streamlit would grey it out each time. Keep it at full strength. */
+[data-stale="true"]{opacity:1 !important;transition:none !important}
 .ll-segs{display:grid;grid-template-columns:repeat(18,1fr);gap:3px}
 .ll-seg{height:10px;background:var(--ll-track);border-radius:3px;overflow:hidden}
 .ll-seg>span{display:block;height:100%;background:var(--ll-lime)}

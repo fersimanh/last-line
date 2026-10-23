@@ -40,6 +40,9 @@ The ball carrier acts every 1-3 s (faster under pressure). Options: pass to each
 - **Added time:** a share of the stoppage time that counted (goals, cards, subs, penalties, ...) plus a little noise.
 - **Contract:** `contract.json` freezes the field list of every original event type; `test_sim.py` checks the engine never drops one.
 
+## Stage 4: perception on real positions (built)
+`vision.build_timeline` reads `tracking.npz` through `perception.load_tracking`: the keeper's tracked position, a gaze toward where the ball was 0.5 s before each event, and every other player on the pitch as a body that may block the view (`Tracking.frame_arrays` builds the keeper-frame arrays once). The engine no longer writes `traffic`; files without tracking fall back to it. `PerceptionFilter.state_at` and `snapshot` also return the players in view, which the app draws.
+
 ## Calibration
 Every target lives in `calibration.py` with a source label: **verified** (Premier League 2025/26, first 11 matchweeks; within 15%) or **approximate** (general knowledge, unverified; ranges, within 25%). `report_calibration.py` runs 60 seeds by default (header goals are rare, so fewer seeds are too noisy to judge) (`--seeds N`) and prints PASS or FAIL per metric. Metrics that need a later stage print `n/a`. Approximate ranges are UNVERIFIED; the report also says whether a value is inside the range or only within 25% of it.
 

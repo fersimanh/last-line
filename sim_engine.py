@@ -42,6 +42,7 @@ HALF_SEC = 2700.0          # 45 minutes, before added time
 LONG_PASS_M = 32.0         # a pass of this length or more is "long"
 BOX_X, BOX_Y0, BOX_Y1 = 88.5, 13.84, 54.16   # the penalty area, in the attacking frame
 FINAL_THIRD_X = 70.0
+FLIP = np.array([105.0, 68.0])   # for turning a point around: FLIP - point
 A_MAX = 5.0                # m/s^2: how fast a player can change velocity
 PARK = np.array([52.5, -2.5])   # where a sent-off player stands (off the pitch)
 
@@ -123,6 +124,8 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
         self.rec_players, self.rec_ball, self.rec_half, self.rec_times, self.rec_who = [], [], [], [], []
         self.poss_time = [0.0, 0.0]
         self.dead_time = 0.0
+        self.wingers = [np.array([self.role[i] == "W" for i in idx]) for idx in self.team_idx]   # fixed for the match
+        self.outfield_mask = [np.array([self.slot[i] != "GK" for i in idx]) for idx in self.team_idx]
         self.init_shots()
         self.init_keeper()
         self.init_stops()
@@ -134,7 +137,7 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
         pts = np.asarray(pts, dtype=float)
         if self.dir[team] == 1:
             return pts
-        return np.stack([PITCH_L - pts[..., 0], PITCH_W - pts[..., 1]], axis=-1)
+        return FLIP - pts                                   # (105 - x, 68 - y)
 
     def gk(self, team):
         return int(self.team_idx[team][0])
@@ -148,7 +151,7 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
 
     # ---------- events ----------
 
-    def emit(self, t, etype, team, actor, frame_team, xy_abs, traffic=None, **fields):
+    def emit(self, t, etype, team, actor, frame_team, xy_abs, **fields):
         """Record one event. `frame_team` decides the frame x, y are written in."""
         xy = self.f(frame_team, xy_abs)
         event = {"t": round(t, 2), "minute": int(t // 60), "second": int(t % 60), "half": self.half,
@@ -157,24 +160,9 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
                  "x": round(float(xy[0]), 1), "y": round(float(xy[1]), 1), "_k": self.keys}
         self.keys += 1
         event.update(fields)
-        if traffic or (traffic is None and event["x"] >= FINAL_THIRD_X):   # the players around, for line of sight
-            event["traffic"] = self.traffic(actor, frame_team, xy_abs)
         self.events.append(event)
         self.note_event(event, team, t)                 # sim_shots: remember what could set up a shot
         return event
-
-    def traffic(self, actor, frame_team, xy_abs, radius=18.0):
-        near = (np.linalg.norm(self.pos - xy_abs, axis=1) <= radius) & self.active
-        near[actor] = False
-        bodies = []
-        for i in np.nonzero(near)[0]:
-            x, y = self.f(frame_team, self.pos[i])
-            bodies.append({"team": self.teams[self.team_of[i]]["name"],
-                           "role": "attacker" if self.team_of[i] == frame_team else "defender",
-                           "x": round(float(x), 1), "y": round(float(y), 1)})
-        return bodies
-
-    # ---------- giving the ball to somebody ----------
 
     def give_ball(self, player, t, wait=None, trigger=None):
         """`player` has the ball and will act after a short pause."""
@@ -199,10 +187,10 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
             has_ball = (self.dead["team"] == team) if self.dead else (self.poss == team)
             spots = self.anchor[idx].copy()
             spots[:, 1] = 34 + (spots[:, 1] - 34) * (0.55 + 0.6 * tac["width"])
-            wingers = np.array([self.role[i] == "W" for i in idx])
+            wingers = self.wingers[team]
             if has_ball:                                                    # wingers hug the touchline in attack
                 spots[wingers, 1] = 34 + (spots[wingers, 1] - 34) * 1.18
-            outfield = np.array([self.slot[i] != "GK" for i in idx])
+            outfield = self.outfield_mask[team]
             # the whole shape moves up when the team has the ball, and drops back when it does not
             spots[outfield, 0] += (PUSH_ATTACK[0] + PUSH_ATTACK[1] * tac["line_height"]) if has_ball else (
                 PUSH_DEFEND[0] + PUSH_DEFEND[1] * tac["line_height"])
@@ -214,11 +202,13 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
             others = [i for i in self.team_idx[1 - team][1:] if self.active[i]]
             if not has_ball and others:                                     # marking: stand goal-side of a nearby attacker
                 attackers = self.f(team, self.pos[others])
-                for k in np.nonzero(outfield)[0]:
-                    gaps = np.linalg.norm(attackers - spots[k], axis=1)
-                    near = int(gaps.argmin())
-                    if gaps[near] < 14.0:
-                        spots[k] = spots[k] + MARK_PULL * (attackers[near] - spots[k]) - np.array([1.5, 0.0])
+                mine = spots[outfield]                                      # every defender at once
+                gaps = np.sqrt(((attackers[None, :, :] - mine[:, None, :]) ** 2).sum(axis=-1))
+                near = gaps.argmin(axis=1)
+                close = gaps[np.arange(len(mine)), near] < 14.0
+                pulled = mine + MARK_PULL * (attackers[near] - mine) - np.array([1.5, 0.0])
+                mine[close] = pulled[close]
+                spots[outfield] = mine
             if not has_ball and not self.dead:                              # pressing
                 outs = np.array([i for i in idx[outfield] if self.active[i]])
                 order = np.argsort(np.linalg.norm(self.pos[outs] - self.ball, axis=1))
@@ -233,11 +223,12 @@ class Engine(StopsMixin, ShotsMixin, KeeperMixin):
             if has_ball and others:                                         # attackers hold the offside line, mostly
                 line = float(self.f(team, self.pos[others])[:, 0].max())
                 running = {int(i) - int(idx[0]) for i, (_, ex) in self.runs.items() if self.team_of[i] == team and t < ex}
-                for k in np.nonzero(outfield)[0]:
-                    if int(k) in running:                                    # a timed run into the box is not held back
-                        continue
-                    late_run = (int(idx[k]) + int(t // 4)) % 6 == 0          # now and then a runner mistimes it
-                    spots[k, 0] = min(spots[k, 0], line + (OFFSIDE_ERR if late_run else 1.2))
+                rows = np.nonzero(outfield)[0]
+                held = np.array([int(k) not in running for k in rows])        # a timed run into the box is not held back
+                late_run = (idx[rows] + int(t // 4)) % 6 == 0                 # now and then a runner mistimes it
+                cap = line + np.where(late_run, OFFSIDE_ERR, 1.2)
+                rows, cap = rows[held], cap[held]
+                spots[rows, 0] = np.minimum(spots[rows, 0], cap)
             tgt[idx] = self.f(team, spots)
             urgency[idx] = local_urgency
         self.keeper_targets(tgt, urgency, t)                  # sim_keeper: rush out to close down

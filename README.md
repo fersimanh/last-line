@@ -4,7 +4,7 @@ Goalkeeper-lens match intelligence for the Microsoft x Premier League "Inside th
 
 ## Match engine
 
-The match is produced by a position-based engine: 22 tracked players and a ball move on the pitch, and the events are read off what happens. It is **football-realistic, calibrated to published league averages where available; not real match data.** Design: `SIM_DESIGN.md`. Targets and their sources: `calibration.py`; run `python3 report_calibration.py` (60 seeds by default, `--seeds N`; about 2.5 minutes).
+The match is produced by a position-based engine: 22 tracked players and a ball move on the pitch, and the events are read off what happens. It is **football-realistic, calibrated to published league averages where available; not real match data.** Design: `SIM_DESIGN.md`. Targets and their sources: `calibration.py`; run `python3 report_calibration.py` (60 seeds by default, `--seeds N`; the seeds run on all cores, about 30 s).
 
 - **Verified** targets are published Premier League 2025/26 figures (first 11 matchweeks): completed passes per match, long-pass share, share of passes ending in the final third, goal kicks ending in the opposition half, header share of goals, second-half added time. The simulated average must be within 15 percent.
 - **Approximate** targets are general football knowledge, **UNVERIFIED**, treated as ranges and held to within 25 percent: pass completion, goals, shots, shots on target, corners, fouls, cards, offsides, crosses, throw-ins and possession. The report also says whether a value is inside the range or only within 25 percent of it.
@@ -29,9 +29,9 @@ The match uses seed 15, chosen from seeds 1-60 because it has 2 goals (Northgate
 
 `id`, `minute`, `second`, `half`, `team`, `player`, `type`, `x`, `y`
 
-### Traffic: the players around an event
+### Traffic (older match files only)
 
-Events in the attacking third (within 35 m of a goal: `x` of 70 or more in their frame), except keeper actions and goal events, also carry `traffic`: the other players standing around, each with `team`, `role` (`defender` or `attacker`) and `x`, `y` in the same frame as the event. Keeper distributions carry their own `traffic` (in the distributing team's frame): `presser`s, one per `opponents_close`, within 10 m of the keeper, and one `marker` per passing option standing exactly that option's `open_m` away. The bodies always agree with the numbers on the event: a shot has exactly `defenders_in_lane` defenders inside the triangle between the ball and the posts, and every option's nearest opponent is its marker. The data has no full 22-player tracking, so events further from goal have no traffic and nothing blocks the view there.
+The first generator had no tracking, so it wrote `traffic` on events near a goal: the other players standing around, each with `team`, `role` and `x`, `y` in the event's frame. The engine no longer writes it: the tracking (`tracking.npz`) holds all 22 players at every moment, and perception reads the bodies from there. `vision.py` still understands `traffic`, so an older match file without tracking keeps working.
 
 ### Event types and extra fields
 
@@ -44,7 +44,7 @@ Events in the attacking third (within 35 m of a goal: `x` of 70 or more in their
 | keeper_save | related_to (shot id), end_z, held (true = caught, false = parried) |
 | keeper_claim, keeper_sweep | none |
 | keeper_close_down | target_player: the attacker the keeper came off the line to close down (1-on-1 and 2-on-1). Recorded in the attacking frame, like saves |
-| keeper_distribution | see [Keeper distribution](#keeper-distribution) below, plus `traffic` |
+| keeper_distribution | see [Keeper distribution](#keeper-distribution) below |
 | tackle, possession_change | none |
 
 ### Keeper distribution
@@ -123,13 +123,13 @@ The weighted sum is stretched around a midpoint (`CENTER = 50`, the average raw 
 
 The keeper's field of view is the INPUT, not an overlay: the agents only ever learn what the keeper could perceive.
 
-- `vision.py` (pure geometry): converts every event into the followed keeper's frame (own goal at x = 0, y = 34; see the two data frames above), tracks where the keeper stands, points them at the ball, and decides visibility with one function, `is_visible(keeper_pos, facing, event_pos, fov_deg=120, radius_m=55, blockers=())`. An event counts as seen when it was inside the cone the keeper was facing just BEFORE it happened (toward the ball's previous position) and no body from its `traffic` stood in the line of sight. A body 0.6 m wide hides a point when it is nearer the keeper than the point and the sightline passes through it, so a player 2 m in front of the keeper hides a wide angle and one 25 m away hides only a sliver.
+- `vision.py` (pure geometry): converts every event into the followed keeper's frame (own goal at x = 0, y = 34; see the two data frames above) and decides visibility with one function, `is_visible(keeper_pos, facing, event_pos, fov_deg=120, radius_m=55, blockers=())`. **With tracking** (the engine's match), `build_timeline` reads from `tracking.npz`: the keeper stands where the tracking says, faces where the ball was half a second before the event (`GAZE_LAG_SAMPLES`), and every other player on the pitch is a body that can block the view, anywhere on the pitch. An event counts as seen when it is inside that cone and no body stands in the line of sight. A body 0.6 m wide hides a point when it is nearer the keeper than the point and the sightline passes through it, so a player 2 m in front of the keeper hides a wide angle and one 25 m away hides only a sliver. The cone itself stays a model: the tracking has positions, not eye direction. Match files without tracking fall back to the events' `traffic` lists.
 - `perception.py`: `PerceptionFilter(team)` replays the match through one keeper's eyes and sorts each event:
   - **perceived** (`PerceivedEvent`, with a `sight`): `own` (the keeper's own save, claim, sweep or distribution), `seen` (inside the sightline), or `felt` (not seen, but impossible to miss: a shot that reaches their goal, or any goal). For distributions, options outside the sightline are removed and counted in `unseen_options`.
   - **missed**: the missed log, with a reason (`beyond_radius`, `outside_fov`, `blocked` by a body, `unseen_option`). It is only for the Reveal view; it never reaches the agents.
   - `state` is the keeper's own picture of the match (a `MatchState` fed with perceived events only), and `unseen_count()` says how much they missed.
 
-Each keeper perceives about 790-830 of the 1,410 events. Most misses are beyond 55 m (the far half); about 50 per keeper are close but outside the cone, and 10-12 are hidden behind a body. Every key moment reaches its keeper. Defenders in a shot's lane usually narrow the angle rather than fully hide the shooter: only a few screened shots are actually blocked from the keeper's eye.
+In the demo match (seed 15) the keepers perceive 970 (Harbor United) and 746 (Northgate FC) of 1,771 events. Most misses are beyond 55 m (660 and 886); 131 and 118 are hidden behind a body, found from the tracked positions, including in midfield; only 10 and 21 are inside range but outside the cone, because the keeper's gaze follows the ball. Every key moment reaches its keeper. The live pitch also draws the players the keeper can see (dots); Reveal draws the others hollow. The sidebar's **Show the full pitch** switch turns the dimming off.
 
 `test_architecture.py` enforces the rule: only the data layer (`generate_match.py`, `legacy_generator.py`, `replay.py`, `scoring.py`, `vision.py`, `perception.py`) may read the raw match, and `agents.py` and `pipeline.py` may never touch the missed log. Every other module, `app.py` included, reads the match only through `PerceptionFilter` (the app also uses its `missed` list and `reveal()` for the Reveal view, which is display only).
 

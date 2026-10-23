@@ -86,7 +86,7 @@ class StopsMixin:
         self.shooting[out] = base["shooting"] + self.rng.gauss(0, 0.03)
         self.control[out] = base["control"] + self.rng.gauss(0, 0.03)
         self.roster_role[roster] = self.role[out]
-        self.emit(t, "substitution", team, out, team, self.pos[out], traffic=False, player_on=name_on,
+        self.emit(t, "substitution", team, out, team, self.pos[out], player_on=name_on,
                   player_off=old_name)
         self.names[out] = name_on
 
@@ -126,7 +126,7 @@ class StopsMixin:
         self.in_box = [False, False]
         self.lost[self.half] += lost
         actor = taker if taker is not None else self.gk(team)
-        self.emit(t, "stoppage", team, actor, team, spot, traffic=False, reason=reason, duration_s=round(duration, 1))
+        self.emit(t, "stoppage", team, actor, team, spot, reason=reason, duration_s=round(duration, 1))
         if plan is not None:
             plan(self.dead)
         self.try_substitute(t, self.dead)
@@ -308,7 +308,7 @@ class StopsMixin:
         weights = ([0.5, 0.2, 0.08, 0.22] if kdist <= 7 else [0.25, 0.15, 0.10, 0.5] if kdist <= 10 else [0.05, 0.03, 0.12, 0.8])
         decision = self.rng.choices(["claim", "punch", "miss", "stay"], weights=weights)[0]
         in_box = lambda team, i: (lambda p: p[0] >= BOX_X and BOX_Y0 <= p[1] <= BOX_Y1)(self.f(att, self.pos[i]))
-        event = self.emit(t, "corner", att, taker, att, d["spot"], traffic=False, delivery=delivery, target_zone=zone,
+        event = self.emit(t, "corner", att, taker, att, d["spot"], delivery=delivery, target_zone=zone,
                           attackers_in_box=sum(1 for i in self.outfield(att) if i != taker and in_box(att, i)),
                           defenders_in_box=sum(1 for i in self.outfield(dfd) if in_box(att, i)),
                           keeper_x=round(float(kp[0]), 1), keeper_y=round(float(kp[1]), 1),
@@ -342,7 +342,7 @@ class StopsMixin:
             fields["keeper_post_offset_m"] = round(float(abs(kp[1] - near_post)), 1)
         else:
             fields["target_zone"] = self.rng.choice(["near_post", "penalty_spot", "far_post"])
-        event = self.emit(t, "free_kick", att, taker, att, d["spot"], traffic=False, **fields)
+        event = self.emit(t, "free_kick", att, taker, att, d["spot"], **fields)
         if kind == "direct":
             self.take_shot(taker, t, 6.0, {"situation": "free_kick", "wall": d.get("wall", []),
                                            "start": d["spot"].copy(), "on_shot": lambda e: event.update(outcome=e["outcome"])})
@@ -358,7 +358,7 @@ class StopsMixin:
         self.move_taker_to_spot(d)
         self.carrier, self.poss = taker, att
         spot_t = self.f(att, d["spot"])
-        event = self.emit(t, "penalty", att, taker, att, d["spot"], traffic=False,
+        event = self.emit(t, "penalty", att, taker, att, d["spot"],
                           keeper_dive=self.rng.choice(["left", "right", "stays"]), outcome=None)
         self.take_shot(taker, t, 4.0, {"situation": "penalty", "start": d["spot"].copy(),
                                        "on_shot": lambda e: event.update(outcome=e["outcome"])})
@@ -374,7 +374,7 @@ class StopsMixin:
         in_box = self.in_own_box(dfd, spot)
         if in_box and self.rng.random() > PENALTY_CALL:               # most challenges in the box are waved away
             return
-        self.emit(t, "foul", dfd, fouler, att, spot, traffic=False, fouled=self.names[victim], in_box=bool(in_box))
+        self.emit(t, "foul", dfd, fouler, att, spot, fouled=self.names[victim], in_box=bool(in_box))
         self.lost[self.half] += LOST_COUNTED["foul"]
         self.maybe_card(t, fouler, att, spot)
         if in_box:
@@ -415,7 +415,7 @@ class StopsMixin:
                 card, reason = "yellow", "foul"
         if card is None:
             return
-        self.emit(t, "card", dfd, fouler, att, spot, traffic=False, card=card, reason=reason)
+        self.emit(t, "card", dfd, fouler, att, spot, card=card, reason=reason)
         self.lost[self.half] += LOST_COUNTED["card"]
         if card == "red":
             self.active[fouler] = False                              # he walks off (see move in sim_engine)
@@ -437,7 +437,7 @@ class StopsMixin:
         att, dfd = fl["team"], 1 - fl["team"]
         j = fl["receiver"]
         spot = self.pos[j].copy()
-        self.emit(t, "offside", att, j, att, spot, traffic=False)
+        self.emit(t, "offside", att, j, att, spot)
         taker = min(self.outfield(dfd), key=lambda i: np.linalg.norm(self.pos[i] - spot))
         self.go_dead(t, "free_kick", dfd, spot, taker, self.rng.uniform(*DUR["offside"]), "offside", fk_kind="short")
 
@@ -446,7 +446,7 @@ class StopsMixin:
     def goal_scored(self, t, team, shooter, shot_event):
         self.score[team] += 1
         xy = self.f(team, np.array([shot_event["x"], shot_event["y"]]))
-        self.emit(t, "goal", team, shooter, team, xy, traffic=False, related_to=shot_event["_k"],
+        self.emit(t, "goal", team, shooter, team, xy, related_to=shot_event["_k"],
                   score="-".join(str(s) for s in self.score))
         conceding = 1 - team
         self.go_dead(t, "kickoff", conceding, np.array([PITCH_L / 2, PITCH_W / 2]), None,
@@ -478,7 +478,7 @@ class StopsMixin:
                 self.half2_start = t
                 self.dir = [-1, 1]                                    # sides swap
                 self.kickoff(1, t)
-                self.emit(t, "stoppage", 1, self.carrier, 1, np.array([PITCH_L / 2, PITCH_W / 2]), traffic=False,
+                self.emit(t, "stoppage", 1, self.carrier, 1, np.array([PITCH_L / 2, PITCH_W / 2]),
                           reason="half_time", duration_s=900.0)
             else:
                 self.finished = True
@@ -524,8 +524,6 @@ class StopsMixin:
                          "end_y": round(float(en[1]), 1), "length_m": round(length, 1),
                          "speed_ms": round(float(speeds[a:b + 1].mean()), 1), "run_for": shot["_k"], "_k": self.keys}
                 self.keys += 1
-                if st[0] >= 70.0:
-                    event["traffic"] = self.traffic_at(P[k0 + a], i, direction)
                 self.events.append(event)
                 found += 1
                 if found >= 2:
@@ -554,14 +552,3 @@ class StopsMixin:
 
     def names_at(self, slot, k):
         return self.roster_names[int(self.rec_who[k][slot])] if k < len(self.rec_who) else self.names[slot]
-
-    def traffic_at(self, snapshot, actor, direction, radius=18.0):
-        bodies = []
-        for i in range(22):
-            if i == actor or snapshot[i, 1] < 0 or np.linalg.norm(snapshot[i] - snapshot[actor]) > radius:
-                continue
-            x, y = self.to_frame(direction, snapshot[i])
-            same = self.team_of[i] == self.team_of[actor]
-            bodies.append({"team": self.teams[self.team_of[i]]["name"], "role": "attacker" if same else "defender",
-                           "x": round(float(x), 1), "y": round(float(y), 1)})
-        return bodies

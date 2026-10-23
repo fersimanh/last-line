@@ -227,7 +227,7 @@ class ShotsMixin:
         elif outcome == "saved":
             gk = self.gk(opp)
             held = self.rng.random() < HELD_SAVE_RATE
-            self.emit(t, "keeper_save", opp, gk, team, self.pos[gk], traffic=False, related_to=event["_k"],
+            self.emit(t, "keeper_save", opp, gk, team, self.pos[gk], related_to=event["_k"],
                       end_z=round(float(fl["shot"]["end_z"]), 2), held=bool(held))
             self.last_keeper_action[opp] = t
             if held:
@@ -284,7 +284,7 @@ class ShotsMixin:
                 name, ev = fl["window"]
                 self.ctx[name] = {"team": team, "until": t + 3.5, "shot": ev["_k"]}
         elif self.slot[winner] == "GK":                               # the keeper gets his hands on it
-            self.emit(t, "keeper_claim", team, winner, shooter_team, self.pos[winner], traffic=False)
+            self.emit(t, "keeper_claim", team, winner, shooter_team, self.pos[winner])
             self.last_keeper_action[team] = t
             self.give_ball(winner, t, wait=self.rng.uniform(1.5, 4.0), trigger="after_claim")
         else:
@@ -327,12 +327,12 @@ class ShotsMixin:
         if allow_keeper and inside and kdist <= CLAIM_REACH and self.active[gk] \
                 and self.rng.random() < clip(1.15 - kdist / 9.0, 0.15, 0.95):
             if self.rng.random() < 0.65:
-                self.emit(t, "keeper_claim", opp, gk, att_team, self.pos[gk], traffic=False)
+                self.emit(t, "keeper_claim", opp, gk, att_team, self.pos[gk])
                 self.last_keeper_action[opp] = t
                 self.give_ball(gk, t, wait=self.rng.uniform(1.5, 4.0), trigger="after_claim")
                 result = "claimed"
             else:
-                self.emit(t, "keeper_punch", opp, gk, att_team, self.pos[gk], traffic=False)
+                self.emit(t, "keeper_punch", opp, gk, att_team, self.pos[gk])
                 self.last_keeper_action[opp] = t
                 away = self.f(att_team, np.array([self.f(att_team, self.pos[gk])[0] - self.rng.uniform(8, 14),
                                                  34.0 + self.rng.uniform(-14, 14)]))

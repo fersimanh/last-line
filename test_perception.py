@@ -97,8 +97,48 @@ def test_bodies_block_the_view():
         assert blocked, f"{team}: nothing was ever blocked"
         for m in blocked:
             assert m.distance_m <= f.radius_m
-            assert "traffic" in m.event
     print("ok  some events are missed only because a body blocked the view")
+
+
+def test_perception_reads_the_tracking():
+    """With tracking, the keeper's position and every body come from it, anywhere on the pitch."""
+    import numpy as np
+    import vision
+    for team in TEAMS:
+        f = full(team)
+        assert f.tracking is not None
+        players, _ = f.tracking.frame_arrays(team)
+        gk = f.tracking.keeper_slot(team)
+        for pe in f.perceived[:300]:                                  # the keeper stands where the tracking says
+            k = max(f.tracking.sample_index(pe.event["t"]) - 1, 0)
+            assert np.allclose(pe.keeper_pos, players[k, gk], atol=1e-6), pe.event["id"]
+        # a missed event marked "blocked" really has a tracked body in the sightline
+        blocked = [m for m in f.missed if m.reason == "blocked"]
+        assert blocked
+        for m in blocked[:50]:
+            k = max(f.tracking.sample_index(m.event["t"]) - 1, 0)
+            pos = vision.to_keeper_frame(m.event, team)
+            bodies = [tuple(p) for i, p in enumerate(players[k]) if i != gk and f.tracking.on_pitch_mask()[k, i]]
+            assert vision.blockers_of(m.keeper_pos, pos, bodies), m.event["id"]
+        # blocking works away from the goals too: the old traffic lists covered only the attacking third
+        assert any(m.distance_m > 30 for m in blocked)
+    print("ok  the keeper's position and the bodies in the way come from the tracking, anywhere on the pitch")
+
+
+def test_the_crowd_the_keeper_sees():
+    import vision
+    f = full(TEAMS[0])
+    for second in (300, 1500, 3200, 5000):
+        eyes, reveal = f.state_at(second), f.state_at(second, reveal=True)
+        assert len(reveal["players"]) >= 18 and all(p["visible"] for p in eyes["players"])
+        assert len(eyes["players"]) == sum(1 for p in reveal["players"] if p["visible"])
+        assert len(eyes["players"]) < len(reveal["players"]), "the keeper never sees everyone"
+        others = [(p["x"], p["y"]) for p in reveal["players"]]
+        for p in reveal["players"]:                                   # Reveal's flag is the same visibility rule
+            rest = [o for o in others if o != (p["x"], p["y"])]
+            assert p["visible"] == vision.is_visible(reveal["keeper"], reveal["facing"], (p["x"], p["y"]),
+                                                     f.fov_deg, f.radius_m, rest)
+    print("ok  Keeper's eyes shows only the players in view; Reveal shows everyone, flagged by the same rule")
 
 
 def test_wider_view_sees_more():
@@ -118,5 +158,7 @@ if __name__ == "__main__":
     test_distribution_options_are_filtered()
     test_unseen_count_and_incremental_replay()
     test_bodies_block_the_view()
+    test_perception_reads_the_tracking()
+    test_the_crowd_the_keeper_sees()
     test_wider_view_sees_more()
     print("all perception tests passed")
