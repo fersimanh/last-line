@@ -1,0 +1,21 @@
+# Never ship secrets or scratch files. (The Dockerfile copies named files only; this is a second lock.)
+.env
+.env.*
+*.key
+*.pem
+.git
+.gitignore
+.vscode
+__pycache__
+*.pyc
+moments.jsonl
+sim_events.json
+sim_tracking.npz
+test_*.py
+smoke_test.py
+hello_agent.py
+build_cache.py
+report_calibration.py
+legacy_generator.py
+README.md
+SIM_DESIGN.md

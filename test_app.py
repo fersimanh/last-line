@@ -274,7 +274,8 @@ def test_full_time_report():
 def pick_events():
     """A perceived pass and a missed pass for the home keeper, both before MID_SEC."""
     f = filter_for(HOME, 120)
-    seen = next(pe for pe in reversed(f.perceived) if pe.second < MID_SEC and pe.event["type"] == "pass")
+    ordinary = lambda pe: not insights.ai_info(HOME, pe.event["id"])["eligible"]   # no AI text exists for it, cached or not
+    seen = next(pe for pe in reversed(f.perceived) if pe.second < MID_SEC and pe.event["type"] == "pass" and ordinary(pe))
     missed = next(m for m in reversed(f.missed) if m.reason != "unseen_option"
                   and match_second(m.event) < MID_SEC and m.event["type"] == "pass")
     return seen.event["id"], missed.event["id"]
@@ -380,6 +381,7 @@ def test_a_failed_agent_call_is_not_repeated_on_every_rerun():
     calls = []
     saved = insights.LIVE_AGENTS, insights.generate_event_text
     insights.LIVE_AGENTS = True
+    os.environ["PROJECT_ENDPOINT"] = "https://example.invalid"            # "configured"; the stub never connects
     insights.generate_event_text = lambda *a, **k: calls.append(1)        # the agents "fail" (None)
     try:
         f = filter_for(HOME, 120)
@@ -393,6 +395,7 @@ def test_a_failed_agent_call_is_not_repeated_on_every_rerun():
         assert len(calls) == 1, f"the agents were asked {len(calls)} times"
     finally:
         insights.LIVE_AGENTS, insights.generate_event_text = saved
+        os.environ.pop("PROJECT_ENDPOINT", None)
         insights._failed.clear()
     print("ok  after a failed agent call the same text is not requested again on every rerun")
 
@@ -522,12 +525,15 @@ def test_ai_insight_comes_from_the_cache_and_quick_insight_is_the_fallback():
     event = next(e for e in insights.notable_events() if e["team"] == HOME)
     facts = filter_for(HOME, 120).facts(event["event_id"], reveal=False)
     second = facts["second"] + 30
-    quick = select_and_run(event["event_id"], seconds=second)
-    assert "Quick insight" in all_markdown(quick) and "AI insight" not in all_markdown(quick)   # cache miss, agents off
     with tempfile.TemporaryDirectory() as folder:
         real_path = insights.CACHE_PATH
         insights.CACHE_PATH = os.path.join(folder, "cache.json")
         try:
+            with open(insights.CACHE_PATH, "w") as f:                  # an empty cache for this match: every request misses
+                json.dump({"_match": insights.cache_fingerprint()}, f)
+            insights._cache, insights._cache_mtime = {}, None
+            quick = select_and_run(event["event_id"], seconds=second)
+            assert "Quick insight" in all_markdown(quick) and "AI insight" not in all_markdown(quick)   # cache miss, agents off
             key = insights.moment_key(event["event_id"], "casual", HOME, "en", "eyes")
             with open(insights.CACHE_PATH, "w") as f:
                 json.dump({"_match": insights.cache_fingerprint(),

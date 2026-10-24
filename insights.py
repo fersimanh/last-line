@@ -265,7 +265,15 @@ RETRY_AFTER_SEC = 600      # after a failure, do not ask the agents for the same
 def may_ask(key):
     """Should the app ask the agents for this text now? Not if they failed for it recently:
     without this, every click or setting change would wait for the same slow failure again."""
-    return LIVE_AGENTS and time.time() - _failed.get(key, -1e9) > RETRY_AFTER_SEC
+    return (LIVE_AGENTS and agents_configured()
+            and time.time() - _failed.get(key, -1e9) > RETRY_AFTER_SEC)
+
+
+def agents_configured():
+    """Are the agents set up at all? Without PROJECT_ENDPOINT (a deployed copy with no key, say)
+    the app never tries them: it shows the cache, or the quick text. Read each time, because
+    the app loads .env after this module is imported."""
+    return bool(os.getenv("PROJECT_ENDPOINT"))
 
 
 def note_failure(key):

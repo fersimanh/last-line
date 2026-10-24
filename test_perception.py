@@ -141,6 +141,27 @@ def test_the_crowd_the_keeper_sees():
     print("ok  Keeper's eyes shows only the players in view; Reveal shows everyone, flagged by the same rule")
 
 
+def test_a_goal_takes_its_shots_clock_for_the_agents():
+    """The agents' moment for a goal is keyed by the shot's time. If the fan clock text did not follow,
+    the 52:47 goal would never match its 52:46 moment and its texts could not be saved."""
+    try:
+        from pipeline import goal_timed_like_its_shot
+    except ImportError:                       # the slim container has no agent libraries; nothing to check there
+        print("ok  (skipped: the agent libraries are not installed here)")
+        return
+    from replay import clock
+    f = full(TEAMS[0])
+    checked = 0
+    for pe in f.perceived + full(TEAMS[1]).perceived:
+        if pe.event["type"] != "goal":
+            continue
+        shot = RAW[pe.event["related_to"]]
+        assert clock(goal_timed_like_its_shot(pe.event, shot)) == clock(shot), (pe.event["clock"], shot["clock"])
+        checked += 1
+    assert checked, "no goal found"
+    print(f"ok  {checked} goal views take their shot's clock, so their explanations are matched and saved")
+
+
 def test_the_cone_never_points_into_the_keepers_own_net():
     """Whatever the ball does (a goal kick behind him, a back-pass, a corner), the keeper does not face backward."""
     for team in TEAMS:
@@ -173,6 +194,7 @@ if __name__ == "__main__":
     test_bodies_block_the_view()
     test_perception_reads_the_tracking()
     test_the_crowd_the_keeper_sees()
+    test_a_goal_takes_its_shots_clock_for_the_agents()
     test_the_cone_never_points_into_the_keepers_own_net()
     test_wider_view_sees_more()
     print("all perception tests passed")

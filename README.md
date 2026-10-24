@@ -208,6 +208,7 @@ python3 test_app.py                 # app tests (no Azure needed)
 python3 test_vision.py              # sightline geometry and frames
 python3 test_perception.py          # what each keeper perceives
 python3 test_scoring.py             # shot situations in the saveability score
+python3 test_cache_only.py          # the deployed app: no key, cache only
 python3 test_inspector.py           # event wording, notable passes, perception rules for facts
 python3 test_selection.py           # the rules for selecting, pausing and going back to live
 python3 test_architecture.py        # nothing reads the raw match except the data layer
@@ -220,6 +221,18 @@ python3 pipeline.py > moments.jsonl # whole match as JSON
 ```
 
 Settings go in a `.env` file (never committed): `PROJECT_ENDPOINT`, `MODEL_DEPLOYMENT_NAME` for the agents; `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `AZURE_OPENAI_DEPLOYMENT` for `smoke_test.py`.
+
+## Deploying (cache-only)
+
+The deployed app needs no key and no Azure login: it serves the saved match and the saved AI texts. The `Dockerfile` copies only what the app reads (its code, `match_events.json`, `tracking.npz`, `insight_cache.json`), installs `requirements-app.txt` (no agent libraries) and sets the switch `LAST_LINE_LIVE_AGENTS=0`, so the agents are never called. A cached text shows as "AI insight"; anything not cached shows the "Quick insight" template. Even with the switch on, the app never calls the agents unless `PROJECT_ENDPOINT` is set.
+
+```
+docker build -t last-line .
+docker run -p 8501:8501 last-line        # then open http://localhost:8501 (health: /_stcore/health)
+python3 test_cache_only.py               # the cache-only behavior, without Docker
+```
+
+The cache is valid only for the exact `match_events.json` it was built with (it stores a hash of the file and ignores itself otherwise), so commit the match and the cache together and do not regenerate the match at build time.
 
 ## Status
 

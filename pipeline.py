@@ -282,6 +282,16 @@ async def keeper_report(live, agents, viewers, kind):
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
+def goal_timed_like_its_shot(goal, shot):
+    """A goal is explained together with the shot that caused it, so it takes that shot's time
+    (a goal at 52:47 is the 52:46 moment). The fan clock text must follow, or the moment's clock
+    and the goal's own clock would disagree and the explanation would never be matched to it."""
+    timed = dict(goal, minute=shot["minute"], second=shot["second"])
+    if "clock" in shot:
+        timed["clock"] = shot["clock"]
+    return timed
+
+
 async def run(only=None, viewers=VIEWERS, path=MATCH_PATH, style="first_person", event_ids=None):
     """Replay the match through both keepers' eyes, in time order. Yield one
     JSON-ready dict per key moment, then the full-time report. With
@@ -319,7 +329,7 @@ async def run(only=None, viewers=VIEWERS, path=MATCH_PATH, style="first_person",
             # it (shots on target at your goal are always felt, so it is there)
             shot = live.filters[live.team].find_perceived(pe.event["related_to"])
             live.insight = shot.insight
-            live.event = dict(pe.event, minute=shot.event["minute"], second=shot.event["second"])
+            live.event = goal_timed_like_its_shot(pe.event, shot.event)
         if only and clock(live.event) != only:
             continue
         yield await process_moment(live, agents, viewers, style)
