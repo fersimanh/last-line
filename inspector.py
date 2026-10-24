@@ -24,7 +24,8 @@ LONG_BALL_M = 45.0      # a ball that travels at least this far
 
 VERDICT_ES = {"should save": "debió pararlo", "tough save": "parada difícil",
               "near-unstoppable": "casi imparable"}
-DIST_VERDICT_ES = {"excellent": "excelente", "safe": "segura", "risky": "arriesgada",
+DIST_VERDICT_ES = {"excellent": "excelente", "safe": "segura", "hard pass": "pase difícil",
+                   "played it safe": "a lo seguro", "debatable choice": "elección discutible",
                    "turnover": "pérdida"}
 REASON_ES = {
     "free_man": "encontraste al compañero libre",

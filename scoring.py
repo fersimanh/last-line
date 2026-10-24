@@ -271,18 +271,26 @@ def distribution_insight(event):
     quality = (0.40 * decision + 0.30 * OUTCOME_POINTS[event["outcome"]]
                + 0.30 * (difficulty if success else 0))
 
+    best = next(o for o in event["options"] if o["player"] == best_player)
+    nearer = target["distance_m"] < best["distance_m"]   # chose the shorter pass over the best-valued option
+
     if not success:
         dist_verdict = "turnover"
     elif quality >= 80:
         dist_verdict = "excellent"
-    elif decision < 60 or difficulty >= 60:
-        dist_verdict = "risky"
+    elif difficulty >= 60:
+        dist_verdict = "hard pass"          # the pass itself was demanding
+    elif decision < 60 and nearer:
+        dist_verdict = "played it safe"     # kept it short; the best option was more ambitious
+    elif decision < 60:
+        dist_verdict = "debatable choice"   # went longer than the best option, to a more marked target
     else:
         dist_verdict = "safe"
 
-    best = next(o for o in event["options"] if o["player"] == best_player)
     if not success and pressure == "high":
         factor = "the press closed in before the pass got away"
+    elif dist_verdict == "played it safe":
+        factor = f"took the nearer pass; the {best['role']} {best['player']} was the stronger build-up option"
     elif decision < 60:
         factor = f"a better option was on: the {best['role']} {best['player']}"
     elif not success:

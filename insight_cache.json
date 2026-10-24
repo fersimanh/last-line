@@ -1536,36 +1536,36 @@
   "text": "Estás a 4 m de tu línea en el 71:35 cuando Kofi Mensah juega un pase hacia adelante a la derecha de unos 36 m a Luca Ferro; lo viste, te sentiste bien colocado para afrontarlo y no acabó en tiro. Hubo tres acciones en los últimos 30 segundos que no viste; si eres del Harbor United, pasó sin consecuencias."
  },
  "1353|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "You were 6 m off your line and judged there was space to play long, so you kicked a long goal kick 60.9 m forward to Hugo Lind at (65.8, 25.6). The ball was contested and your side won it, retaining possession, but the pass quality was 42/100 and it was a risky choice since Ben Arkwright, 15.6 m away and far more open, would likely have been the better option."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "You took the goal kick and sent it long 60.9 m to Hugo Lind, prioritizing a direct, retention-focused target over a short buildup option. The ball was contested and your team won it without it leading to a shot; the choice is debatable because Ben Arkwright was much nearer and far more open, and the pass quality was 42. There was one event in the last 30 seconds you couldn't see."
  },
  "1353|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "Estabas 6 m fuera de tu línea y notaste que había espacio para jugar largo. Pateaste un saque de puerta largo hacia Hugo Lind — 60.9 m hacia adelante hasta (65.8, 25.6); el balón fue disputado y tu equipo lo ganó, manteniendo la posesión, pero la calidad del pase fue 42/100 y fue una elección arriesgada, ya que Ben Arkwright, a 15.6 m de distancia y mucho más abierto, probablemente habría sido la mejor opción."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "Cogiste el saque de puerta y lo mandaste largo 60.9 m hacia Hugo Lind, priorizando un objetivo directo y de retención segura frente a la opción corta. El balón fue disputado y tu equipo lo ganó sin que derivara en tiro; fue buena noticia para Northgate FC. La elección es debatible porque Ben Arkwright estaba mucho más cerca y mucho más abierto, y la calidad del pase fue 42. Hubo un evento en los últimos 30 segundos que no pudiste ver."
  },
  "1353|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "You were 6 m off your line and saw space to play long. You launched a goal kick to Hugo Lind — 60.9 m to (65.8, 25.6); it was contested, your side won the duel and retained possession, but the pass quality was 42/100 and it was a risky choice since Ben Arkwright, 15.6 m away and more open, would likely have been the better option. Good for Northgate FC. Great."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "You took the goal kick and kicked it long 60.9 m forward to Hugo Lind, opting for a direct, safe-retention target rather than a short option — a positive outcome for Northgate FC. The ball was contested and your team won it without it leading to a shot; the choice is debatable because Ben Arkwright was much nearer and far more open, and the pass quality was 42. There was one event in the last 30 seconds you couldn't see."
  },
  "1353|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "Estabas 6 m adelantado respecto a tu línea y sentiste que había espacio para jugar largo. Diste un saque de portería largo a Hugo Lind — 60.9 m hacia delante hasta (65.8, 25.6); el balón fue disputado y tu equipo lo ganó, manteniendo la posesión, lo que fue buena noticia para Northgate FC, pero la calidad del pase fue 42/100 y fue una opción arriesgada ya que Ben Arkwright, a 15.6 m y mucho más desmarcado, probablemente habría sido la mejor opción."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "Tú sacaste de puerta y la enviaste larga 60.9 m hacia Hugo Lind, optando por un objetivo directo para retener el balón de forma segura en lugar de una opción corta. El balón fue disputado y tu equipo lo ganó sin que derivara en disparo; la elección es debatible porque Ben Arkwright estaba mucho más cerca y mucho más libre, y la calidad del pase fue 42 — buena noticia para Northgate FC. Hubo un evento en los últimos 30 segundos que no pudiste ver."
  },
  "1353|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "You were a bit off your line and felt there was room to play long. You kicked a long goal kick to Hugo Lind; the ball was contested and your side won it, keeping possession — the pass quality was 42/100. It was a risky choice since Ben Arkwright looked more open, but it worked out."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "You took the goal kick and sent it long to Hugo Lind, picking a direct, safe target instead of a short option. The ball was contested and your team won it without it turning into a shot; the choice is debatable because Ben Arkwright was much nearer and more open, and the pass quality was 42. There was one event in the last 30 seconds you couldn't see, and overall that worked out well for Northgate."
  },
  "1353|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "Estabas algo adelantado y viste espacio para jugar largo. Mandaste un saque largo a Hugo Lind; el balón fue disputado y tu equipo lo ganó, manteniendo la posesión, pero la calidad del pase fue 42/100 y fue una elección arriesgada porque Ben Arkwright, más abierto, probablemente habría sido la mejor opción."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "Sacaste de puerta y la mandaste larga a Hugo Lind, optando por un envío directo y seguro en vez de una opción corta. La pelota fue disputada y tu equipo la ganó sin que acabara en disparo; la elección puede discutirse porque Ben Arkwright estaba mucho más cerca y más abierto, y la calidad del pase fue 42, así que al final fue una buena noticia para Northgate FC. Hubo un suceso en los últimos instantes que no llegaste a ver."
  },
  "1353|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "You were off your line and saw space to play long. You sent a long goal kick to Hugo Lind; the ball was contested and your side won it, keeping possession, with pass quality 42/100 — good news for Northgate FC. It was a risky choice, though, since Ben Arkwright was much more open and would likely have been the better option."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "You took the goal kick and sent it long to Hugo Lind, choosing a direct, safe option rather than going short. The ball was contested and your team won it without a shot; the choice is debatable because Ben Arkwright was much closer and more open, and the pass quality was 42. Nice for Northgate FC that it worked, and there was one event in the last 30 seconds you couldn't see."
  },
  "1353|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:13:32+00:00",
-  "text": "Estabas lejos de la línea y sentiste que había espacio para jugar largo. Lanzaste un saque largo a Hugo Lind; el balón fue disputado y tu equipo lo ganó, manteniendo la posesión, pero la calidad del pase fue 42/100 y fue una elección arriesgada porque Ben Arkwright, más abierto, probablemente habría sido la opción mejor. Esto fue buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:54:23+00:00",
+  "text": "Diste el saque de puerta y lo mandaste largo 60.9 m hacia Hugo Lind, optando por un objetivo directo y de retención segura en lugar de una opción corta. El balón fue disputado y tu equipo lo ganó sin que se convirtiera en un disparo; la elección es discutible porque Ben Arkwright estaba mucho más cerca y mucho más abierto, y la calidad del pase fue 42, lo que fue una buena noticia para Northgate FC. Hubo un evento en los últimos 30 segundos que no pudiste ver."
  },
  "1363|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T01:57:11+00:00",
@@ -1952,36 +1952,36 @@
   "text": "Viste a Andre Salas jugar un pase de 41,5 m a Luca Ferro y te sentiste listo para reaccionar; fue algo que tranquilizó a Harbor United. El balón llegó bajo presión media, no acabó en disparo y no viste ningún evento en los últimos 30 segundos."
  },
  "1503|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "You were 6 m off your line and, seeing low pressure with no opponents close, judged it safe to play long.  \nYou kicked a long goal-kick to Jory Kane, roughly 60.9 m forward to (65.8, 42.4); it completed but did not lead to a shot.  \nYou bypassed Viktor Haas (who was much closer and more open) and the pass quality was 48/100 — the choice is judged risky, though it proved good news for Northgate FC."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "You're 6 m off your line and you saw a chance to play long from the goal kick.  \nYou kicked it long to Jory Kane (ST), a 60.9 m delivery that completed, but it was a debatable choice because Kane had very little space (about 2.4 m) while Viktor Haas was much more open (around 28.2 m) and closer (≈31.9 m); quality 48/100."
  },
  "1503|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "Estás a 6 m de tu línea y viste poca presión, sin oponentes cerca, así que te sentiste cómodo para jugar largo.  \nPateaste un saque de portería largo a Jory Kane, aproximadamente 60.9 m hacia adelante hasta (65.8, 42.4); se completó pero no derivó en un disparo.  \nEl pase evitó a Viktor Haas (que estaba mucho más cerca y más abierto) y la calidad fue 48/100 — la elección se juzga arriesgada."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "Estás a 6 m de tu línea y viste la oportunidad de jugar largo desde el saque de portería. La lanzaste larga a Jory Kane (DC), un envío de 60.9 m que se completó, pero fue una opción discutible porque Kane tenía muy poco espacio (unos 2.4 m) mientras que Viktor Haas estaba mucho más abierto (alrededor de 28.2 m) y más cercano (≈31.9 m); calidad 48/100."
  },
  "1503|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "You're 6 m off your line and you saw low pressure with no opponents close, so you felt comfortable to play it long.  \nYou kicked a long goal-kick to Jory Kane, roughly 60.9 m forward to (65.8, 42.4); it completed but did not lead to a shot — good news for Northgate FC.  \nYou bypassed Viktor Haas (who was much closer and more open) and the pass quality was 48/100 — the choice is judged risky."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "You're 6 m off your line and you saw a chance to play long from the goal kick.  \nYou kicked it long to Jory Kane (ST), a 60.9 m delivery that completed, but it was a debatable choice because Kane had very little space (about 2.4 m) while Viktor Haas was much more open (around 28.2 m) and closer (≈31.9 m); quality 48/100 — good news for Northgate FC."
  },
  "1503|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "Estás 6 m fuera de tu línea y viste baja presión sin rivales cerca, así que te sentiste cómodo para jugar largo.  \nLanzaste un saque de meta largo a Jory Kane, aproximadamente 60.9 m hacia adelante a (65.8, 42.4); se completó pero no llevó a un disparo.  \nEvitaste a Viktor Haas (que estaba mucho más cerca y más libre) y la calidad del pase fue 48/100 — la elección se juzga arriesgada; es una buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "Estás a 6 m de tu línea y ves una oportunidad para jugar largo desde el saque de puerta; buena noticia para Northgate FC. La enviaste larga a Jory Kane (delantero), un envío de 60,9 m que se completó, pero fue una elección discutible porque Kane tenía muy poco espacio (unos 2,4 m) mientras que Viktor Haas estaba mucho más libre (unos 28,2 m) y más cerca (≈31,9 m); calidad 48/100."
  },
  "1503|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "You were off your line with low pressure and no opponents close, so you felt comfortable to play it long. You launched a long goal-kick to Jory Kane; it connected but didn’t lead to a shot. You bypassed Viktor Haas, who was much closer and more open, and the pass quality was 48/100 — a risky choice that still helped Northgate."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "You're a bit off your line and you saw a chance to play long from the goal kick.  \nYou kicked it long to Jory Kane up front and it reached him, which was good news for Northgate, though it was a debatable choice because Kane had very little room while Viktor Haas was much more open and nearer; quality 48/100."
  },
  "1503|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "Estás fuera de tu línea y viste poca presión, sin rivales cerca, así que te sentiste cómodo para jugarla larga.  \nSacaste un saque de puerta largo hacia Jory Kane; se completó, pero no llevó a un disparo.  \nDejaste atrás a Viktor Haas (que estaba mucho más cerca y más libre) y la calidad del pase fue 48/100 — la elección se considera arriesgada.  \nY eso fue buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "Estás a 6 m de tu línea y viste la oportunidad de jugar largo desde el saque de puerta.  \nLo lanzaste largo a Jory Kane (DEL), un envío de 60.9 m que llegó, aunque fue una decisión discutible porque Kane tenía muy poco espacio (unos 2.4 m) mientras Viktor Haas estaba mucho más libre (unos 28.2 m) y más cerca (≈31.9 m); calidad 48/100, y aun así fue buena noticia para Northgate FC."
  },
  "1503|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "You were off your line and saw low pressure with no opponents close, so you felt comfortable playing it long.  \nYou kicked a long goal-kick to Jory Kane that reached him forward; it completed but did not lead to a shot — good news for Northgate FC.  \nYou bypassed Viktor Haas, who was much closer and more open, and the pass quality was 48/100 — the choice is judged risky."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "You're a little off your line and you saw a chance to play long from the goal kick. You kicked it long to Jory Kane and it connected, though it was a debatable choice because Kane had very little space while Viktor Haas was much more open and closer; quality 48/100 — nice for Northgate FC."
  },
  "1503|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:14:18+00:00",
-  "text": "Estabas algo adelantado respecto a tu línea y viste poca presión, sin rivales cercanos, así que te sentiste cómodo para jugar largo; buena noticia para Northgate FC.  \nMandaste un saque largo a Jory Kane; el pase se completó pero no provocó un disparo.  \nDejaste de pasar a Viktor Haas (que estaba mucho más cerca y más libre) y la calidad 48/100 — la elección se considera arriesgada."
+  "generated_at": "2026-10-24T15:55:11+00:00",
+  "text": "Estás a 6 m de tu línea y viste la oportunidad de jugar largo desde el saque de puerta.  \nLa lanzaste largo a Jory Kane (delantero) y la entrega llegó, aunque fue una elección discutible porque Kane tenía muy poco espacio mientras Viktor Haas estaba mucho más libre y más cerca; calidad 48/100 — buena noticia para el Northgate FC."
  },
  "1511|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T02:02:20+00:00",
@@ -2176,36 +2176,36 @@
   "text": "Estás a 4 m de tu línea y al 83:41 atrapaste el centro; fue tu propia acción y la situación tenía poco peligro, así que fue un atrape cómodo, buena noticia para Northgate FC. No viste 11 eventos en los 30 segundos antes del momento."
  },
  "1534|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "You saw two opponents close after your claim and felt under pressure, with ten events you couldn't see in the last 30 seconds. You kicked a long volley forward of about 42 m to Hugo Lind; it completed but didn't lead to a shot. The analytics graded the choice 64/100 and flagged it as risky because Leo Santos — at roughly 23 m and far more open (about 19 m) — was the safer, closer option compared with the tightly marked striker you targeted."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "You saw two opponents closing in and high pressure around you. After a claim you played a long volleyed pass to striker Hugo Lind; it reached him but did not lead to a shot. The pass was hard to execute (difficulty 78) and your choice was rated low — Leo Santos on the flank was the clearer, nearer outlet; pass quality 64/100."
  },
  "1534|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "Viste a 2 rivales muy cerca tras atrapar el centro y te sentiste presionado, con 10 acciones que no pudiste ver en los últimos 30 segundos. Pateaste un balón largo al vuelo de unos 42 m hacia Hugo Lind; el pase se completó pero no generó un disparo. Los análisis calificaron la elección 64/100 y la señalaron como arriesgada porque Leo Santos — a aproximadamente 23 m y mucho más libre (unos 19 m) — era la opción más segura y cercana frente al delantero muy marcado al que buscaste, y en todo caso fue buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "Viste a dos oponentes cerrándote y mucha presión a tu alrededor. Tras atrapar el centro, pusiste un saque largo de volea dirigido al delantero Hugo Lind; llegó pero no culminó en un disparo. El pase fue difícil de ejecutar (dificultad 78) y tu elección fue valorada como baja — Leo Santos en la banda era la salida más clara y cercana; calidad del pase 64/100."
  },
  "1534|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "You saw two opponents close after your claim and felt under pressure, with ten events you couldn't see in the last 30 seconds. You kicked a long volley forward of about 42 m to Hugo Lind; it completed but didn't lead to a shot. The analytics graded the choice 64/100 and flagged it as risky because Leo Santos — at roughly 23 m and far more open (about 19 m) — was the safer, closer option compared with the tightly marked striker you targeted, which was good for your club, Northgate FC."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "You saw two opponents closing in and high pressure around you. After a claim you kicked a long volleyed pass to striker Hugo Lind; it completed but did not lead to a shot. The pass was hard to execute (difficulty 78) and your choice was rated low — Leo Santos on the flank was the clearer, nearer outlet. Pass quality 64/100; despite the low-choice rating and high difficulty, it was good news for Northgate FC."
  },
  "1534|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "Viste a dos adversarios cerca tras tu atrapada del centro y te sentiste presionado, con diez eventos que no pudiste ver en los últimos 30 segundos, buena noticia para Northgate FC.  \nLanzaste una volea larga hacia delante de unos 42 m a Hugo Lind; llegó pero no se tradujo en disparo.  \nLos análisis calificaron la decisión con una calidad de 64/100 y la señalaron como arriesgada porque Leo Santos — a unos 23 m y mucho más abierto (aprox. 19 m) — era la opción más segura y más cercana frente al delantero fuertemente marcado al que apuntaste."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "Viste a dos oponentes cerrando y mucha presión a tu alrededor. Tras atrapar el centro, enviaste un pase largo de volea al delantero Hugo Lind; llegó con éxito pero no derivó en un disparo — buena noticia para Northgate FC. El pase fue difícil de ejecutar (dificultad 78) y tu elección recibió una valoración baja: Leo Santos en la banda era la alternativa más clara y cercana; calidad del pase 64/100."
  },
  "1534|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "You felt pressure with two opponents closing in after your claim, and there were several events you couldn't see just before. You picked out Hugo Lind with a long volley; it reached him but didn't lead to a shot. Analytics gave the choice 64/100, calling it risky because Leo Santos was much more open and the nearer, safer option than the tightly marked striker you targeted."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "You saw opponents closing in and heavy pressure around you. After a claim you kicked a long, volleyed pass to striker Hugo Lind; it connected but didn’t lead to a shot. The pass was difficult to pull off and your decision was rated low — Leo Santos on the flank was the clearer, nearer outlet; pass quality 64/100."
  },
  "1534|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "Viste a dos rivales muy cerca después de tu atrapada y te sentiste presionado, además hubo diez acciones que no pudiste ver en los últimos treinta segundos. Pateaste un balón largo de volea de unos 42 m hacia Hugo Lind; llegó pero no terminó en disparo. Los análisis valoraron la decisión con una calidad de 64/100 y la marcaron como arriesgada porque Leo Santos — a unos 23 m y mucho más libre (unos 19 m) — era la opción más segura y cercana frente al delantero tan marcado que buscaste."
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "Vistes a dos rivales cerrando y mucha presión a tu alrededor. Tras atrapar el centro enviaste un pase largo y bombeado a Hugo Lind; llegó completo pero no generó disparo. El pase fue difícil de ejecutar y tu elección recibió baja valoración — Leo Santos en la banda era la salida más clara y cercana; calidad 64/100; para ti fue buena noticia para Northgate FC."
  },
  "1534|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "You saw two opponents close after your claim and felt under pressure, with some events you couldn't see in the moments before. You kicked a long volley forward to Hugo Lind; it reached him but didn't lead to a shot. The analytics graded the choice 64/100 and flagged it as risky because Leo Santos was the safer, nearer option compared with the tightly marked striker you picked. It was good news for Northgate FC, so you can be quietly pleased about how it helped the team."
+  "generated_at": "2026-10-24T15:55:56+00:00",
+  "text": "You felt opponents closing and heavy pressure around you. After a claim you kicked a long volleyed pass to striker Hugo Lind; it reached him but did not lead to a shot. The pass was hard to execute and your choice wasn’t ideal — Leo Santos on the flank was the clearer, nearer outlet; pass quality 64/100; nice for Northgate FC."
  },
  "1534|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:15:40+00:00",
-  "text": "Viste a dos rivales muy cerca tras atrapar el centro y te sentiste presionado, con diez acciones que no pudiste ver en los últimos 30 segundos. Lanzaste un saque largo de volea hacia Hugo Lind; llegó pero no terminó en disparo. La analítica dio la jugada una calidad de 64/100 y la consideró arriesgada porque Leo Santos estaba mucho más libre y era la opción más segura que el delantero que buscaste; ¡bien para Northgate FC!"
+  "generated_at": "2026-10-24T15:55:57+00:00",
+  "text": "Viste a dos rivales cerrando y mucha presión a tu alrededor. Tras atrapar el centro, diste un pase largo de volea a Hugo Lind; llegó a destino pero no acabó en disparo — buena noticia para Northgate FC. Era una acción difícil y la elección fue de baja valoración — Leo Santos en la banda era la opción más clara y cercana; calidad 64/100."
  },
  "1544|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T02:04:23+00:00",
@@ -2432,36 +2432,36 @@
   "text": "Viste a Yusuf Demir y a Ben Arkwright igual de cerca y abiertos, con poca presión, y pensaste que Yusuf era la opción libre adecuada, así que enviaste un pase raso de 15.6 m hacia Yusuf. El pase se completó, no acabó en disparo y tuvo calidad 74/100; fue tu primera distribución y tu porcentaje de acierto es 100% — buena noticia para Northgate FC."
  },
  "1586|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "You received a back pass 8 m off your line and recognised medium pressure with one opponent close.  \nYou kicked a short ground pass 23.3 m forward to Nico Alves; it completed and did not lead to a shot.  \nYou chose Alves despite him having only about 3.6 m of space, while Dex Hallam was much more open (18.3 m) and other visible options were Andre Salas (14.6 m, 8.5 m open) and Arlo Finch (26.7 m, 15.7 m open); the pass quality was 51/100 and the decision was risky."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "You were 8 m off your line and under medium pressure with one opponent close; there were five events in the last 30 seconds you couldn't see.  \nYou kicked a ground pass out from the back to Nico Alves, 23.3 m forward — the pass was completed and did not lead to a shot.  \nYou deliberately played it safe to relieve the press by choosing the nearer DM over Dex Hallam, who was farther but much more open; quality score 51/100."
  },
  "1586|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "Recibiste un pase atrás a 8 m de tu línea y reconociste presión media con un rival cerca.\nDiste un pase corto rastrero de 23,3 m hacia adelante a Nico Alves; se completó y no derivó en un tiro.\nElegiste a Alves pese a que tenía solo unos 3,6 m de espacio, mientras que Dex Hallam estaba mucho más abierto (18,3 m) y otras opciones visibles eran Andre Salas (14,6 m, 8,5 m de espacio) y Arlo Finch (26,7 m, 15,7 m de espacio); la calidad del pase fue 51/100 y la decisión fue arriesgada."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "Estabas 8 m fuera de tu línea y bajo presión media con un rival cerca; esta fue tu acción y hubo cinco eventos en los últimos 30 segundos que no pudiste ver.  \nPusiste un pase rastrero desde atrás a Nico Alves, 23.3 m hacia delante — el pase se completó y no derivó en un disparo.  \nJugaste a lo seguro para aliviar la presión eligiendo al mediocentro defensivo más cercano en lugar de Dex Hallam, que estaba más lejos pero mucho más libre; calidad 51/100."
  },
  "1586|analyst|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "You received a back pass 8 m off your line and recognised medium pressure with one opponent close.  \nYou kicked a short ground pass 23.3 m forward to Nico Alves; it completed and did not lead to a shot.  \nYou chose Alves despite him having only about 3.6 m of space, while Dex Hallam was much more open (18.3 m) and other visible options were Andre Salas (14.6 m, 8.5 m open) and Arlo Finch (26.7 m, 15.7 m open).  \nThe pass quality was 51/100 and the decision was risky — good news for Harbor United."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "You were 8 m off your line and under medium pressure with one opponent close; this was your action and there were five events in the last 30 seconds you couldn't see.\nYou kicked a ground pass out from the back to Nico Alves, 23.3 m forward — the pass was completed and did not lead to a shot.\nYou played it safe to relieve the press by choosing the nearer DM over Dex Hallam, who was farther but much more open; quality score 51/100 — good for Harbor United."
  },
  "1586|analyst|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "Recibiste un pase atrás 8 m de tu línea y reconociste presión media con un oponente cerca. Diste un pase corto raso de 23.3 m hacia Nico Alves; se completó y no derivó en un remate. Elegiste a Alves pese a que tenía solo unos 3.6 m de espacio, mientras Dex Hallam estaba mucho más abierto (18.3 m) y otras opciones visibles eran Andre Salas (14.6 m, 8.5 m libres) y Arlo Finch (26.7 m, 15.7 m libres). La calidad del pase fue 51/100 y la decisión fue arriesgada; aun así, fue buena noticia para Harbor United, algo que te debe alegrar."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "Estabas a 8 m de tu línea y bajo presión media con un rival cerca; esta fue tu acción y hubo cinco eventos en los últimos 30 segundos que no pudiste ver, lo cual fue buena noticia para Harbor United.  \nMandaste un pase raso desde el fondo a Nico Alves, 23.3 m hacia delante — el pase se completó y no derivó en un disparo.  \nJugaste a lo seguro para aliviar la presión, eligiendo al mediocentro defensivo (DM) más cercano en lugar de Dex Hallam, que estaba más lejos pero mucho más desmarcado; calidad 51/100."
  },
  "1586|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "You received a back pass just off your line and felt medium pressure with one opponent close.  \nYou kicked a short ground pass forward to Nico Alves; it reached him and did not lead to a shot — good news for Harbor United.  \nYou chose Alves despite him having only a little space, while Dex Hallam seemed much more open and Andre Salas and Arlo Finch were visible alternatives; the decision was risky.  \nPass quality: 51/100."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "You were a bit off your line and under medium pressure with an opponent close; this was your action and there were a few events in the last 30 seconds you couldn't see.  \nYou kicked a ground pass out from the back to Nico Alves, well forward — the pass was completed and did not lead to a shot.  \nYou played it safe to relieve the press by choosing the nearer DM over Dex Hallam, who was farther but much more open; quality score 51/100."
  },
  "1586|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:18:02+00:00",
-  "text": "Recibiste un pase atrás cerca de tu área y viste presión media con un rival próximo. Diste un pase corto al suelo hacia Nico Alves; lo completó y no acabó en tiro. Elegiste a Alves pese a que tenía poco espacio y había otras opciones más abiertas como Dex Hallam, Andre Salas y Arlo Finch; la calidad fue 51/100 y la decisión fue arriesgada, pero al final fue buena noticia para Harbor United."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "Estabas un poco adelantado y bajo presión media con un rival cerca; fue tu acción y hubo varios sucesos en los segundos previos que no pudiste ver.\nSacaste un pase raso desde atrás hacia Nico Alves, hacia adelante — el pase llegó y no acabó en tiro.\nJugaste seguro para aliviar la presión, eligiendo al mediocentro defensivo más cercano en lugar de Dex Hallam, que estaba más lejos pero mucho más abierto; calidad 51/100."
  },
  "1586|casual|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T22:18:01+00:00",
-  "text": "You received a back pass a few metres off your line and recognised medium pressure with one opponent close.  \nYou kicked a short ground pass forward to Nico Alves; it reached him and did not lead to a shot, which was good news for Harbor United.  \nYou chose Alves despite him having only a little space while Dex Hallam was much more open and other visible options were Andre Salas and Arlo Finch; the pass quality was 51/100 and the decision was risky."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "You were a little off your line and under medium pressure with an opponent close; this was your action and there were events in the last moments you couldn't see.\n\nYou kicked a ground pass out from the back to Nico Alves — the pass was completed and did not lead to a shot.\n\nYou played it safe to relieve the press by choosing the nearer DM over Dex Hallam, who was farther but much more open; quality score 51/100. Good for Harbor United."
  },
  "1586|casual|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T22:18:01+00:00",
-  "text": "Recibiste un pase atrás y notaste presión media con un rival cerca.  \nDiste un pase corto y raso a Nico Alves; llegó y no dejó un remate, buena noticia para Harbor United.  \nLo elegiste aunque tenía poco espacio, mientras Dex Hallam estaba mucho más libre y también estaban visibles Andre Salas y Arlo Finch; la calidad del pase fue 51/100 y la decisión fue arriesgada."
+  "generated_at": "2026-10-24T15:56:48+00:00",
+  "text": "Estabas a 8 m de tu línea y bajo presión media con un rival cerca; esta fue tu acción y hubo cinco eventos en los últimos 30 segundos que no pudiste ver.  \nMandaste un pase raso desde atrás a Nico Alves, 23,3 m hacia adelante — el pase llegó y no derivó en un disparo.  \nJugaste a lo seguro para aliviar la presión eligiendo al medio defensivo más cercano sobre Dex Hallam, que estaba más lejos pero mucho más abierto; calidad 51/100 — buena noticia para Harbor United."
  },
  "158|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T02:53:01+00:00",
@@ -2688,36 +2688,36 @@
   "text": "Estabas a 4 m de tu línea, a unos 33 m del balón; viste a Dani Okoye jugar un pase hacia adelante a Ivo Marsh que recorrió aproximadamente 33 m. Sentiste una presión media; el pase llegó a Marsh pero no terminó en tiro y viste toda la secuencia, así que bien para Northgate FC que no pasó a más."
  },
  "1659|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "You saw your goal kick leave your boot and felt it was a risky option. You kicked it 56.1 m forward to Bram Tolland; the ball won the contested duel and it did not lead to a shot. You aimed at Bram instead of the nearer, much more open Andre Salas (about 15.6 m away), and the pass quality was rated 62/100."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "You're 6 m off your line; you identified low pressure with no opponents close and judged you could play long. You kicked a long goal kick 56.1 m forward to Bram Tolland — it was contested and won and didn't lead to a shot — you chose the direct forward option over the nearer, much more open centre back Andre Salas (the analysis judges that a debatable choice); distribution quality 62/100."
  },
  "1659|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "Viste el saque de puerta salir de tu bota y sentiste que era una opción arriesgada. Lo enviaste 56.1 m hacia Bram Tolland; el balón ganó el duelo disputado y no derivó en un disparo. Apuntaste a Bram en lugar del más cercano y mucho más abierto Andre Salas (unos 15.6 m), y la calidad del pase fue valorada en 62/100."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "Estás a 6 m de tu línea; viste poca presión, sin rivales cerca, y te sentiste capaz de jugar largo. Diste un saque de puerta largo de 56.1 m hacia Bram Tolland — fue disputado y ganado y no derivó en un remate — elegiste la opción directa hacia adelante en lugar del central Andre Salas, que estaba más cerca y mucho más libre (el análisis considera que fue una elección debatible); calidad de distribución 62/100."
  },
  "1659|analyst|Harbor United|en|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "You saw your goal kick leave your boot and felt it was a risky option. You kicked it 56.1 m forward to Bram Tolland; the ball won the contested duel and it did not lead to a shot. You aimed at Bram instead of the nearer, much more open Andre Salas (about 15.6 m away); the pass quality was rated 62/100, and that outcome was good news for Harbor United."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "You're 6 m off your line; you saw low pressure with no opponents close and felt able to play long. You kicked a long goal kick 56.1 m forward to Bram Tolland — it was contested and won and didn't lead to a shot — you chose the direct forward option over the nearer, much more open centre back Andre Salas (the analysis judges that a debatable choice); distribution quality 62/100; good news for Harbor United."
  },
  "1659|analyst|Harbor United|es|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "Viste cómo el saque de puerta salía de tu bota y sentiste que era una opción arriesgada. Lo pateaste 56.1 m hacia adelante a Bram Tolland; el balón ganó el duelo disputado y no derivó en un disparo, y eso te alegró porque fue buena noticia para Harbor United. Apuntaste a Bram en lugar del más cercano y mucho más desmarcado Andre Salas (unos 15.6 m), y la calidad del pase se valoró en 62/100."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "Estás a 6 m de tu línea; viste poca presión, sin rivales cerca y te sentiste con capacidad para jugar largo. Lanzaste un saque de puerta largo 56,1 m hacia Bram Tolland —fue disputado y ganado y no derivó en un tiro— elegiste la opción directa hacia adelante en lugar del central mucho más cercano y libre Andre Salas (el análisis juzga que fue una elección debatible); calidad de la distribución 62/100 (buena noticia para Harbor United)."
  },
  "1659|casual|Both|en|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "You saw your goal kick leave your boot and felt it was a risky option. You kicked it forward to Bram Tolland; the ball won the contested duel and it did not lead to a shot. You aimed at Bram instead of the nearer, much more open Andre Salas, the pass quality was rated 62/100, and that tidy choice ended up helping Harbor United."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "You're 6 m off your line; you saw low pressure with no opponents close and felt able to play long. You hit a long goal kick 56.1 m forward to Bram Tolland — it was contested and won and didn't lead to a shot — you chose the direct forward option over the nearer, much more open centre back Andre Salas (the analysis judges that a debatable choice); distribution quality 62/100."
  },
  "1659|casual|Both|es|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "Viste salir tu saque de puerta de la bota y lo sentiste como una opción arriesgada.  \nLo enviaste hacia Bram Tolland; el balón ganó el duelo disputado y no acabó en disparo.  \nApuntaste a Bram en vez de al mucho más abierto Andre Salas y la calidad del pase fue 62/100, así que al final fue buena noticia para Harbor United."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "Estás a 6 m de tu línea; viste poca presión y ningún rival cerca y te sentiste capaz de jugar largo. Lanzaste un saque de puerta largo hacia Bram Tolland — fue disputado, lo ganaste y no acabó en remate — elegiste la opción directa hacia adelante en lugar del defensa central, mucho más cercano y abierto, Andre Salas (el análisis considera que fue una elección discutible); calidad de distribución 62/100."
  },
  "1659|casual|Harbor United|en|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "You saw your goal kick leave your boot and felt it was a risky option. You kicked it forward to Bram Tolland; the ball won the contested duel and it did not lead to a shot. You aimed at Bram instead of the nearer, much more open Andre Salas, and the pass quality was 62/100, a nice moment for Harbor United."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "You're a few metres off your line; you saw low pressure with no opponents close and felt able to play long. You kicked a long goal kick 56.1 m forward to Bram Tolland — it was contested and won and didn't lead to a shot — you chose the direct forward option over the nearer, much more open centre back Andre Salas (the analysis judges that a debatable choice); distribution quality 62/100. Glad it helped Harbor United."
  },
  "1659|casual|Harbor United|es|eyes": {
-  "generated_at": "2026-10-24T02:15:32+00:00",
-  "text": "Viste cómo el saque de puerta salió de tu bota y pensaste que era una opción arriesgada. Lo mandaste largo hacia Bram Tolland; el balón ganó el duelo disputado y no acabó en disparo, buena noticia para Harbor United. Apuntaste a Bram en vez de al mucho más abierto Andre Salas, y la calidad del pase fue 62/100."
+  "generated_at": "2026-10-24T15:59:31+00:00",
+  "text": "Estabas algo adelantado en tu línea; viste poca presión, sin rivales cerca, y te sentiste capaz de jugar largo. Lanzaste un saque de puerta largo hacia Bram Tolland — fue disputado, lo ganó y no acabó en disparo — elegiste la opción directa hacia delante en vez del defensa central más cercano y muy libre Andre Salas (el análisis considera que fue una elección debatible); calidad 62/100. Buena noticia para Harbor United."
  },
  "1663|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T03:55:32+00:00",
@@ -2816,36 +2816,36 @@
   "text": "Estás fuera de tu línea cuando Jory Kane (Northgate) dispara desde una entrada abierta al área — lo viste suceder. Estabas preparado con tiempo de sobra y no hubo desviación; el tiro rápido fue calificado 79 (salvabilidad; debería salvarse), y lo paraste, bien por Harbor United."
  },
  "1674|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "You saw yourself roll the ball to Kofi Mensah after your save. You felt immediate pressure from two opponents closing in.\n\nYou rolled it 5.4 m forward to Kofi Mensah because he was the nearest, safer target with about 4.2 m of space, even though Arlo Finch was much more open (≈19.0 m) but farther away (≈26.3 m); quality 50/100. The pass was completed, it relieved the pressure and did not lead to a shot — the choice was risky."
+  "generated_at": "2026-10-24T15:57:58+00:00",
+  "text": "You had just made a save and rolled the ball short; you saw two opponents close and felt the high pressure. You rolled it 5.4 m forward to Kofi Mensah (target ~4.6 m, open ~4.2), choosing the nearer, safer option under pressure even though Arlo Finch (26.3 m, open ~19.0) would have been better for build-up; the pass completed and didn't lead to a shot — quality 50/100."
  },
  "1674|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "Te viste rodar el balón a Kofi Mensah después de tu parada. Sentiste presión inmediata de dos oponentes cerrándose.\n\nLo rodaste 5.4 m hacia adelante a Kofi Mensah porque era el objetivo más cercano y más seguro con aproximadamente 4.2 m de espacio, aunque Arlo Finch estaba mucho más abierto (≈19.0 m) pero más lejos (≈26.3 m); calidad 50/100. El pase se completó, alivió la presión y no acabó en disparo — la elección fue arriesgada."
+  "generated_at": "2026-10-24T15:57:58+00:00",
+  "text": "Habías hecho una parada y rodaste el balón corto; viste a dos oponentes cerca y sentiste la alta presión. Lo enviaste 5.4 m hacia adelante a Kofi Mensah (objetivo ~4.6 m, abierto ~4.2), eligiendo la opción más cercana y segura bajo presión aunque Arlo Finch (26.3 m, abierto ~19.0) habría sido mejor para la construcción; el pase se completó y no derivó en un disparo — calidad 50/100; fue buena noticia para Harbor United."
  },
  "1674|analyst|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "You saw yourself roll the ball to Kofi Mensah after your save. You felt immediate pressure from two opponents closing in — a good outcome for Harbor United.\n\nYou rolled it 5.4 m forward to Kofi Mensah because he was the nearest, safer target with about 4.2 m of space, even though Arlo Finch was much more open (≈19.0 m) but farther away (≈26.3 m); quality 50/100. The pass was completed, it relieved the pressure and did not lead to a shot — the choice was risky."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "You had just made a save and rolled the ball short; you saw two opponents close and felt the high pressure. You rolled it 5.4 m forward to Kofi Mensah (target ~4.6 m, open ~4.2), choosing the nearer, safer option under pressure even though Arlo Finch (26.3 m, open ~19.0) would have been better for build-up; the pass completed and didn't lead to a shot — quality 50/100, a positive outcome for Harbor United."
  },
  "1674|analyst|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "Viste cómo rodaste el balón hacia Kofi Mensah tras tu parada. Sentiste presión inmediata de 2 rivales que se acercaban.\n\nLo rodaste 5.4 m hacia adelante a Kofi Mensah porque era el objetivo más cercano y más seguro con unos 4.2 m de espacio, aunque Arlo Finch estaba mucho más abierto (≈19.0 m) pero más lejos (≈26.3 m); calidad 50/100. El pase se completó, alivió la presión y no derivó en un disparo — la elección fue arriesgada; fue una buena noticia para Harbor United."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "Habías hecho una parada y rodaste el balón corto; viste a dos rivales cerca y percibiste la alta presión. Lo rodaste 5.4 m hacia adelante a Kofi Mensah (destino ~4.6 m, libre ~4.2), eligiendo la opción más cercana y segura bajo presión aunque Arlo Finch (26.3 m, libre ~19.0) habría sido mejor para la salida de balón; el pase se completó y no condujo a un disparo — calidad 50/100. Buena noticia para Harbor United."
  },
  "1674|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "You rolled the ball to Kofi Mensah after your save. You felt immediate pressure from two opponents closing in.\n\nYou rolled it a short way forward to Kofi Mensah because he was the nearest, safer option with a bit of space, even though Arlo Finch was much more open but farther away; quality 50/100. The pass was completed, it relieved the pressure and did not lead to a shot — the choice was risky."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "You had just made a save and rolled the ball short; you saw two opponents close and felt the high pressure. You rolled it to Kofi Mensah, choosing the nearer, safer option under pressure even though Arlo Finch would have been better for build-up; the pass completed and didn't lead to a shot — quality 50/100."
  },
  "1674|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "Te viste rodar el balón a Kofi Mensah tras tu parada. Sentiste la presión inmediata de dos rivales que se cerraban.\n\nLo pasaste porque era el objetivo más cercano y más seguro, con algo de espacio, aunque Arlo Finch estaba mucho más libre pero más lejos; calidad 50/100. El pase se completó, alivió la presión y no llevó a un disparo — la elección fue arriesgada."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "Habías acabado de sacar una parada y la habías rodado corta; viste a dos rivales cerca y notaste la alta presión. La pasaste un poco hacia adelante a Kofi Mensah, eligiendo la opción más cercana y segura bajo apremio aunque Arlo Finch habría sido mejor para construir; el pase llegó y no acabó en tiro — calidad 50/100. Fue la opción sensata, y ayudó a frenar la presión."
  },
  "1674|casual|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "You saw yourself roll the ball to Kofi Mensah after your save. You felt immediate pressure from two opponents closing in.\n\nYou picked the nearer, safer target and rolled the pass — quality 50/100. The pass was completed, it relieved the pressure and did not lead to a shot; it was risky, but a nice moment for Harbor United."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "You had just made a save and rolled the ball short; you saw two opponents close and felt the high pressure — a tidy moment that helped Harbor United. You rolled it forward to Kofi Mensah, choosing the nearer, safer option under pressure even though Arlo Finch would have been better for build-up; the pass completed and didn't lead to a shot — quality 50/100."
  },
  "1674|casual|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T22:19:46+00:00",
-  "text": "Te viste pasar el balón a Kofi Mensah tras tu parada. Sentiste presión inmediata de dos rivales que se acercaban. Lo pasaste porque Kofi era el objetivo más cercano y seguro, aunque Arlo Finch estaba mucho más abierto pero más lejos; calidad 50/100. El pase llegó, alivió la presión y no acabó en disparo — fue una elección arriesgada, buena noticia para Harbor United."
+  "generated_at": "2026-10-24T15:57:57+00:00",
+  "text": "Tú acababas de parar el balón y lo rodaste corto; viste a dos rivales cerca y sentiste la presión alta. Lo pasaste a Kofi Mensah, eligiendo la opción más cercana y segura bajo presión aunque Arlo Finch habría sido mejor para la construcción; el pase se completó y no llevó a un disparo — calidad 50/100. ¡Buena noticia para Harbor United!"
  },
  "1690|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T03:56:17+00:00",
@@ -3040,36 +3040,36 @@
   "text": "Ves a Dani Okoye lanzar un rápido centro lateral al área hacia Bram Tolland que de inmediato provocó un remate; estabas algo adelantado cuando llegó y sentiste que tus líneas de visión y tu tiempo de reacción quedaron muy reducidos por la entrega bajo presión y los atacantes cercanos. Se calificó con 40/100 de salvabilidad — una parada complicada — y hubo dos acciones en los últimos segundos que no llegaste a ver; una pena para Northgate FC."
  },
  "1729|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "You were 6 m off your line when you took the goal kick; you judged the long ball to be a risky choice.  \nYou played a long goal kick to Hugo Lind, it completed (about 61 m) and it led to a shot.  \nYou targeted Lind aiming for safe retention even though Leo Santos was much closer (≈32 m) and far more open, so the decision was risky — quality 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "You saw Hugo upfield and chose to launch a long goal kick to try to retain possession. There were two events in the previous 30 seconds you didn't see.\n\nYou kicked a long goal kick from your box to Hugo Lind (ST), forward 60.9 m to (65.8,25.6); it completed and led to a shot (ID 1734). The choice was debatable — quality 48/100 — because Leo Santos was a nearer, much more open outlet (31.9 m and 28.2 m open) while Hugo was far and only 2.4 m from the nearest opponent."
  },
  "1729|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "Estabas 6 m por delante de tu línea cuando hiciste el saque de portería; consideraste que el balón largo era una opción arriesgada.\nLanzaste un saque largo a Hugo Lind, se completó (≈61 m) y derivó en un disparo.\nElegiste a Lind buscando la retención segura aunque Leo Santos estaba mucho más cercano (≈32 m) y mucho más desmarcado, por lo que la decisión fue arriesgada — calidad 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "Viste a Hugo adelantado y elegiste lanzar un saque de puerta largo para intentar mantener la posesión.  \nHubo dos eventos en los 30 segundos anteriores que no viste.\n\nPateaste un saque de puerta largo desde tu área a Hugo Lind (ST), hacia adelante 60.9 m hasta (65.8,25.6); se completó y llevó a un disparo (ID 1734). La elección fue debatible — calidad 48/100 — porque Leo Santos era una salida más cercana y mucho más abierta (31.9 m y 28.2 m abiertos) mientras Hugo estaba lejos y solo 2.4 m del rival más cercano."
  },
  "1729|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "You were 6 m off your line when you took the goal kick; you judged the long ball to be a risky option.  \nYou kicked a long goal kick to Hugo Lind, it completed (about 61 m) and it led to a shot — a positive outcome for Northgate FC.  \nYou picked Lind aiming for safe retention even though Leo Santos was much closer (≈32 m) and far more open, so the decision was risky — quality 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "You saw Hugo upfield and chose to launch a long goal kick to try to retain possession, a decision that ultimately favoured Northgate FC. There were two events in the previous 30 seconds you didn't see. You kicked a long goal kick from your box to Hugo Lind (ST), forward 60.9 m to (65.8,25.6); it completed and led to a shot (ID 1734). The choice was debatable — quality 48/100 — because Leo Santos was a nearer, much more open outlet (31.9 m and 28.2 m open) while Hugo was far and only 2.4 m from the nearest opponent."
  },
  "1729|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "Estabas a 6 m de tu línea cuando ejecutaste el saque de puerta; sentiste que el balón largo era una opción arriesgada.  \nLanzaste un saque de puerta largo a Hugo Lind, se completó (≈61 m) y derivó en un disparo.  \nElegiste a Lind buscando retención segura aunque Leo Santos estaba mucho más cerca (≈32 m) y mucho más libre, por lo que la decisión fue arriesgada — calidad 48/100. Fue buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "Viste a Hugo adelantado y elegiste lanzar un saque de puerta largo para intentar mantener la posesión.\n\nHubo dos eventos en los 30 segundos anteriores que no viste.\n\nLanzaste un saque de puerta largo desde tu área hacia Hugo Lind (delantero), hacia adelante 60.9 m hasta (65.8,25.6); se completó y derivó en un disparo (ID 1734), lo cual fue buena noticia para Northgate FC.\n\nLa elección fue debatible — calidad 48/100 — porque Leo Santos era una salida más cercana y mucho más abierta (31.9 m y 28.2 m de espacio) mientras Hugo estaba lejos y solo a 2.4 m del adversario más próximo."
  },
  "1729|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "You were about six metres off your line when you took the goal kick, and you felt the long ball was a risky choice.  \nYou kicked a long one to Hugo Lind that reached him (about 61 m) and it led to a shot — good news for Northgate FC.  \nYou picked Lind to try to keep possession even though Leo Santos was much closer and more open, so it was a risky call — quality 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "You saw Hugo upfield and chose to launch a long goal kick to try to retain possession. There were two events in the moments before that you didn't see.\n\nYou kicked a long goal kick from your box to Hugo Lind; it reached him and led to a shot — the choice was debatable, quality 48/100, because Leo Santos was a nearer, more open option while Hugo was farther out and close to an opponent."
  },
  "1729|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "Estabas adelantado respecto a tu línea cuando hiciste el saque de portería; sentiste que el balón largo era una opción arriesgada.  \nMandaste un saque largo a Hugo Lind, completó la acción y terminó en un disparo.  \nElegiste a Lind buscando retener con seguridad aunque Leo Santos estaba mucho más abierto, así que fue una decisión arriesgada — calidad 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "Viste a Hugo adelantado y decidiste lanzar un saque de portería largo para intentar conservar la posesión. Hubo dos acciones en los 30 segundos previos que no viste. Pateaste un saque largo desde tu área hacia Hugo Lind (ST); se completó y acabó en un disparo. La elección fue discutible — calidad 48/100 — porque Leo Santos era una salida más cercana y mucho más libre, mientras Hugo estaba lejos y bastante marcado. Al final fue buena noticia para Northgate FC."
  },
  "1729|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "You were a few meters off your line when you took the goal kick; you felt the long ball was a risky choice.  \nYou kicked a long goal kick to Hugo Lind, it found him and led to a shot — great for Northgate FC.  \nYou picked Lind aiming for safe retention even though Leo Santos was much closer and more open, so the decision was risky — quality 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "You saw Hugo upfield and sent a long goal kick to try to keep possession. There were two events in the previous 30 seconds you didn't see.\n\nYour long kick from the box reached Hugo Lind and it completed, leading to a shot — nice for Northgate FC. The choice was debatable — quality 48/100 — because Leo Santos was a nearer, much more open outlet while Hugo was farther and close to an opponent."
  },
  "1729|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T22:21:44+00:00",
-  "text": "Estabas fuera de tu línea cuando hiciste el saque de puerta; sentiste que el balón largo era una opción arriesgada.  \nMandaste un saque largo a Hugo Lind, se completó y acabó en un disparo; buena noticia para Northgate FC.  \nElegiste a Lind para intentar retener con seguridad aunque Leo Santos estaba mucho más cerca y más abierto — calidad 48/100."
+  "generated_at": "2026-10-24T15:58:43+00:00",
+  "text": "Viste a Hugo más adelantado y decidiste lanzar una saca de puerta larga para intentar mantener la posesión. Hubo dos acciones en los 30 segundos previos que no viste.\n\nLanzaste la saca de tu área hacia Hugo Lind (delantero); llegó y acabó en un disparo. La elección fue discutible — calidad 48/100 — porque Leo Santos era una opción más cercana y mucho más abierta, mientras Hugo estaba lejos y apenas a poca distancia del rival más cercano. Fue buena noticia para Northgate FC; eso ayudó al equipo y te da motivos para sonreír."
  },
  "1733|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T02:19:19+00:00",
@@ -3584,36 +3584,36 @@
   "text": "Estás a 4 m de tu línea y lo viste ocurrir; te sentiste alerta. Kofi Mensah dio un pase corto de 9.6 m hacia adelante a Nico Alves en tu propio tercio; se completó con presión media, no terminó en disparo, y tú lo viste —bien para Harbor United."
  },
  "276|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "You saw the back-pass and, with two opponents closing and high pressure, decided to relieve it. You kicked a 10.4 m ground pass to Ben Arkwright as the short, nearer outlet—completed and gaining 9.2 m—rather than the more progressive but farther and more open Viktor Haas. The action was judged risky with a quality score of 63/100."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "You recognised high pressure from two opponents close (around 1.6 m) and judged immediate relief was necessary. You played a short ground pass out from the back to Ben Arkwright (about 10 m), deliberately choosing the nearer centre‑back instead of the more open full‑back to reduce pressure; the pass was completed and rated 63 for quality."
  },
  "276|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "Viste el pase atrás y, con dos oponentes cerrando y alta presión, decidiste aliviarlo. Lanzaste un pase raso de 10.4 m hacia Ben Arkwright como la salida corta y más cercana —completado y ganando 9.2 m— en lugar de la opción más progresiva pero más lejana y más abierta de Viktor Haas. La acción fue juzgada arriesgada con una puntuación de calidad de 63/100."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "Viste una presión alta con dos rivales cerca (unos 1,6 m) y sentiste que necesitabas aliviarla. Hiciste un pase corto raso desde la salida atrás hacia Ben Arkwright (unos 10 m), escogiendo al central más cercano en vez del lateral más abierto para aliviar la presión. El pase se completó y fue valorado con una calidad de 63."
  },
  "276|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "You saw the back-pass and, with two opponents closing and high pressure, chose the safer relief. You played a 10.4 m ground pass to Ben Arkwright as the short, nearer outlet—completed and advancing 9.2 m—over the farther, more progressive Viktor Haas. The action was judged risky; quality 63/100, positive for Northgate FC. indeed!!"
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "You saw high pressure with two opponents close (around 1.6 m) and decided you needed to relieve it. You played a short ground pass out from the back to Ben Arkwright (about 10 m), choosing the nearer centre‑back instead of the more open full‑back to relieve pressure. You completed the pass and it was rated 63 for quality — a tidy, safety‑first action that helped Northgate FC."
  },
  "276|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "Viste el pase atrás y, con dos rivales cerrando y mucha presión, decidiste aliviarlo. Pateaste un pase raso de 10,4 m a Ben Arkwright como salida corta y más cercana —completado y ganando 9,2 m— en lugar de Viktor Haas, más progresivo pero más lejano y más abierto; la acción se juzgó arriesgada con una puntuación de calidad de 63/100 —buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "Viste presión alta con dos oponentes cerca (unos 1,6 m) y percibiste que necesitabas aliviarla. Lanzaste un pase corto raso desde atrás a Ben Arkwright (unos 10 m), elegiste al defensa central más cercano en lugar del lateral más abierto para aliviar la presión; el pase se completó y fue valorado 63 de calidad —buena noticia para Northgate FC."
  },
  "276|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "You saw the back-pass and, with two players closing under heavy pressure, decided to relieve it. You played a short ground pass to Ben Arkwright, the nearer outlet, which was completed and carried the ball forward instead of the more progressive but farther Viktor Haas. You took a risky option, judged with a quality score of 63/100."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "You saw high pressure with two opponents close and felt you needed to relieve it. You played a short ground pass out from the back to Ben Arkwright, choosing the nearer centre‑back instead of the more open full‑back to ease the pressure; the pass was completed and rated 63 for quality, a tidy moment that helped Northgate."
  },
  "276|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "Viste el pase atrás y, con dos rivales cerrando y mucha presión, decidiste aliviarla. Mandaste un pase raso a Ben Arkwright como salida corta y más cercana —se completó y ganó terreno— en vez de buscar a Viktor Haas, más progresivo pero más lejos y más abierto. La acción se consideró arriesgada con una calidad de 63/100; aun así fue buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "Tú viste presión alta con dos rivales muy cerca y sentiste que había que aliviarla. Diste un pase corto por el suelo desde atrás a Ben Arkwright, escogiendo al central más cercano en lugar del lateral más libre; el pase llegó y tuvo una calidad de 63."
  },
  "276|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "You saw the back-pass and, with two opponents closing and high pressure, decided to relieve it. You kicked a short ground pass to Ben Arkwright as the nearer outlet—completed and gaining ground—rather than the more progressive but farther and more open Viktor Haas, a tidy choice that helped Northgate FC. The action was judged risky with a quality score of 63/100."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "You saw high pressure with two opponents close (around 1.6 m) and felt you needed to relieve it. You chose the nearer centre-back and played a short ground pass out from the back to Ben Arkwright (about 10 m), the pass was completed, it helped Northgate FC and was rated 63 for quality."
  },
  "276|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T21:38:20+00:00",
-  "text": "Viste el pase atrás y, con dos rivales cerrando y mucha presión, decidiste aliviarlo. Pasaste en corto a Ben Arkwright como salida más cercana—se completó y ganó metros—en lugar de Viktor Haas, más progresivo y abierto. Buena para Northgate FC. Calidad 63/100. Fue una decisión segura y sencilla, que alegró a la gente de Northgate."
+  "generated_at": "2026-10-24T15:52:21+00:00",
+  "text": "Viste una presión alta con dos rivales cerca y sentiste que debías aliviarla. Diste un pase corto y raso desde atrás a Ben Arkwright, eligiendo al central más cercano en vez del lateral más libre para aliviar la presión; el pase fue completado y tuvo una calidad de 63, buena noticia para Northgate FC."
  },
  "288|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T00:59:12+00:00",
@@ -4512,36 +4512,36 @@
   "text": "Viste la entrada al área de Dani Okoye al 25:26 desde 8.7 m; el balón no avanzó y acabó en un disparo. Estabas a 3.8 m de tu línea y lo viste, aunque en los últimos 30 segundos hubo cuatro acciones que no alcanzaste a ver; bien por Northgate."
  },
  "481|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "You identified space to gain big territory and judged a long goal kick the correct tactical option. You kicked it 60.9 m forward to Pavel Drum with little pressure; the ball was completed, the contest was won and the sequence led to a shot. Ben Arkwright was much closer and far more open, so choosing Drum reduced your margin for error — pass quality 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "You were 6 m off your line and observed low pressure on the kick, so you judged a long distribution as safe to retain possession. You played a 60.9 m goal kick to Pavel Drum at (65.8, 42.4); the ball was contested, won, and it led to a shot. The choice was debatable because Ben Arkwright was much closer (15.6 m) and far more open (35.0 m), offering a safer short option; pass quality was 42/100."
  },
  "481|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "Viste espacio para avanzar mucho terreno y consideraste que un saque largo de portería era la opción correcta. Lo enviaste 60.9 m hacia adelante a Pavel Drum con poca presión; el balón llegó, ganaste el duelo y la secuencia derivó en un disparo. Ben Arkwright estaba mucho más cerca y mucho más libre, así que elegir a Drum redujo tu margen de error — calidad del pase 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "Estabas 6 m fuera de tu línea y viste presión baja en el despeje, por lo que consideraste seguro jugar largo para retener la posesión. Lo enviaste largo a Pavel Drum — un saque de meta de 60.9 m a (65.8, 42.4); el balón fue disputado y ganado y derivó en un disparo. La elección fue debatible porque Ben Arkwright estaba mucho más cerca (15.6 m) y mucho más desmarcado (35.0 m), ofreciendo una opción corta más segura; la calidad del pase fue 42/100."
  },
  "481|analyst|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "You saw space to gain big territory and felt a long goal kick was the right option. You kicked it 60.9m forward to Pavel Drum with light pressure; the ball was completed, the contest was won and the sequence led to a shot for Northgate FC.Ben Arkwright was closer and more open, so choosing Drum reduced margin for error—pass quality 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "You were 6 m off your line and saw low pressure on the kick, so you felt it was safe to play long to retain possession, and it paid off for Northgate FC. You kicked it long to Pavel Drum — a 60.9 m goal kick to (65.8, 42.4); the ball was contested and won and it led to a shot. The choice was debatable because Ben Arkwright was much closer (15.6 m) and far more open (35.0 m), offering a safer short option; pass quality was 42/100."
  },
  "481|analyst|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "Viste espacio para ganar gran territorio y consideraste que un saque de meta largo era la opción correcta, buena noticia para Northgate FC. Lo pateaste 60.9 m hacia adelante a Pavel Drum con poca presión; el balón fue completado, ganaste el contest y la secuencia derivó en un disparo. Ben Arkwright estaba mucho más cerca y mucho más abierto, así que elegir a Drum redujo tu margen de error — calidad del pase 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "Estabas 6 m fuera de tu línea y viste poca presión sobre el saque, así que consideraste seguro jugar largo para mantener la posesión. Lo lanzaste largo a Pavel Drum — un saque de puerta de 60.9 m hacia (65.8, 42.4); el balón fue disputado y ganado y derivó en un tiro, lo cual fue buena noticia para Northgate FC. La elección fue debatible porque Ben Arkwright estaba mucho más cerca (15.6 m) y mucho más desmarcado (35.0 m), ofreciendo una opción corta más segura; la calidad del pase fue 42/100."
  },
  "481|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "You saw space to gain big territory and decided a long goal kick was the right move. You sent it forward to Pavel Drum with little pressure; the ball found him, the contest was won and the sequence led to a shot. Ben Arkwright was much closer and more open, so choosing Drum was riskier and reduced your margin for error — pass quality 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "You were a bit off your line and saw low pressure on the kick, so you felt it was safe to play long to retain possession. You kicked it long to Pavel Drum — the ball was contested and won, and it led to a shot. The choice was debatable because Ben Arkwright was much closer and far more open, offering a safer short option; pass quality was 42/100."
  },
  "481|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "Viste espacio para ganar mucho terreno y sentiste que un despeje largo era la opción correcta. Lo mandaste adelante a Pavel Drum con poca presión; el balón llegó, ganaste el duelo y la jugada terminó en un disparo. Ben Arkwright estaba mucho más cerca y mucho más libre, así que elegir a Drum redujo tu margen de error — calidad 42/100."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "Estabas un poco adelantado en tu línea y viste que había poca presión en el saque, así que te pareció seguro jugar largo para mantener la posesión. La enviaste larga a Pavel Drum; el balón fue disputado, se ganó y acabó en un remate. La decisión fue discutible porque Ben Arkwright estaba mucho más cerca y más libre, ofreciendo una opción corta más segura; calidad del pase 42/100."
  },
  "481|casual|Northgate FC|en|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "You saw space to gain big territory and felt a long goal kick was the right option. You kicked it long forward to Pavel Drum with little pressure; the ball was completed, the contest was won and the sequence led to a shot. Ben Arkwright was much closer and far more open, so choosing Drum reduced your margin for error — pass quality 42/100; nice for Northgate FC."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "You were off your line and saw low pressure on the kick, so you felt it was safe to play long to retain possession. You kicked it long to Pavel Drum; the ball was contested and won and it led to a shot — good news for Northgate FC. The choice was debatable because Ben Arkwright was much closer and far more open, offering a safer short option; pass quality was 42/100."
  },
  "481|casual|Northgate FC|es|eyes": {
-  "generated_at": "2026-10-23T21:42:36+00:00",
-  "text": "Viste espacio para ganar mucho terreno y sentiste que un saque largo era la opción correcta. Lo pateaste 60,9 m hacia adelante a Pavel Drum con poca presión; el balón llegó, ganaste el duelo y la secuencia terminó en un remate. Ben Arkwright estaba mucho más cerca y mucho más abierto, así que elegir a Drum redujo tu margen de error — calidad del pase 42/100; buena noticia para Northgate FC."
+  "generated_at": "2026-10-24T15:53:06+00:00",
+  "text": "Estabas algo adelantado respecto a tu línea y viste que la presión en el saque era baja, así que te pareció seguro jugar largo para mantener la posesión. Lo enviaste largo a Pavel Drum; el balón fue disputado, lo ganaron y acabó en un tiro — buena noticia para Northgate FC. La elección fue discutible porque Ben Arkwright estaba mucho más cerca y mucho más libre, ofreciendo la opción corta más segura; calidad del pase 42/100."
  },
  "485|analyst|Both|en|eyes": {
   "generated_at": "2026-10-24T01:09:13+00:00",
@@ -4864,36 +4864,36 @@
   "text": "Ves el disparo en juego abierto de Hugo Lind y notas que te impacta en el cuerpo mientras estás bien colocado. Tenía salvabilidad 75/100 — una parada que debías hacer y la salvaste pese a tener reacción y alcance algo reducidos; buena noticia para Harbor United."
  },
  "528|analyst|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "You recognised it was your own action and felt two opponents closing in as you released the ball.\n\nYou rolled it (bowled) short and forward about 5.8 m to Nico Alves under high pressure with two opponents close. The pass was completed, gained roughly 4.9 m and did not lead to a shot. You chose Nico because he was nearby and relatively open (5.0 m, open 7.2 m), reducing immediate turnover risk instead of the more progressive Remy Cole who was much more open (18.9 m) and farther (24.5 m); that choice was judged risky, with a quality of 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "You saw two opponents closing in (about 2.2 m) and judged it necessary to relieve pressure after your save. You played a 5.8 m rolled pass forward to Nico Alves, the nearest fairly open option, completing it effectively under very high pressure immediately because it was the safer outlet than Remy Cole, who would have been better for build-up but was much farther away; the pass quality was 59/100 and it did not lead to a shot."
  },
  "528|analyst|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "Viste que era una acción tuya y notaste a dos rivales cerrando cuando soltaste el balón.\n\nLo rodaste (lanzaste) corto y hacia delante unos 5.8 m hacia Nico Alves bajo alta presión con dos rivales cerca. El pase se completó, ganó aproximadamente 4.9 m y no derivó en un tiro. Elegiste a Nico porque estaba más cercano y relativamente libre (5.0 m, libre 7.2 m), reduciendo el riesgo inmediato de pérdida en lugar de optar por el más progresivo Remy Cole, que estaba mucho más libre (18.9 m) y más lejos (24.5 m); esa decisión fue juzgada como arriesgada, con una calidad de 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "Viste a dos oponentes cerrándose (aprox. 2.2 m) y sentiste la necesidad de aliviar la presión tras tu parada. Lanzaste un pase rodado hacia adelante de 5.8 m a Nico Alves —la opción más cercana y relativamente libre— y lo completaste bajo alta presión porque era la salida más segura en comparación con Remy Cole, que habría sido mejor para la salida de balón pero estaba mucho más lejos; la calidad del pase fue 59/100 y no derivó en remate."
  },
  "528|analyst|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "You saw it was your own action and felt two opponents closing in as you released the ball. Good news for Harbor United — the sequence worked out in the team’s favour.\n\nYou rolled it (bowled) short and forward about 5.8 m to Nico Alves under high pressure with two opponents close. The pass was completed, gained roughly 4.9 m and did not lead to a shot. You chose Nico because he was nearby and relatively open (5.0 m, open 7.2 m), reducing immediate turnover risk instead of the more progressive Remy Cole who was much more open (18.9 m) and farther (24.5 m); that choice was judged risky, with a quality of 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "You saw two opponents closing in (about 2.2 m) and felt the need to relieve pressure after your save, a pragmatic choice that helped Harbor United. You threw a 5.8 m rolled pass forward to Nico Alves — the nearest and fairly open option — completing it under high pressure because it was the safer outlet than Remy Cole, who would have been better for build-up but was much farther away; the pass quality was 59/100 and it did not lead to a shot."
  },
  "528|analyst|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "Viste que era tu propia acción y notaste a 2 rivales cerrando sobre ti cuando soltaste el balón. La rodaste (lanzada) corta y hacia adelante unos 5.8 m hacia Nico Alves, bajo mucha presión con 2 rivales cerca. El pase se completó, ganó aproximadamente 4.9 m y no derivó en un disparo. Elegiste a Nico porque estaba cerca y relativamente libre (5.0 m, libre 7.2 m), reduciendo el riesgo de pérdida inmediata en lugar del más progresivo Remy Cole, que estaba mucho más abierto (18.9 m) y más lejos (24.5 m); esa elección fue considerada arriesgada, con una calidad de 59/100; buen resultado para Harbor United."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "Viste a dos rivales cerrando (about 2.2 m) y sentiste la necesidad de aliviar la presión tras tu parada. Lanzaste un pase rodado de 5.8 m hacia delante a Nico Alves — la opción más cercana y bastante libre — y lo completaste bajo alta presión porque era la salida más segura que Remy Cole, quien habría sido mejor para la construcción pero estaba mucho más lejos; la calidad del pase fue 59/100 y no derivó en un disparo; buena noticia para Harbor United."
  },
  "528|casual|Both|en|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "You saw it was your ball and felt two opponents closing in as you let it go.\n\nYou rolled it short and forward to Nico Alves under heavy pressure. The pass reached him, moved the play forward a bit and did not lead to a shot. You chose Nico because he was nearby and relatively open, reducing immediate turnover risk instead of the more progressive Remy Cole who was much more open and farther; that choice was judged risky, with a quality of 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "You saw two opponents closing in (about 2.2 m) and, after your save, decided you needed to relieve the pressure. You rolled a 5.8 m pass forward to Nico Alves — the nearest and fairly open option — completing it under heavy pressure because it was the safer outlet than Remy Cole, who would have been better for build-up but was much farther away; the pass quality was 59/100 and it did not lead to a shot."
  },
  "528|casual|Both|es|eyes": {
-  "generated_at": "2026-10-23T21:46:20+00:00",
-  "text": "Tú viste que fue tu propia acción y notaste a dos rivales cerrándote mientras soltabas el balón. \n\nLo rodaste corto y hacia adelante hacia Nico Alves bajo mucha presión con dos rivales cerca. El pase se completó, ganó metros y no llevó a un tiro. Elegiste a Nico porque estaba más cerca y relativamente libre, reduciendo el riesgo inmediato de pérdida en vez de buscar a Remy Cole, que estaba mucho más abierto y más lejos; esa elección se consideró arriesgada, con una calidad de 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "Viste a dos rivales acercándose y sentiste que había que aliviar la presión tras tu parada. Lanzaste un pase rodado hacia adelante a Nico Alves, la opción más cercana y bastante libre, completándolo bajo mucha presión porque era el desahogo más seguro frente a Remy Cole, que habría sido mejor para la construcción pero estaba mucho más lejos; la calidad del pase fue 59/100 y no acabó en disparo. Eso fue buena noticia para Harbor United."
  },
  "528|casual|Harbor United|en|eyes": {
-  "generated_at": "2026-10-23T21:46:19+00:00",
-  "text": "You saw it was your own action and felt two opponents closing in as you released the ball.\n\nYou rolled it short and forward to Nico under high pressure; the pass was completed, moved play on and did not lead to a shot — nice for Harbor United.\n\nYou chose Nico because he was nearby and relatively open, reducing immediate turnover risk instead of the more progressive Remy Cole who was much more open and farther; that choice was judged risky, with a quality of 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "You saw two opponents closing in and felt you needed to relieve the pressure after your save. You rolled a pass forward to Nico Alves — the nearest, fairly open option — and completed it under high pressure because it was the safer choice than Remy Cole, who would have been better for building play but was much farther away; the pass quality was 59/100. It did not lead to a shot, and that calmer possession was good news for Harbor United."
  },
  "528|casual|Harbor United|es|eyes": {
-  "generated_at": "2026-10-23T21:46:19+00:00",
-  "text": "Viste que la acción era tuya y notaste a dos rivales cerrando cuando soltaste el balón.  \nLo pasaste corto y hacia delante a Nico Alves bajo mucha presión, con dos rivales muy cerca.  \nTu pase llegó a destino, avanzó unos metros y no derivó en disparo; buen trabajo para Harbor United.  \nElegiste a Nico porque estaba más cerca y relativamente libre, reduciendo el riesgo de pérdida inmediata frente a Remy Cole, que estaba mucho más abierto y lejos; la decisión se consideró arriesgada, con una calidad de 59/100."
+  "generated_at": "2026-10-24T15:53:46+00:00",
+  "text": "Viste a dos rivales acercarse y sentiste la necesidad de aliviar la presión tras tu parada. Lanzaste un pase rodado hacia adelante a Nico Alves —la opción más cercana y bastante libre— completándolo bajo mucha presión porque era la salida más segura que Remy Cole, que habría sido mejor para la construcción pero estaba mucho más lejos; la calidad del pase fue 59/100 y no llevó a un disparo, así que fue una buena noticia para Harbor United."
  },
  "531|analyst|Both|en|eyes": {
   "generated_at": "2026-10-23T21:50:25+00:00",
